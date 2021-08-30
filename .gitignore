@@ -1,6 +1,6 @@
 
-# Created by https://www.toptal.com/developers/gitignore/api/c,c++,python,git,cmake
-# Edit at https://www.toptal.com/developers/gitignore?templates=c,c++,python,git,cmake
+# Created by https://www.toptal.com/developers/gitignore/api/c,python,git
+# Edit at https://www.toptal.com/developers/gitignore?templates=c,python,git
 
 ### C ###
 # Prerequisites
@@ -55,42 +55,6 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
-
-### C++ ###
-# Prerequisites
-
-# Compiled Object files
-*.slo
-
-# Precompiled Headers
-
-# Compiled Dynamic libraries
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-
-# Executables
-
-### CMake ###
-CMakeLists.txt.user
-CMakeCache.txt
-CMakeFiles
-CMakeScripts
-Testing
-Makefile
-cmake_install.cmake
-install_manifest.txt
-compile_commands.json
-CTestTestfile.cmake
-_deps
-
-### CMake Patch ###
-# External projects
-*-prefix/
 
 ### Git ###
 # Created by git for backups. To disable backups in Git:
@@ -246,4 +210,4 @@ dmypy.json
 # Cython debug symbols
 cython_debug/
 
-# End of https://www.toptal.com/developers/gitignore/api/c,c++,python,git,cmake
+# End of https://www.toptal.com/developers/gitignore/api/c,python,git
