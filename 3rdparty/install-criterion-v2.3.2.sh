@@ -13,10 +13,12 @@ function cleanup {
 trap cleanup EXIT
 
 ## Download
-echo "[CRITERION] Downloading criterion-v2.3.2..."
+echo -n "[CRITERION] Downloading criterion-v2.3.2..."
 wget -q $CRITERION_RELEASE_URL -O $CRITERION_FILE_NAME
 tar -xjf $CRITERION_FILE_NAME
+echo "Done!"
 
 ## Install
-echo "[CRITERION] Installing criterion-v2.3.2..."
+echo -n "[CRITERION] Installing criterion-v2.3.2..."
 sudo cp -rf $FOLDER_NAME* $CRITERION_INSTALL_PATH
+echo "Done!"

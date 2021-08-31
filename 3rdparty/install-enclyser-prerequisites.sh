@@ -22,13 +22,15 @@ fi
 # fi
 
 # System packages
-echo "[ENCLYSER] INSTALLING SYSTEM PACKAGES..."
+echo -n "[ENCLYSER] INSTALLING SYSTEM PACKAGES..."
 sudo apt -y install $ENCLYSER_SYSTEM_PACKAGES
+echo "Done!"
 
 # Python libraries
-echo "[ENCLYSER] INSTALLING PYTHON LIBRARIES..."
+echo -n "[ENCLYSER] INSTALLING PYTHON LIBRARIES..."
 sudo apt -y install python3-pip
 sudo pip3 install $ENCLYSER_PYTHON_LIBRARIES
+echo "Done!"
 
 # Additional information before exit
 echo '`sudo reboot` is required for the installing to take effect.'
