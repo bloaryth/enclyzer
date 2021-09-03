@@ -6,21 +6,57 @@
  */
 #ifdef NAMESPACE_SGX_SHARED
 
+/**
+ * @brief Try different variants of the l1des attack.
+ * 
+ * @param l1des_attack the specified attack
+ * @param attaking_buffer the buffer used by the attack
+ * @param encoding_buffer the buffer used to encode data leaked
+ *
+ * @see FLUSH+RELOAD in enclyser/channel/flush_reload.h
+ */
 static void l1des_attack(enclyer_attack_t *l1des_attack, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
 {
     /** TODO */
 }
 
+/**
+ * @brief Try different variants of the l1tf attack.
+ * 
+ * @param l1tf_attack the specified attack
+ * @param attaking_buffer the buffer used by the attack
+ * @param encoding_buffer the buffer used to encode data leaked
+ *
+ * @see FLUSH+RELOAD in enclyser/channel/flush_reload.h
+ */
 static void l1tf_attack(enclyer_attack_t *l1tf_attack, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
 {
     /** TODO */
 }
 
+/**
+ * @brief Try different variants of the lvi attack.
+ * 
+ * @param lvi_attack the specified attack
+ * @param attaking_buffer the buffer used by the attack
+ * @param encoding_buffer the buffer used to encode data leaked
+ *
+ * @see FLUSH+RELOAD in enclyser/channel/flush_reload.h
+ */
 static void lvi_attack(enclyer_attack_t *lvi_attack, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
 {
     /** TODO */
 }
 
+/**
+ * @brief Try different variants of the mds attack.
+ * 
+ * @param mds_attack the specified attack
+ * @param attaking_buffer the buffer used by the attack
+ * @param encoding_buffer the buffer used to encode data leaked
+ *
+ * @see FLUSH+RELOAD in enclyser/channel/flush_reload.h
+ */
 static void mds_attack(enclyer_attack_t *mds_attack, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
 {
     switch (mds_attack->minor)
@@ -35,7 +71,7 @@ static void mds_attack(enclyer_attack_t *mds_attack, enclyser_buffer_t *attaking
             "movzbq 0(%0), %%rax\n"
             "shl $6, %%rax\n"   /** TODO calculate 6 in asm code */
             "movzbq (%%rax, %1), %%rax\n"
-            "xabort\n"
+            "xabort $0\n"
             "xend\n"
             "1:\n"
             :
@@ -47,6 +83,15 @@ static void mds_attack(enclyer_attack_t *mds_attack, enclyser_buffer_t *attaking
     }
 }
 
+/**
+ * @brief Try different variants of the taa attack.
+ * 
+ * @param taa_attack the specified attack
+ * @param attaking_buffer the buffer used by the attack
+ * @param encoding_buffer the buffer used to encode data leaked
+ *
+ * @see FLUSH+RELOAD in enclyser/channel/flush_reload.h
+ */
 static void taa_attack(enclyer_attack_t *taa_attack, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
 {
     switch (taa_attack->minor)
@@ -63,7 +108,7 @@ static void taa_attack(enclyer_attack_t *taa_attack, enclyser_buffer_t *attaking
             "movzbq 0(%0), %%rax\n"
             "shl $6, %%rax\n"   /** TODO calculate 6 in asm code */
             "movzbq (%%rax, %1), %%rax\n"
-            "xabort\n"
+            "xabort $0\n"
             "xend\n"
             "1:\n"
             :

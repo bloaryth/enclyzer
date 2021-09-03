@@ -31,7 +31,8 @@ extern "C" {
  */
 #ifdef NAMESPACE_SGX_NO
 
-#include <fcntl.h>
+#include <fcntl.h> // open function
+#include <unistd.h> // close function
 #include <sys/ioctl.h>
 
 #include "kenclyser/kenclyser_ioctl.h"
@@ -60,25 +61,6 @@ void open_system_file();
  * 
  */
 void close_system_file();
-
-/**
- * @brief an inline function of the cpuid instruction
- * 
- * @param eax the eax register
- * @param ebx the ebx register
- * @param ecx the ecx register
- * @param edx the edx register
- */
-static inline void native_cpuid(unsigned int *eax, unsigned int *ebx, unsigned int *ecx, unsigned int *edx);
-
-/**
- * @brief an inline function of the rdmsr instruction
- * 
- * @param eax the eax register
- * @param ecx the ecx register
- * @param edx the edx register
- */
-static inline void native_rdmsr(unsigned int *eax, unsigned int *ecx, unsigned int *edx);
 
 /**
  * @brief Print the system information that is related to the project.

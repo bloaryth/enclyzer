@@ -95,6 +95,8 @@ void print(enclyser_buffer_t *printing_buffer)
         }
     }
     printf("--------------------}\n\n");
+
+    reset_printing_buffer(printing_buffer);
 }
 
 #endif

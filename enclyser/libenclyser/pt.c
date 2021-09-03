@@ -37,7 +37,7 @@ void *remap(uint64_t phys)
 {
 	void *map;
 	uintptr_t virt;
-	volatile uint8_t force_mapping;
+	// volatile uint8_t force_mapping;
 
 	ASSERT(fd_enclyser >= 0); /** /dev/enclyser is opened. */
 	map = mmap(0, 0x1000, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_SHARED, fd_mem, phys & ~PFN_MASK);

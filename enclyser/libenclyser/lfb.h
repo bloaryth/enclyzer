@@ -16,10 +16,10 @@ extern "C" {
  */
 #ifdef NAMESPACE_SGX_SHARED
 
+
+
 /**
  * @brief Fill the internal buffer LFB via different sequences.
- * 
- * The \p filling_buffer is an instance of the \p grooming_buffer.
  * 
  * @param filling_sequence a number to choose which sequence will be used
  * @param filling_buffer the buffer which the function operates on
@@ -28,8 +28,6 @@ void fill_lfb(int filling_sequence, enclyser_buffer_t *filling_buffer);
 
 /**
  * @brief Clear the internal buffer LFB via different sequences.
- * 
- * The \p clearing_buffer buffer is an instance of the \p grooming_buffer.
  * 
  * @param clearing_sequence a number to choose which sequence will be used
  * @param clearing_buffer the buffer which the function operates on

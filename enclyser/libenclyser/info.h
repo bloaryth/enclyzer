@@ -14,6 +14,7 @@ extern "C" {
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdint.h>
 
 #define ASSERT(cond)                                                    \
     do {                                                                \
@@ -50,6 +51,9 @@ extern "C" {
  */
 #define PRINTF_BUF_SIZE 256
 
+#include <stdarg.h>
+#include <string.h>
+
 /**
  * @brief Invokes OCALL to display the enclave buffer to the terminal.
  * 
@@ -58,6 +62,8 @@ extern "C" {
  * @return int On success, the total number of characters written is returned.
  */
 int printf(const char* fmt, ...);
+
+extern void ocall_print_string(const char *str);
 
 #endif
 

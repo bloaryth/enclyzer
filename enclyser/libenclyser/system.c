@@ -33,13 +33,21 @@ void open_system_file()
 
 void close_system_file()
 {
-    ASSERT(fd_mem >= 0);    /** /dev/mem is opened. */
-    ASSERT(fd_enclyser >= 0);   /** /dev/enclyser is opened. */
+    ASSERT(fd_mem >= 0);      /** /dev/mem is opened. */
+    ASSERT(fd_enclyser >= 0); /** /dev/enclyser is opened. */
     close(fd_mem);
     close(fd_enclyser);
 }
 
-static inline void native_cpuid(unsigned int *eax, unsigned int *ebx, unsigned int *ecx, unsigned int *edx)
+/**
+ * @brief a function of the cpuid instruction
+ * 
+ * @param eax the eax register
+ * @param ebx the ebx register
+ * @param ecx the ecx register
+ * @param edx the edx register
+ */
+static void native_cpuid(uint32_t *eax, uint32_t *ebx, uint32_t *ecx, uint32_t *edx)
 {
     /** ecx is often an input as well as an output. */
     asm volatile(
@@ -49,12 +57,19 @@ static inline void native_cpuid(unsigned int *eax, unsigned int *ebx, unsigned i
 }
 
 /** FIXME Check the validation of input value. */
-static inline void native_rdmsr(unsigned int *eax, unsigned int *ecx, unsigned int *edx)
+/**
+ * @brief a function of the rdmsr instruction
+ * 
+ * @param eax the eax register
+ * @param ecx the ecx register
+ * @param edx the edx register
+ */
+static void native_rdmsr(uint32_t *eax, uint32_t *ecx, uint32_t *edx)
 {
     msr_t msr = {.eax = *eax, .ecx = *ecx, .edx = *edx};
 
-    ASSERT(fd_enclyser >= 0);   /** /dev/enclyser is opened. */
-    ASSERT(ioctl(fd_enclyser, KENCLYSER_IOCTL_RDMSR, &msr) >= 0);   /** ioctl returns successfully. */
+    ASSERT(fd_enclyser >= 0);                                     /** /dev/enclyser is opened. */
+    ASSERT(ioctl(fd_enclyser, KENCLYSER_IOCTL_RDMSR, &msr) >= 0); /** ioctl returns successfully. */
 
     *eax = msr.eax;
     *ecx = msr.ecx;
@@ -63,7 +78,7 @@ static inline void native_rdmsr(unsigned int *eax, unsigned int *ecx, unsigned i
 
 void print_system_info()
 {
-    unsigned int eax, ebx, ecx, edx;
+    uint32_t eax, ebx, ecx, edx;
     eax = 7;
     ecx = 0;
 
@@ -74,9 +89,9 @@ void print_system_info()
     INFO("RTM_ALWAYS_ABORT: %d\n", (edx >> 11) & 0x1);
     INFO("TSX_FORCE_ABORT: %d\n", (edx >> 13) & 0x1);
 
-    if ((edx >> 13) & 0x1)  /** TSX_FORCE_ABORT MSR */
+    if ((edx >> 13) & 0x1) /** TSX_FORCE_ABORT MSR */
     {
-        unsigned int eax, ecx, edx;
+        uint32_t eax, ecx, edx;
         ecx = 0x10f;
 
         native_rdmsr(&eax, &ecx, &edx);
@@ -94,10 +109,10 @@ void print_system_info()
     INFO("L1D_FLUSH: %d\n", (edx >> 28) & 0x1);
     INFO("IA32_ARCH_CAPABILITIES: %d\n", (edx >> 29) & 0x1);
     INFO("SSBD: %d\n", (edx >> 31) & 0x1);
-    
-    if ((edx >> 29) & 0x1)  /** IA32_ARCH_CAPABILITIES MSR */
+
+    if ((edx >> 29) & 0x1) /** IA32_ARCH_CAPABILITIES MSR */
     {
-        unsigned int eax, ecx, edx;
+        uint32_t eax, ecx, edx;
         ecx = 0x10a;
 
         native_rdmsr(&eax, &ecx, &edx);
@@ -113,9 +128,9 @@ void print_system_info()
         INFO("\tTSX_CTRL: %d\n", (eax >> 7) & 0x1);
         INFO("\tTAA_NO: %d\n", (eax >> 8) & 0x1);
 
-        if ((eax >> 7) & 0x1)   /** IA32_TSX_CTRL MSR */
+        if ((eax >> 7) & 0x1) /** IA32_TSX_CTRL MSR */
         {
-            unsigned int eax, ecx, edx;
+            uint32_t eax, ecx, edx;
             ecx = 0x10a;
 
             native_rdmsr(&eax, &ecx, &edx);
@@ -125,9 +140,9 @@ void print_system_info()
             INFO("\tTSX_CPUID_CLEAR: %d\n", (eax >> 1) & 0x1);
         }
     }
-    if (((edx >> 26) & 0x1) | ((edx >> 27) & 0x1) | ((edx >> 31) & 0x1))    /** IA32_SPEC_CTRL MSR */
+    if (((edx >> 26) & 0x1) | ((edx >> 27) & 0x1) | ((edx >> 31) & 0x1)) /** IA32_SPEC_CTRL MSR */
     {
-        unsigned int eax, ecx, edx;
+        uint32_t eax, ecx, edx;
         ecx = 0x48;
 
         native_rdmsr(&eax, &ecx, &edx);
@@ -140,19 +155,19 @@ void print_system_info()
 
     // if ((edx >> 26) & 0x1)  /** IA32_PRED_CMD MSR */
     // {
-    //     unsigned int eax, ecx, edx;
+    //     uint32_t eax, ecx, edx;
     //     ecx = 0x49;
-    
+
     //     native_rdmsr(&eax, &ecx, &edx);
-    
+
     //     INFO("IA32_PRED_CMD MSR\n");
     //     if ((edx >> 26) & 0x1)
     //         INFO("\tIBPB: %d\n", (eax >> 0) & 0x1);
     // }
 
-    if ((edx >> 9) & 0x1)   /** IA32_MCU_OPT_CTRL MSR */
+    if ((edx >> 9) & 0x1) /** IA32_MCU_OPT_CTRL MSR */
     {
-        unsigned int eax, ecx, edx;
+        uint32_t eax, ecx, edx;
         ecx = 0x123;
 
         native_rdmsr(&eax, &ecx, &edx);

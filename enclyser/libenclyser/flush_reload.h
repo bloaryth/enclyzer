@@ -32,6 +32,8 @@ extern "C" {
  */
 #ifdef NAMESPACE_SGX_NO
 
+#include <ctype.h>  // isprint function
+
 /**
  * @brief The boundry which defines which is a succussful cache hit.
  * 

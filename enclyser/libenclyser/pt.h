@@ -34,6 +34,7 @@ extern "C" {
 
 #include <sys/mman.h>
 #include <sys/ioctl.h>
+#include <string.h>
 
 #include "kenclyser/kenclyser_ioctl.h"
 
