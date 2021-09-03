@@ -34,9 +34,9 @@ extern "C" {
  * @brief the settings for \p reloading_buffer
  * 
  */
-#define RELOADING_BUFFER_SLOT_SHIFT     6
-#define RELOADING_BUFFER_SLOT_SIZE      (1 << RELOADING_BUFFER_SLOT_SHIFT)
-#define RELOADING_BUFFER_SLOT_NUM       256
+#define ENCODING_BUFFER_SLOT_SHIFT     6
+#define ENCODING_BUFFER_SLOT_SIZE      (1 << ENCODING_BUFFER_SLOT_SHIFT)
+#define ENCODING_BUFFER_SLOT_NUM       256
 
 /**
  * @brief the struct for all the buffers in the project
@@ -83,14 +83,16 @@ typedef struct {
  * @brief the default settings for \p enclyser_buffer_t
  * 
  */
-#define DEFAULT_GROOMING_BUFFER_SIZE    6144    /** the default and minumun size of a grooming buffer */
+#define DEFAULT_FILLING_BUFFER_SIZE     6144    /** the default and minumun size of a filling buffer */
+#define DEFAULT_CLEARING_BUFFER_SIZE    6144    /** the default and minumun size of a clearing buffer */
 #define DEFAULT_FAULTING_BUFFER_SIZE    6144    /** the default size of a faulting buffer */
-#define DEFAULT_RELOADING_BUFFER_SIZE   (RELOADING_BUFFER_SLOT_NUM * RELOADING_BUFFER_SLOT_SIZE)    /** the default size of a reloading buffer */
-#define DEFAULT_PRINTING_BUFFER_SIZE    (RELOADING_BUFFER_SLOT_NUM * sizeof(int))                   /** the default size of a printing buffer */
+#define DEFAULT_ATTACKING_BUFFER_SIZE   6144    /** the default size of an attacking buffer */
+#define DEFAULT_ENCODING_BUFFER_SIZE    (ENCODING_BUFFER_SLOT_NUM * ENCODING_BUFFER_SLOT_SIZE)  /** the default size of a encoding buffer */
+#define DEFAULT_PRINTING_BUFFER_SIZE    (ENCODING_BUFFER_SLOT_NUM * sizeof(int))                /** the default size of a printing buffer */
 #define DEFAULT_BUFFER_VALUE            0       /** the default value of a buffer */
-#define DEFAULT_BUFFER_ORDER            BUFFER_ORDER_NON        /** the default order of a buffer */
+#define DEFAULT_BUFFER_ORDER            BUFFER_ORDER_NONE       /** the default order of a buffer */
 #define DEFAULT_BUFFER_MEM_TYPE         BUFFER_MEM_TYPE_NONE    /** the default memory type of a buffer */
-#define DEFAULT_BUFFER_CTRL_RSVD        BUFFER_ACCESS_CTRL_NONE /** the default memory type of a buffer */
+#define DEFAULT_BUFFER_ACCESS_CTRL      BUFFER_ACCESS_CTRL_NONE /** the default memory type of a buffer */
 
 /**
  * @brief the struct used to select an attack in the project

@@ -74,13 +74,13 @@ static void taa_attack(enclyer_attack_t *taa_attack, enclyser_buffer_t *attaking
 /**
  * @brief Try different types of attacks.
  * 
- * @param attack the specified attack
+ * @param attack_spec the specified attack
  * @param attaking_buffer the buffer used by the attack
  * @param encoding_buffer the buffer used to encode data leaked
  *
  * @see FLUSH+RELOAD in enclyser/libenclyser/flush_reload.h
  */
-void attack(enclyer_attack_t *attack, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer);
+void attack(enclyer_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer);
 
 #endif
 

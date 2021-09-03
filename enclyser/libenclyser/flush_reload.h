@@ -48,10 +48,10 @@ extern "C" {
 /**
  * @brief The FLUSH phase of the FLUSH+RELOAD technique.
  * 
- * @param reloading_buffer the buffer that contains temporary data
+ * @param encoding_buffer the buffer that contains temporary data
  * @param printing_buffer the buffer that accumulates persistent data
  */
-void flush(enclyser_buffer_t *reloading_buffer, enclyser_buffer_t *printing_buffer);
+void flush(enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffer);
 
 /**
  * @brief Get the time used to access the memory address, which indicates its location 
@@ -68,10 +68,10 @@ static unsigned int access_time(unsigned long address);
 /**
  * @brief The RELOAD phase of the FLUSH+RELOAD technique.
  * 
- * @param reloading_buffer the buffer that contains temporary data
+ * @param encoding_buffer the buffer that contains temporary data
  * @param printing_buffer the buffer that accumulates persistent data
  */
-void reload(enclyser_buffer_t *reloading_buffer, enclyser_buffer_t *printing_buffer);
+void reload(enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffer);
 
 /**
  * @brief Reset all of the accumulated data to zero.

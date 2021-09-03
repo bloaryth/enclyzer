@@ -75,26 +75,26 @@ static void taa_attack(enclyer_attack_t *taa_attack, enclyser_buffer_t *attaking
     }
 }
 
-void attack(enclyer_attack_t *attack, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
+void attack(enclyer_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
 {
-    switch (attack->major)
+    switch (attack_spec->major)
     {
     case ATTACK_MAJOR_NONE:
         break;
     case ATTACK_MAJOR_L1DES:
-        l1des_attack(attack, attaking_buffer, encoding_buffer);
+        l1des_attack(attack_spec, attaking_buffer, encoding_buffer);
         break;
     case ATTACK_MAJOR_L1TF:
-        l1tf_attack(attack, attaking_buffer, encoding_buffer);
+        l1tf_attack(attack_spec, attaking_buffer, encoding_buffer);
         break;
     case ATTACK_MAJOR_LVI:
-        lvi_attack(attack, attaking_buffer, encoding_buffer);
+        lvi_attack(attack_spec, attaking_buffer, encoding_buffer);
         break;
     case ATTACK_MAJOR_MDS:
-        mds_attack(attack, attaking_buffer, encoding_buffer);
+        mds_attack(attack_spec, attaking_buffer, encoding_buffer);
         break;
     case ATTACK_MAJOR_TAA:
-        taa_attack(attack, attaking_buffer, encoding_buffer);
+        taa_attack(attack_spec, attaking_buffer, encoding_buffer);
         break;
     default:
         break;

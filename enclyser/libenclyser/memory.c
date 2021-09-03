@@ -12,7 +12,7 @@ void flush_enclyser_buffer(enclyser_buffer_t *enclyser_buffer)
 
     for (i = 0; i < enclyser_buffer->size; i += CACHELINE_SIZE)
     {
-        asm volatile("clflush (%0)\n" ::"r"(enclyser_buffer->buffer + i));
+        asm volatile("clflush (%0)\n" ::"r"(enclyser_buffer->shadow + i));
     }
     asm volatile("mfence\n");
 }
@@ -93,7 +93,7 @@ void cripple_enclyser_buffer(enclyser_buffer_t *enclyser_buffer)
             break;
         }
 
-        switch (enclyser_buffer->access_ctrl)
+        switch (enclyser_buffer->access_ctrl)   // FIXME bit seperation
         {
         case BUFFER_ACCESS_CTRL_NONE:
             break;

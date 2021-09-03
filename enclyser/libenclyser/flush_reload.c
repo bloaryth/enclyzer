@@ -22,13 +22,13 @@
  */
 #ifdef NAMESPACE_SGX_NO
 
-void flush(enclyser_buffer_t *reloading_buffer, enclyser_buffer_t *printing_buffer)
+void flush(enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffer)
 {
     int i;
 
-    for (i = 0; i < reloading_buffer->size; i += RELOADING_BUFFER_SLOT_SHIFT)
+    for (i = 0; i < encoding_buffer->size; i += ENCODING_BUFFER_SLOT_SHIFT)
     {
-        asm volatile("clflush (%0)\n" ::"r"(reloading_buffer->buffer + i));
+        asm volatile("clflush (%0)\n" ::"r"(encoding_buffer->buffer + i));
     }
 
     asm volatile("mfence\n");
@@ -54,19 +54,19 @@ static unsigned int access_time(unsigned long address)
     return cycles;
 }
 
-void reload(enclyser_buffer_t *reloading_buffer, enclyser_buffer_t *printing_buffer)
+void reload(enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffer)
 {
     int i;
     unsigned long dt;
 
     asm volatile("mfence\n");
 
-    for (i = 0; i < reloading_buffer->size; i += RELOADING_BUFFER_SLOT_SHIFT)
+    for (i = 0; i < encoding_buffer->size; i += ENCODING_BUFFER_SLOT_SHIFT)
     {
-        dt = access_time((unsigned long)(reloading_buffer->buffer + i));
+        dt = access_time((unsigned long)(encoding_buffer->buffer + i));
         if (dt < TIME_LIMIT)
         {
-            printing_buffer->buffer[i / RELOADING_BUFFER_SLOT_SHIFT]++;
+            printing_buffer->buffer[i / ENCODING_BUFFER_SLOT_SHIFT]++;
         }
     }
 }
