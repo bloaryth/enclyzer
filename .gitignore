@@ -2,6 +2,27 @@
 # Created by https://www.toptal.com/developers/gitignore/api/c,python,git
 # Edit at https://www.toptal.com/developers/gitignore?templates=c,python,git
 
+### PROJECT ###
+
+.vscode
+
+3rdparty/criterion-v2.3.2
+3rdparty/criterion-v2.3.2-linux-x86_64.tar.bz2
+
+doc/dev-log
+doc/intel-cpu
+doc/microcode-update
+doc/weekly-report
+
+enclyser/app/enclave_u.c
+enclyser/app/enclave_u.h
+enclyser/enclave/enclave_t.c
+enclyser/enclave/enclave_t.h
+enclyser/sgx_app
+
+test/enclyser/test
+test/enclyser/test.txt
+
 ### C ###
 # Prerequisites
 *.d
@@ -48,6 +69,7 @@
 *.pdb
 
 # Kernel Module Compile Results
+*.dwo
 *.mod*
 *.cmd
 .tmp_versions/
