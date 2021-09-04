@@ -44,9 +44,9 @@ void flush(enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffe
  * @see How to Benchmark Code Execution Times on Intel® IA-32 and IA-64 
  *     Instruction Set Architectures
  */
-static unsigned int access_time(unsigned long address)
+static uint32_t access_time(uint64_t address)
 {
-    unsigned int cycles;
+    uint32_t cycles;
 
     asm volatile(
         "cpuid\n"
@@ -67,17 +67,18 @@ static unsigned int access_time(unsigned long address)
 void reload(enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffer)
 {
     int i;
-    unsigned long dt;
+    uint64_t dt;
 
     asm volatile("mfence\n");
 
-    for (i = 0; i < encoding_buffer->size; i += ENCODING_BUFFER_SLOT_SHIFT)
+    for (i = 0; i < encoding_buffer->size; i += ENCODING_BUFFER_SLOT_SIZE)
     {
-        dt = access_time((unsigned long)(encoding_buffer->buffer + i));
+        dt = access_time((uint64_t)(encoding_buffer->buffer + i));
         if (dt < TIME_LIMIT)
         {
-            printing_buffer->buffer[i / ENCODING_BUFFER_SLOT_SHIFT]++;
+            printing_buffer->buffer[i / ENCODING_BUFFER_SLOT_SIZE]++;
         }
+        // INFO("i: %x, dt: %lu, %d", i, dt, i / ENCODING_BUFFER_SLOT_SIZE);
     }
 }
 
@@ -103,10 +104,11 @@ void print(enclyser_buffer_t *printing_buffer)
     printf("{--------------------\n");
     for (i = 0; i < printing_buffer->size; i++)
     {
-        if (printing_buffer->buffer[i] * RECOVERY_DINOMINATOR >  RECOVERY_NUMERATOR * REPETITION_TIME)
+        if (printing_buffer->buffer[i] > 0)
+        // if (printing_buffer->buffer[i] * RECOVERY_DINOMINATOR >  RECOVERY_NUMERATOR * REPETITION_TIME)
         {
-            printf("%08u: %02x (%c)\n", printing_buffer->buffer[i], (unsigned int)i,
-                   isprint(i) ? (unsigned int)i : '?');
+            printf("%08u: %02x (%c)\n", printing_buffer->buffer[i], (uint32_t)i,
+                   isprint(i) ? (uint32_t)i : '?');
         }
     }
     printf("--------------------}\n\n");

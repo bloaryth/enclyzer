@@ -27,16 +27,18 @@ int fd_mem = FD_UNINITIALIZED;
 
 void open_system_file()
 {
-    ASSERT((fd_mem = open("/dev/mem", O_RDWR)) >= 0);           /** /dev/mem is opened. */
-    ASSERT((fd_enclyser = open("/dev/enclyser", O_RDWR)) >= 0); /** /dev/enclyser is opened. */
+    if (fd_mem == FD_UNINITIALIZED)
+        ASSERT((fd_mem = open("/dev/mem", O_RDWR)) >= 0);           /** /dev/mem is opened. */
+    if (fd_enclyser == FD_UNINITIALIZED)
+        ASSERT((fd_enclyser = open("/dev/kenclyser", O_RDWR)) >= 0); /** /dev/enclyser is opened. */
 }
 
 void close_system_file()
 {
-    ASSERT(fd_mem >= 0);      /** /dev/mem is opened. */
-    ASSERT(fd_enclyser >= 0); /** /dev/enclyser is opened. */
-    close(fd_mem);
-    close(fd_enclyser);
+    if (fd_mem >= 0)
+        close(fd_mem);
+    if (fd_enclyser >= 0)
+        close(fd_enclyser);
 }
 
 /**

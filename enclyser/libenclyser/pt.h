@@ -203,7 +203,7 @@ extern "C" {
 
 #define RSVD(entry)			    (((entry) & RSVD_MASK) >> RSVD_SHIFT)
 #define MARK_RSVD(entry)        ((entry) | RSVD_MASK)
-#define CLEAR_RSVD(entry)       ((entry) & ~RSVD_MASK)
+#define MARK_NOT_RSVD(entry)       ((entry) & ~RSVD_MASK)
 
 /**
  * @brief some converting utilities

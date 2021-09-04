@@ -43,8 +43,8 @@ extern "C" {
  * 
  */
 typedef struct {
-    char *buffer;       /** where the data is stored */
-    char *shadow;       /** has the same physical address but different virtual address to \p buffer */
+    uint8_t *buffer;       /** where the data is stored */
+    uint8_t *shadow;       /** has the same physical address but different virtual address to \p buffer */
     int size;           /** the allocated size of \p buffer */
     int value;          /** the initial value that is mutated and assigned to \p buffer */
     int order;          /** the policy which specifies how the initial value is mutated when assigned */
@@ -74,10 +74,14 @@ typedef struct {
  * 
  */
 #define BUFFER_ACCESS_CTRL_NONE             0x0
-#define BUFFER_ACCESS_CTRL_NOT_ACCESSED     0x1
-#define BUFFER_ACCESS_CTRL_SUPERVISOR       0x2
-#define BUFFER_ACCESS_CTRL_NOT_PRESENT      0x3
-#define BUFFER_ACCESS_CTRL_RSVD             0x4
+#define BUFFER_ACCESS_CTRL_ACCESSED         0x1
+#define BUFFER_ACCESS_CTRL_NOT_ACCESSED     0x2
+#define BUFFER_ACCESS_CTRL_USER             0x3
+#define BUFFER_ACCESS_CTRL_SUPERVISOR       0x4
+#define BUFFER_ACCESS_CTRL_PRESENT          0x5
+#define BUFFER_ACCESS_CTRL_NOT_PRESENT      0x6
+#define BUFFER_ACCESS_CTRL_NOT_RSVD         0x7
+#define BUFFER_ACCESS_CTRL_RSVD             0x8
 
 /**
  * @brief the default settings for \p enclyser_buffer_t
@@ -85,8 +89,8 @@ typedef struct {
  */
 #define DEFAULT_FILLING_BUFFER_SIZE     6144    /** the default and minumun size of a filling buffer */
 #define DEFAULT_CLEARING_BUFFER_SIZE    6144    /** the default and minumun size of a clearing buffer */
-#define DEFAULT_FAULTING_BUFFER_SIZE    6144    /** the default size of a faulting buffer */
-#define DEFAULT_ATTACKING_BUFFER_SIZE   6144    /** the default size of an attacking buffer */
+#define DEFAULT_FAULTING_BUFFER_SIZE    4096    /** the default size of a faulting buffer */
+#define DEFAULT_ATTACKING_BUFFER_SIZE   4096    /** the default size of an attacking buffer */
 #define DEFAULT_ENCODING_BUFFER_SIZE    (ENCODING_BUFFER_SLOT_NUM * ENCODING_BUFFER_SLOT_SIZE)  /** the default size of a encoding buffer */
 #define DEFAULT_PRINTING_BUFFER_SIZE    (ENCODING_BUFFER_SLOT_NUM * sizeof(int))                /** the default size of a printing buffer */
 #define DEFAULT_BUFFER_VALUE            0       /** the default value of a buffer */
