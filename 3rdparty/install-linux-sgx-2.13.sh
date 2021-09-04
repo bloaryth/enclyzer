@@ -12,7 +12,7 @@ sudo apt-get -y install libssl-dev libcurl4-openssl-dev protobuf-compiler libpro
 # Download the source code and prepare the submodules and prebuilt binaries
 # You may need to set an https proxy. For example, $ export all_proxy="socks5://127.0.0.1:1080".
 echo "[LINUX-SGX] Downloading linux-sgx-2.13..."
-git clone https://github.com/intel/linux-sgx.git linux-sgx --branch sgx_2.13 --single-branch
+git clone https://github.com/intel/linux-sgx.git linux-sgx --branch sgx_2.13 --single-branch --depth 1
 cd linux-sgx && make preparation
 
 # Copy the mitigation tools corresponding to current OS distribution from external/toolset/{current_distr} to /usr/local/bin and make sure they have execute permission

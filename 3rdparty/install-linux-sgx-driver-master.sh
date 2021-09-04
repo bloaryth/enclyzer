@@ -19,7 +19,7 @@ echo "Done!"
 # Download the source code
 # You may need to set an https proxy. For example, $ export all_proxy="socks5://127.0.0.1:1080".
 echo -n "[LINUX-SGX-DRIVER] Downloading linux-sgx-driver-master..."
-git clone -q https://github.com/intel/linux-sgx-driver.git linux-sgx-driver --branch master --single-branch
+git clone -q https://github.com/intel/linux-sgx-driver.git linux-sgx-driver --branch master --single-branch --depth 1
 echo "Done!"
 
 # Build the Intel(R) SGX driver

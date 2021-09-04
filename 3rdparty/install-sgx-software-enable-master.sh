@@ -9,7 +9,7 @@ trap cleanup EXIT
 # Download the source code
 # You may need to set an https proxy. For example, $ export all_proxy="socks5://127.0.0.1:1080".
 echo -n "[SGX-SOFTWARE-ENABLE] Downloading sgx-software-enable..."
-git clone -q https://github.com/intel/sgx-software-enable.git sgx-software-enable --branch master --single-branch
+git clone -q https://github.com/intel/sgx-software-enable.git sgx-software-enable --branch master --single-branch --depth 1
 echo "Done!"
 
 # Build the Intel(R) SGX Software Enabling Application

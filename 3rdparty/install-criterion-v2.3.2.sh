@@ -20,5 +20,5 @@ echo "Done!"
 
 ## Install
 echo -n "[CRITERION] Installing criterion-v2.3.2..."
-sudo cp -rf $FOLDER_NAME* $CRITERION_INSTALL_PATH
+sudo cp -rf $CRITERION_FOLDER_PATH* $CRITERION_INSTALL_PATH
 echo "Done!"
