@@ -56,31 +56,12 @@ extern "C" {
 void flush(enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffer);
 
 /**
- * @brief Get the time used to access the memory address, which indicates its location 
- * in the memory hierarchy.
- * 
- * @param address the memory address to be accessed.
- * @return the time used to access the memory address.
- * 
- * @see How to Benchmark Code Execution Times on Intel® IA-32 and IA-64 
- *     Instruction Set Architectures
- */
-static unsigned int access_time(unsigned long address);
-
-/**
  * @brief The RELOAD phase of the FLUSH+RELOAD technique.
  * 
  * @param encoding_buffer the buffer that contains temporary data
  * @param printing_buffer the buffer that accumulates persistent data
  */
 void reload(enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffer);
-
-/**
- * @brief Reset all of the accumulated data to zero.
- * 
- * @param printing_buffer the buffer that accumulates persistent data
- */
-static void reset_printing_buffer(enclyser_buffer_t *printing_buffer);
 
 /**
  * @brief Print the printing_buffer in a clear and concise way.

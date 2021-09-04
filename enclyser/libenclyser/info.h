@@ -63,8 +63,6 @@ extern "C" {
  */
 int printf(const char* fmt, ...);
 
-extern void ocall_print_string(const char *str);
-
 #endif
 
 /**

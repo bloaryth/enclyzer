@@ -111,7 +111,7 @@ static void desctruct_app_environment()
     ASSERT(signal(SIGSEGV, SIG_DFL) != SIG_ERR);
 }
 
-static void app_grooming(int filling_sequence, enclyser_buffer_t *filling_buffer, int clearing_sequence, enclyser_buffer_t *clearing_buffer, enclyer_attack_t *faulting_buffer)
+static void app_grooming(int filling_sequence, enclyser_buffer_t *filling_buffer, int clearing_sequence, enclyser_buffer_t *clearing_buffer, enclyser_buffer_t *faulting_buffer)
 {
     fill_lfb(filling_sequence, filling_buffer);
     clear_lfb(clearing_sequence, clearing_buffer);
@@ -130,11 +130,11 @@ static void app_attack_2(enclyer_attack_t *attack_spec, enclyser_buffer_t *attak
     reload(encoding_buffer, printing_buffer);
 }
 
-static void app_test(int filling_sequence, enclyser_buffer_t *filling_buffer, int clearing_sequence, enclyser_buffer_t *clearing_buffer, enclyer_attack_t *faulting_buffer, enclyer_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffer)
+static void app_test(int filling_sequence, enclyser_buffer_t *filling_buffer, int clearing_sequence, enclyser_buffer_t *clearing_buffer, enclyser_buffer_t *faulting_buffer, enclyer_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffer)
 {
     int i;
 
-    for (int i = 0; i < REPETITION_TIME; i++)
+    for (i = 0; i < REPETITION_TIME; i++)
     {
         app_attack_1(attack_spec, attaking_buffer, encoding_buffer, printing_buffer);
 #if VAB_MODEL == USER_USER_NONE

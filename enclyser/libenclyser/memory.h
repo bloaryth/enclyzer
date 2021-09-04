@@ -46,6 +46,8 @@ void assign_enclyser_buffer(enclyser_buffer_t *enclyser_buffer);
  */
 #ifdef NAMESPACE_SGX_NO
 
+#include <sys/mman.h>
+
 /**
  * @brief Malloc a space for a enclyser buffer.
  * 

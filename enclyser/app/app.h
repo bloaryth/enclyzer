@@ -97,7 +97,7 @@ static void desctruct_app_environment();
  * @param clearing_buffer the buffer that a clearing sequence operates on
  * @param faulting_buffer the buffer that raises SIGSEGV if accessed
  */
-static void app_grooming(int filling_sequence, enclyser_buffer_t *filling_buffer, int clearing_sequence, enclyser_buffer_t *clearing_buffer, enclyer_attack_t *faulting_buffer);
+static void app_grooming(int filling_sequence, enclyser_buffer_t *filling_buffer, int clearing_sequence, enclyser_buffer_t *clearing_buffer, enclyser_buffer_t *faulting_buffer);
 
 /**
  * @brief Execute attack select by \p attack. Step 1.
@@ -131,7 +131,7 @@ static void app_attack_2(enclyer_attack_t *attack_spec, enclyser_buffer_t *attak
  * @param encoding_buffer the buffer that encodes the temporary attack output
  * @param printing_buffer the buffer that consistently logs and accumulates attack output
  */
-static void app_test(int filling_sequence, enclyser_buffer_t *filling_buffer, int clearing_sequence, enclyser_buffer_t *clearing_buffer, enclyer_attack_t *faulting_buffer, enclyer_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffer);
+static void app_test(int filling_sequence, enclyser_buffer_t *filling_buffer, int clearing_sequence, enclyser_buffer_t *clearing_buffer, enclyser_buffer_t *faulting_buffer, enclyer_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffer);
 
 #ifdef __cplusplus
 }

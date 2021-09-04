@@ -34,6 +34,16 @@ void flush(enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffe
     asm volatile("mfence\n");
 }
 
+/**
+ * @brief Get the time used to access the memory address, which indicates its location 
+ * in the memory hierarchy.
+ * 
+ * @param address the memory address to be accessed.
+ * @return the time used to access the memory address.
+ * 
+ * @see How to Benchmark Code Execution Times on Intel® IA-32 and IA-64 
+ *     Instruction Set Architectures
+ */
 static unsigned int access_time(unsigned long address)
 {
     unsigned int cycles;
@@ -71,6 +81,11 @@ void reload(enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buff
     }
 }
 
+/**
+ * @brief Reset all of the accumulated data to zero.
+ * 
+ * @param printing_buffer the buffer that accumulates persistent data
+ */
 static void reset_printing_buffer(enclyser_buffer_t *printing_buffer)
 {
     int i;
