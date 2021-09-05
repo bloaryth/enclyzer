@@ -4,8 +4,6 @@
 
 ### PROJECT ###
 
-.vscode
-
 3rdparty/criterion-v2.3.2
 3rdparty/criterion-v2.3.2-linux-x86_64.tar.bz2
 
@@ -19,6 +17,7 @@ enclyser/app/enclave_u.h
 enclyser/enclave/enclave_t.c
 enclyser/enclave/enclave_t.h
 enclyser/sgx_app
+enclyser/sgx_app.txt
 
 test/enclyser/test
 test/enclyser/test.txt
