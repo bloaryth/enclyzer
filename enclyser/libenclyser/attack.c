@@ -15,7 +15,7 @@
  *
  * @see FLUSH+RELOAD in enclyser/channel/flush_reload.h
  */
-static void l1des_attack(enclyer_attack_t *l1des_attack, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
+static void l1des_attack(enclyser_attack_t *l1des_attack, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
 {
     /** TODO */
 }
@@ -29,7 +29,7 @@ static void l1des_attack(enclyer_attack_t *l1des_attack, enclyser_buffer_t *atta
  *
  * @see FLUSH+RELOAD in enclyser/channel/flush_reload.h
  */
-static void l1tf_attack(enclyer_attack_t *l1tf_attack, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
+static void l1tf_attack(enclyser_attack_t *l1tf_attack, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
 {
     /** TODO */
 }
@@ -43,7 +43,7 @@ static void l1tf_attack(enclyer_attack_t *l1tf_attack, enclyser_buffer_t *attaki
  *
  * @see FLUSH+RELOAD in enclyser/channel/flush_reload.h
  */
-static void lvi_attack(enclyer_attack_t *lvi_attack, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
+static void lvi_attack(enclyser_attack_t *lvi_attack, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
 {
     /** TODO */
 }
@@ -57,7 +57,7 @@ static void lvi_attack(enclyer_attack_t *lvi_attack, enclyser_buffer_t *attaking
  *
  * @see FLUSH+RELOAD in enclyser/channel/flush_reload.h
  */
-static void mds_attack(enclyer_attack_t *mds_attack, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
+static void mds_attack(enclyser_attack_t *mds_attack, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
 {
     switch (mds_attack->minor)
     {
@@ -92,7 +92,7 @@ static void mds_attack(enclyer_attack_t *mds_attack, enclyser_buffer_t *attaking
  *
  * @see FLUSH+RELOAD in enclyser/channel/flush_reload.h
  */
-static void taa_attack(enclyer_attack_t *taa_attack, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
+static void taa_attack(enclyser_attack_t *taa_attack, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
 {
     switch (taa_attack->minor)
     {
@@ -120,7 +120,7 @@ static void taa_attack(enclyer_attack_t *taa_attack, enclyser_buffer_t *attaking
     }
 }
 
-void attack(enclyer_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
+void attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
 {
     switch (attack_spec->major)
     {

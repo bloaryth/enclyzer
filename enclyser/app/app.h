@@ -53,7 +53,7 @@ enclyser_buffer_t app_filling_buffer;
 enclyser_buffer_t app_clearing_buffer;
 enclyser_buffer_t app_faulting_buffer;
 
-enclyer_attack_t attack_spec;
+enclyser_attack_t attack_spec;
 
 enclyser_buffer_t app_attaking_buffer;
 enclyser_buffer_t app_encoding_buffer;
@@ -107,7 +107,7 @@ static void app_grooming(int filling_sequence, enclyser_buffer_t *filling_buffer
  * @param encoding_buffer the buffer that encodes the temporary attack output
  * @param printing_buffer the buffer that consistently logs and accumulates attack output
  */
-static void app_attack_1(enclyer_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffer);
+static void app_attack_1(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffer);
 
 /**
  * @brief Execute attack select by \p attack. Step 2.
@@ -116,7 +116,7 @@ static void app_attack_1(enclyer_attack_t *attack_spec, enclyser_buffer_t *attak
  * @param attaking_buffer the buffer that an attack operates on
  * @param encoding_buffer the buffer that encodes the attack output
  */
-static void app_attack_2(enclyer_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffer);
+static void app_attack_2(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffer);
 
 /**
  * @brief A single test provided by this app.
@@ -131,7 +131,7 @@ static void app_attack_2(enclyer_attack_t *attack_spec, enclyser_buffer_t *attak
  * @param encoding_buffer the buffer that encodes the temporary attack output
  * @param printing_buffer the buffer that consistently logs and accumulates attack output
  */
-static void app_test(int filling_sequence, enclyser_buffer_t *filling_buffer, int clearing_sequence, enclyser_buffer_t *clearing_buffer, enclyser_buffer_t *faulting_buffer, enclyer_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffer);
+static void app_test(int filling_sequence, enclyser_buffer_t *filling_buffer, int clearing_sequence, enclyser_buffer_t *clearing_buffer, enclyser_buffer_t *faulting_buffer, enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffer);
 
 #ifdef __cplusplus
 }

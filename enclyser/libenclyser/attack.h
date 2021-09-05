@@ -25,7 +25,7 @@ extern "C" {
  *
  * @see FLUSH+RELOAD in enclyser/libenclyser/flush_reload.h
  */
-void attack(enclyer_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer);
+void attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer);
 
 #endif
 

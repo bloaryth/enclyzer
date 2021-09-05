@@ -92,7 +92,7 @@ typedef struct {
 #define DEFAULT_FAULTING_BUFFER_SIZE    4096    /** the default size of a faulting buffer */
 #define DEFAULT_ATTACKING_BUFFER_SIZE   4096    /** the default size of an attacking buffer */
 #define DEFAULT_ENCODING_BUFFER_SIZE    (ENCODING_BUFFER_SLOT_NUM * ENCODING_BUFFER_SLOT_SIZE)  /** the default size of a encoding buffer */
-#define DEFAULT_PRINTING_BUFFER_SIZE    (ENCODING_BUFFER_SLOT_NUM * sizeof(int))                /** the default size of a printing buffer */
+#define DEFAULT_PRINTING_BUFFER_SIZE    (ENCODING_BUFFER_SLOT_NUM * sizeof(uint8_t))            /** the default size of a printing buffer */
 #define DEFAULT_BUFFER_VALUE            0       /** the default value of a buffer */
 #define DEFAULT_BUFFER_ORDER            BUFFER_ORDER_NONE       /** the default order of a buffer */
 #define DEFAULT_BUFFER_MEM_TYPE         BUFFER_MEM_TYPE_NONE    /** the default memory type of a buffer */
@@ -105,10 +105,10 @@ typedef struct {
 typedef struct {
     int major;      /** different types of attacks have different \p major */
     int minor;      /** different variants of an attack referenced by \p major have different \p minor. */
-} enclyer_attack_t;
+} enclyser_attack_t;
 
 /**
- * @brief the enum defines for \p enclyer_attack_t->major
+ * @brief the enum defines for \p enclyser_attack_t->major
  * 
  */
 #define ATTACK_MAJOR_NONE       0x0
@@ -119,14 +119,14 @@ typedef struct {
 #define ATTACK_MAJOR_TAA        0x5
 
 /**
- * @brief the enum defines for \p enclyer_attack_t->minor
+ * @brief the enum defines for \p enclyser_attack_t->minor
  * 
  */
 #define ATTACK_MINOR_NONE       0x0
 #define ATTACK_MINOR_STABLE     0xff
 
 /**
- * @brief the default settings for \p enclyer_attack_t
+ * @brief the default settings for \p enclyser_attack_t
  * 
  */
 #define DEFAULT_ATTACK_MAJOR    ATTACK_MAJOR_NONE

@@ -38,7 +38,7 @@ enclyser_buffer_t app_faulting_buffer = {
     .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL
 };
 
-enclyer_attack_t app_attack_spec = {
+enclyser_attack_t app_attack_spec = {
     .major = DEFAULT_ATTACK_MAJOR,
     .minor = DEFAULT_ATTACK_MINOR
 };
@@ -85,6 +85,8 @@ static void construct_app_environment()
     ret = sgx_create_enclave(ENCLAVE_FILENAME, SGX_DEBUG_FLAG, &token, &updated, &global_eid, NULL);
     ASSERT(ret == SGX_SUCCESS);
 
+    open_system_file();
+
     malloc_enclyser_buffer(&app_filling_buffer);
     malloc_enclyser_buffer(&app_clearing_buffer);
     malloc_enclyser_buffer(&app_faulting_buffer);
@@ -108,6 +110,8 @@ static void desctruct_app_environment()
     free_enclyser_buffer(&app_encoding_buffer);
     free_enclyser_buffer(&app_printing_buffer);
 
+    close_system_file();
+
     ASSERT(signal(SIGSEGV, SIG_DFL) != SIG_ERR);
 }
 
@@ -118,19 +122,19 @@ static void app_grooming(int filling_sequence, enclyser_buffer_t *filling_buffer
     /** a placeholder for access to \p faulting_buffer */
 }
 
-static void app_attack_1(enclyer_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffer)
+static void app_attack_1(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffer)
 {
     flush_enclyser_buffer(attaking_buffer);
     flush_enclyser_buffer(encoding_buffer);
 }
 
-static void app_attack_2(enclyer_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffer)
+static void app_attack_2(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffer)
 {
     attack(attack_spec, attaking_buffer, encoding_buffer);
     reload(encoding_buffer, printing_buffer);
 }
 
-static void app_test(int filling_sequence, enclyser_buffer_t *filling_buffer, int clearing_sequence, enclyser_buffer_t *clearing_buffer, enclyser_buffer_t *faulting_buffer, enclyer_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffer)
+static void app_test(int filling_sequence, enclyser_buffer_t *filling_buffer, int clearing_sequence, enclyser_buffer_t *clearing_buffer, enclyser_buffer_t *faulting_buffer, enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffer)
 {
     int i;
 
