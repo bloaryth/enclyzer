@@ -78,7 +78,7 @@
 #define RELOAD_SIZE (1 << RELOAD_SHIFT)
 #define RELOAD_RESULT_LIMIT 256
 #define RELOAD_BUFFER_SIZE (RELOAD_RESULT_LIMIT * RELOAD_SIZE)
-#define RELOAD_RESULTS_SIZE (RELOAD_RESULT_LIMIT * sizeof(unsigned int))
+#define RELOAD_RESULTS_SIZE (RELOAD_RESULT_LIMIT * sizeof(uint8_t))
 
 /**
  * Defs for primeprobe_utility.
@@ -182,7 +182,7 @@
  * 
  * @param grooming_buffer the grooming_buffer to be flushed.
  */
-void flush_grooming_buffer(unsigned char *grooming_buffer)
+void flush_grooming_buffer(uint8_t *grooming_buffer)
 {
     int i;
 
@@ -206,7 +206,7 @@ void flush_grooming_buffer(unsigned char *grooming_buffer)
  * 
  * @param grooming_buffer the grooming_buffer to fill.
  */
-void fill_lfb_gp_load(unsigned char *grooming_buffer)
+void fill_lfb_gp_load(uint8_t *grooming_buffer)
 {
     int i;
 
@@ -227,7 +227,7 @@ void fill_lfb_gp_load(unsigned char *grooming_buffer)
  * 
  * @param grooming_buffer the grooming_buffer to fill.
  */
-void fill_lfb_gp_store(unsigned char *grooming_buffer)
+void fill_lfb_gp_store(uint8_t *grooming_buffer)
 {
     // int i;
 
@@ -282,7 +282,7 @@ void fill_lfb_gp_store(unsigned char *grooming_buffer)
  * 
  * @param grooming_buffer the grooming_buffer to fill.
  */
-void fill_lfb_nt_load(unsigned char *grooming_buffer)
+void fill_lfb_nt_load(uint8_t *grooming_buffer)
 {
     int i;
 
@@ -303,7 +303,7 @@ void fill_lfb_nt_load(unsigned char *grooming_buffer)
  * 
  * @param grooming_buffer the grooming_buffer to fill.
  */
-void fill_lfb_nt_store(unsigned char *grooming_buffer)
+void fill_lfb_nt_store(uint8_t *grooming_buffer)
 {
     // int i;
 
@@ -362,7 +362,7 @@ void fill_lfb_nt_store(unsigned char *grooming_buffer)
  * 
  * @param grooming_buffer the grooming_buffer to fill.
  */
-void fill_lfb_str_load(unsigned char *grooming_buffer)
+void fill_lfb_str_load(uint8_t *grooming_buffer)
 {
     flush_grooming_buffer(grooming_buffer);
 
@@ -380,7 +380,7 @@ void fill_lfb_str_load(unsigned char *grooming_buffer)
  * 
  * @param grooming_buffer the grooming_buffer to fill.
  */
-void fill_lfb_str_store(unsigned char *grooming_buffer)
+void fill_lfb_str_store(uint8_t *grooming_buffer)
 {
     flush_grooming_buffer(grooming_buffer);
 #if BUFFER_GROOMING_POLICY == ENUM_OFFSET_INLINE
@@ -437,7 +437,7 @@ void fill_lfb_str_store(unsigned char *grooming_buffer)
  * 
  * @param grooming_buffer_1 the grooming_buffer_1 to be flushed.
  */
-void flush_grooming_buffer_1(unsigned char *grooming_buffer_1)
+void flush_grooming_buffer_1(uint8_t *grooming_buffer_1)
 {
     flush_grooming_buffer(grooming_buffer_1);
 }
@@ -447,7 +447,7 @@ void flush_grooming_buffer_1(unsigned char *grooming_buffer_1)
  * 
  * @param grooming_buffer_1 the grooming_buffer_1 to fill.
  */
-void fill_lfb_gp_load_1(unsigned char *grooming_buffer_1)
+void fill_lfb_gp_load_1(uint8_t *grooming_buffer_1)
 {
     fill_lfb_gp_load(grooming_buffer_1);
 }
@@ -457,7 +457,7 @@ void fill_lfb_gp_load_1(unsigned char *grooming_buffer_1)
  * 
  * @param grooming_buffer_1 the grooming_buffer_1 to fill.
  */
-void fill_lfb_gp_store_1(unsigned char *grooming_buffer_1)
+void fill_lfb_gp_store_1(uint8_t *grooming_buffer_1)
 {
     fill_lfb_gp_store(grooming_buffer_1);
 }
@@ -467,7 +467,7 @@ void fill_lfb_gp_store_1(unsigned char *grooming_buffer_1)
  * 
  * @param grooming_buffer_1 the grooming_buffer_1 to fill.
  */
-void fill_lfb_nt_load_1(unsigned char *grooming_buffer_1)
+void fill_lfb_nt_load_1(uint8_t *grooming_buffer_1)
 {
     fill_lfb_nt_load(grooming_buffer_1);
 }
@@ -477,7 +477,7 @@ void fill_lfb_nt_load_1(unsigned char *grooming_buffer_1)
  * 
  * @param grooming_buffer_1 the grooming_buffer_1 to fill.
  */
-void fill_lfb_nt_store_1(unsigned char *grooming_buffer_1)
+void fill_lfb_nt_store_1(uint8_t *grooming_buffer_1)
 {
     fill_lfb_nt_store(grooming_buffer_1);
 }
@@ -487,7 +487,7 @@ void fill_lfb_nt_store_1(unsigned char *grooming_buffer_1)
  * 
  * @param grooming_buffer_1 the grooming_buffer_1 to fill.
  */
-void fill_lfb_str_load_1(unsigned char *grooming_buffer_1)
+void fill_lfb_str_load_1(uint8_t *grooming_buffer_1)
 {
     fill_lfb_str_load(grooming_buffer_1);
 }
@@ -497,7 +497,7 @@ void fill_lfb_str_load_1(unsigned char *grooming_buffer_1)
  * 
  * @param grooming_buffer_1 the grooming_buffer_1 to fill.
  */
-void fill_lfb_str_store_1(unsigned char *grooming_buffer_1)
+void fill_lfb_str_store_1(uint8_t *grooming_buffer_1)
 {
     fill_lfb_str_store(grooming_buffer_1);
 }
@@ -507,7 +507,7 @@ void fill_lfb_str_store_1(unsigned char *grooming_buffer_1)
  * 
  * @param grooming_buffer_2 the grooming_buffer_2 to be flushed.
  */
-void flush_grooming_buffer_2(unsigned char *grooming_buffer_2)
+void flush_grooming_buffer_2(uint8_t *grooming_buffer_2)
 {
     flush_grooming_buffer(grooming_buffer_2);
 }
@@ -517,7 +517,7 @@ void flush_grooming_buffer_2(unsigned char *grooming_buffer_2)
  * 
  * @param grooming_buffer_2 the grooming_buffer_2 to fill.
  */
-void fill_lfb_gp_load_2(unsigned char *grooming_buffer_2)
+void fill_lfb_gp_load_2(uint8_t *grooming_buffer_2)
 {
     fill_lfb_gp_load(grooming_buffer_2);
 }
@@ -527,7 +527,7 @@ void fill_lfb_gp_load_2(unsigned char *grooming_buffer_2)
  * 
  * @param grooming_buffer_2 the grooming_buffer_2 to fill.
  */
-void fill_lfb_gp_store_2(unsigned char *grooming_buffer_2)
+void fill_lfb_gp_store_2(uint8_t *grooming_buffer_2)
 {
     fill_lfb_gp_store(grooming_buffer_2);
 }
@@ -537,7 +537,7 @@ void fill_lfb_gp_store_2(unsigned char *grooming_buffer_2)
  * 
  * @param grooming_buffer_2 the grooming_buffer_2 to fill.
  */
-void fill_lfb_nt_load_2(unsigned char *grooming_buffer_2)
+void fill_lfb_nt_load_2(uint8_t *grooming_buffer_2)
 {
     fill_lfb_nt_load(grooming_buffer_2);
 }
@@ -547,7 +547,7 @@ void fill_lfb_nt_load_2(unsigned char *grooming_buffer_2)
  * 
  * @param grooming_buffer_2 the grooming_buffer_2 to fill.
  */
-void fill_lfb_nt_store_2(unsigned char *grooming_buffer_2)
+void fill_lfb_nt_store_2(uint8_t *grooming_buffer_2)
 {
     fill_lfb_nt_store(grooming_buffer_2);
 }
@@ -557,7 +557,7 @@ void fill_lfb_nt_store_2(unsigned char *grooming_buffer_2)
  * 
  * @param grooming_buffer_2 the grooming_buffer_2 to fill.
  */
-void fill_lfb_str_load_2(unsigned char *grooming_buffer_2)
+void fill_lfb_str_load_2(uint8_t *grooming_buffer_2)
 {
     fill_lfb_str_load(grooming_buffer_2);
 }
@@ -567,7 +567,7 @@ void fill_lfb_str_load_2(unsigned char *grooming_buffer_2)
  * 
  * @param grooming_buffer_2 the grooming_buffer_2 to fill.
  */
-void fill_lfb_str_store_2(unsigned char *grooming_buffer_2)
+void fill_lfb_str_store_2(uint8_t *grooming_buffer_2)
 {
     fill_lfb_str_store(grooming_buffer_2);
 }
@@ -575,7 +575,7 @@ void fill_lfb_str_store_2(unsigned char *grooming_buffer_2)
 /**
  * Clear lfb using VERW.
  */
-void clear_lfb_verw(unsigned char *clear_buffer)
+void clear_lfb_verw(uint8_t *clear_buffer)
 {
     /* TODO CPUID TEST FOR VERW SUPPORT */
     asm volatile("verw (%0)\n" ::"r"(clear_buffer));
@@ -584,7 +584,7 @@ void clear_lfb_verw(unsigned char *clear_buffer)
 /**
  * CLEAR lfb using orpd.
  */
-void clear_lfb_orpd(unsigned char *clear_buffer)
+void clear_lfb_orpd(uint8_t *clear_buffer)
 {
     asm volatile(
         "orpd (%0), %%xmm0\n"
@@ -600,16 +600,16 @@ void clear_lfb_orpd(unsigned char *clear_buffer)
 /**
  * The buffer required by buffer-grooming techniques.
  */
-unsigned char *grooming_buffer;
+uint8_t *grooming_buffer;
 
 /**
  * Malloc the buffer required by buffer-grooming techniques.
  * 
  * @param grooming_buffer the grooming_buffer to be malloced.
  */
-void malloc_grooming_buffer(unsigned char **grooming_buffer)
+void malloc_grooming_buffer(uint8_t **grooming_buffer)
 {
-    *grooming_buffer = (unsigned char *)mmap(NULL, GROOMING_BUFFER_SIZE, MMAP_PROT, MMAP_FLAGS, -1, 0);
+    *grooming_buffer = (uint8_t *)mmap(NULL, GROOMING_BUFFER_SIZE, MMAP_PROT, MMAP_FLAGS, -1, 0);
     ASSERT(*grooming_buffer != MAP_FAILED);
 }
 
@@ -618,7 +618,7 @@ void malloc_grooming_buffer(unsigned char **grooming_buffer)
  * 
  * @param grooming_buffer the grooming_buffer to be freed.
  */
-void free_grooming_buffer(unsigned char *grooming_buffer)
+void free_grooming_buffer(uint8_t *grooming_buffer)
 {
     ASSERT(!munmap(grooming_buffer, GROOMING_BUFFER_SIZE));
 }
@@ -628,7 +628,7 @@ void free_grooming_buffer(unsigned char *grooming_buffer)
 /**
  * The buffer required by buffer-grooming techniques.
  */
-unsigned char *grooming_buffer_1;
+uint8_t *grooming_buffer_1;
 
 /**
  * The pte used with page permission control.
@@ -640,7 +640,7 @@ unsigned long *grooming_buffer_pte_1;
  * 
  * @param grooming_buffer_1 the grooming_buffer_1 to be malloced.
  */
-void malloc_grooming_buffer_1(unsigned char **grooming_buffer_1)
+void malloc_grooming_buffer_1(uint8_t **grooming_buffer_1)
 {
     malloc_grooming_buffer(grooming_buffer_1);
 }
@@ -650,7 +650,7 @@ void malloc_grooming_buffer_1(unsigned char **grooming_buffer_1)
  * 
  * @param grooming_buffer_1 the grooming_buffer_1 to be freed.
  */
-void free_grooming_buffer_1(unsigned char *grooming_buffer_1)
+void free_grooming_buffer_1(uint8_t *grooming_buffer_1)
 {
     free_grooming_buffer(grooming_buffer_1);
 }
@@ -660,7 +660,7 @@ void free_grooming_buffer_1(unsigned char *grooming_buffer_1)
  * 
  * @param grooming_buffer_1 the grooming_buffer_1 to be marked.
  */
-void mark_grooming_buffer_1(unsigned char *grooming_buffer_1)
+void mark_grooming_buffer_1(uint8_t *grooming_buffer_1)
 {
     int i;
 
@@ -679,7 +679,7 @@ void mark_grooming_buffer_1(unsigned char *grooming_buffer_1)
  * 
  * @param grooming_buffer_1 the grooming_buffer_1 to be assigned.
  */
-void assign_grooming_buffer_1(unsigned char *grooming_buffer_1)
+void assign_grooming_buffer_1(uint8_t *grooming_buffer_1)
 {
     int i;
 
@@ -697,7 +697,7 @@ void assign_grooming_buffer_1(unsigned char *grooming_buffer_1)
 /**
  * The buffer required by buffer-grooming techniques.
  */
-unsigned char *grooming_buffer_2;
+uint8_t *grooming_buffer_2;
 
 /**
  * The pte used with page permission control.
@@ -709,7 +709,7 @@ unsigned long *grooming_buffer_pte_2;
  * 
  * @param grooming_buffer_2 the grooming_buffer_2 to be malloced.
  */
-void malloc_grooming_buffer_2(unsigned char **grooming_buffer_2)
+void malloc_grooming_buffer_2(uint8_t **grooming_buffer_2)
 {
     malloc_grooming_buffer(grooming_buffer_2);
 }
@@ -719,7 +719,7 @@ void malloc_grooming_buffer_2(unsigned char **grooming_buffer_2)
  * 
  * @param grooming_buffer_2 the grooming_buffer_2 to be freed.
  */
-void free_grooming_buffer_2(unsigned char *grooming_buffer_2)
+void free_grooming_buffer_2(uint8_t *grooming_buffer_2)
 {
     free_grooming_buffer(grooming_buffer_2);
 }
@@ -729,7 +729,7 @@ void free_grooming_buffer_2(unsigned char *grooming_buffer_2)
  * 
  * @param grooming_buffer_2 the grooming_buffer_2 to be marked.
  */
-void mark_grooming_buffer_2(unsigned char *grooming_buffer_2)
+void mark_grooming_buffer_2(uint8_t *grooming_buffer_2)
 {
     int i;
 
@@ -748,7 +748,7 @@ void mark_grooming_buffer_2(unsigned char *grooming_buffer_2)
  * 
  * @param grooming_buffer_2 the grooming_buffer_2 to be assigned.
  */
-void assign_grooming_buffer_2(unsigned char *grooming_buffer_2)
+void assign_grooming_buffer_2(uint8_t *grooming_buffer_2)
 {
     int i;
 
@@ -775,8 +775,8 @@ unsigned char clear_buffer[64];
 /**
  * The buffers required by flush-reload techniques.
  */
-unsigned char *reload_buffer;
-unsigned int *reload_results;
+uint8_t *reload_buffer;
+uint8_t *reload_results;
 
 /**
  * Malloc buffers required by flush-reload techniques.
@@ -784,13 +784,13 @@ unsigned int *reload_results;
  * @param reload_buffer the reload_buffer to be malloced.
  * @param reload_results the reload_results to be malloced.
  */
-void malloc_flush_reload_buffers(unsigned char **reload_buffer, unsigned int **reload_results)
+void malloc_flush_reload_buffers(uint8_t **reload_buffer, uint8_t **reload_results)
 {
-    *reload_buffer = (unsigned char *)mmap(NULL, RELOAD_BUFFER_SIZE, MMAP_PROT, MMAP_FLAGS,
+    *reload_buffer = (uint8_t *)mmap(NULL, RELOAD_BUFFER_SIZE, MMAP_PROT, MMAP_FLAGS,
                                            -1, 0);
     ASSERT(*reload_buffer != MAP_FAILED);
 
-    *reload_results = (unsigned int *)malloc(RELOAD_RESULTS_SIZE);
+    *reload_results = (uint8_t *)malloc(RELOAD_RESULTS_SIZE);
     ASSERT(*reload_results != NULL);
 
     memset(*reload_results, 0, RELOAD_RESULTS_SIZE);
@@ -802,7 +802,7 @@ void malloc_flush_reload_buffers(unsigned char **reload_buffer, unsigned int **r
  * @param reload_buffer the reload_buffer to be freed.
  * @param reload_results the reload_results to be freed.
  */
-void free_flush_reload_buffers(unsigned char *reload_buffer, unsigned int *reload_results)
+void free_flush_reload_buffers(uint8_t *reload_buffer, uint8_t *reload_results)
 {
     ASSERT(!munmap(reload_buffer, RELOAD_BUFFER_SIZE));
 
@@ -817,7 +817,7 @@ void free_flush_reload_buffers(unsigned char *reload_buffer, unsigned int *reloa
  * @note This function requires the prefetcher to be disabled in advance 
  *     to work properly.
  */
-void flush_reload_buffer(unsigned char *reload_buffer)
+void flush_reload_buffer(uint8_t *reload_buffer)
 {
     int i;
 
@@ -868,7 +868,7 @@ unsigned int access_time(unsigned long address)
  * @note This function requires the prefetcher to be disabled in advance 
  *     to work properly.
  */
-void reload_reload_buffer(unsigned char *reload_buffer, unsigned int *reload_results)
+void reload_reload_buffer(uint8_t *reload_buffer, uint8_t *reload_results)
 {
     int i;
     unsigned long dt;
@@ -890,7 +890,7 @@ void reload_reload_buffer(unsigned char *reload_buffer, unsigned int *reload_res
  * @param reload_results the reload_results to be printed.
  * 
  */
-void print_reload_results(unsigned int *reload_results)
+void print_reload_results(uint8_t *reload_results)
 {
     int i;
 
@@ -911,7 +911,7 @@ void print_reload_results(unsigned int *reload_results)
  * 
  * @param reload_results reload_results to be reset.
  */
-void reset_reload_results(unsigned int *reload_results)
+void reset_reload_results(uint8_t *reload_results)
 {
     int i;
 
@@ -936,8 +936,8 @@ int rep;
 /**
  * The buffer and remapped buffer required by mds-attack techniques.
  */
-unsigned char *leak_source;
-unsigned char *leak_source_shadow;
+uint8_t *leak_source;
+uint8_t *leak_source_shadow;
 
 /**
  * The pte used with page permission control.
@@ -949,9 +949,9 @@ unsigned long *leak_source_pte;
  * 
  * @param leak_source the leak_source to be malloced.
  */
-void malloc_mds_attack_buffer(unsigned char **leak_source)
+void malloc_mds_attack_buffer(uint8_t **leak_source)
 {
-    *leak_source = (unsigned char *)mmap(NULL, LEAK_SOURCE_SIZE, MMAP_PROT, MMAP_FLAGS, -1, 0);
+    *leak_source = (uint8_t *)mmap(NULL, LEAK_SOURCE_SIZE, MMAP_PROT, MMAP_FLAGS, -1, 0);
     if (*leak_source == MAP_FAILED)
     {
         printf("[sgx-analyser] mmap leak_source failed.\n");
@@ -964,7 +964,7 @@ void malloc_mds_attack_buffer(unsigned char **leak_source)
  * 
  * @param leak_source the leak_source to be freed.
  */
-void free_mds_attack_buffer(unsigned char *leak_source)
+void free_mds_attack_buffer(uint8_t *leak_source)
 {
     if (munmap(leak_source, LEAK_SOURCE_SIZE) == -1)
     {
@@ -976,15 +976,15 @@ void free_mds_attack_buffer(unsigned char *leak_source)
 /**
  * Remap the buffer required by mds-attack techniques.
  */
-void remap_mds_attack_buffer(unsigned char **leak_source_shadow, unsigned char *leak_source)
+void remap_mds_attack_buffer(uint8_t **leak_source_shadow, uint8_t *leak_source)
 {
-    *leak_source_shadow = (unsigned char *)remap_page_table_level(leak_source, PAGE);
+    *leak_source_shadow = (uint8_t *)remap_page_table_level(leak_source, PAGE);
 }
 
 /**
  * Assign the buffer required by mds-attack techniques.
  */
-void assign_mds_attack_buffer(unsigned char *leak_source)
+void assign_mds_attack_buffer(uint8_t *leak_source)
 {
     int i;
 
@@ -1000,7 +1000,7 @@ void assign_mds_attack_buffer(unsigned char *leak_source)
  * 
  * @param leak_source the leak_source to be marked.
  */
-void mark_mds_attack_buffer(unsigned char *leak_source)
+void mark_mds_attack_buffer(uint8_t *leak_source)
 {
     int i;
 
@@ -1026,7 +1026,7 @@ void mark_mds_attack_buffer(unsigned char *leak_source)
 /**
  * Flush the buffer required by mds-attack techniques.
  */
-void flush_mds_attack_buffer(unsigned char *leak_source)
+void flush_mds_attack_buffer(uint8_t *leak_source)
 {
     int i;
 
@@ -1175,8 +1175,8 @@ void flush_mds_attack_buffer(unsigned char *leak_source)
  * @param leak_source_shadow Another virtual address for the same leak_source.
  * 
  */
-void taa_1ae694f7(unsigned char *leak_source, unsigned char *reload_buffer,
-                  unsigned char *leak_source_shadow)
+void taa_1ae694f7(uint8_t *leak_source, uint8_t *reload_buffer,
+                  uint8_t *leak_source_shadow)
 {
     // EMPTY
 }
@@ -1191,8 +1191,8 @@ void taa_1ae694f7(unsigned char *leak_source, unsigned char *reload_buffer,
  * @param leak_source_shadow Another virtual address for the same leak_source.
  * 
  */
-void taa_e1a21680(unsigned char *leak_source, unsigned char *reload_buffer,
-                  unsigned char *leak_source_shadow)
+void taa_e1a21680(uint8_t *leak_source, uint8_t *reload_buffer,
+                  uint8_t *leak_source_shadow)
 {
     asm volatile(
         TAA_PREPERATION TAA_INTER_SPECULATION
@@ -1211,8 +1211,8 @@ void taa_e1a21680(unsigned char *leak_source, unsigned char *reload_buffer,
  * @param leak_source_shadow Another virtual address for the same leak_source.
  * 
  */
-void taa_7d05af71(unsigned char *leak_source, unsigned char *reload_buffer,
-                  unsigned char *leak_source_shadow)
+void taa_7d05af71(uint8_t *leak_source, uint8_t *reload_buffer,
+                  uint8_t *leak_source_shadow)
 {
     asm volatile(
         TAA_PREPERATION TAA_SPECULATION
@@ -1223,7 +1223,7 @@ void taa_7d05af71(unsigned char *leak_source, unsigned char *reload_buffer,
 
 /** ===== libsgxanalyser/core_utility/sgxmds_trts.c ===== */
 
-void first_buffer_grooming(unsigned char *grooming_buffer_1)
+void first_buffer_grooming(uint8_t *grooming_buffer_1)
 {
     // #if FIRST_BUFFER_GROOMING_INST == ENUM_EMPTY
     // #elif FIRST_BUFFER_GROOMING_INST == ENUM_GP_LOAD
@@ -1241,7 +1241,7 @@ void first_buffer_grooming(unsigned char *grooming_buffer_1)
     // #endif
 }
 
-void second_buffer_grooming(unsigned char *grooming_buffer_2)
+void second_buffer_grooming(uint8_t *grooming_buffer_2)
 {
 #if SECOND_BUFFER_GROOMING_INST == ENUM_EMPTY
 #elif SECOND_BUFFER_GROOMING_INST == ENUM_GP_LOAD
@@ -1259,7 +1259,7 @@ void second_buffer_grooming(unsigned char *grooming_buffer_2)
 #endif
 }
 
-void buffer_clearing(unsigned char *clear_buffer)
+void buffer_clearing(uint8_t *clear_buffer)
 {
 #if BUFFER_CLEARING == ENUM_NO_CLEAR
 #elif BUFFER_CLEARING == ENUM_VERW_CLEAR
@@ -1269,8 +1269,8 @@ void buffer_clearing(unsigned char *clear_buffer)
 #endif
 }
 
-void base_attack(unsigned char *leak_source, unsigned char *reload_buffer,
-                 unsigned char *leak_source_shadow)
+void base_attack(uint8_t *leak_source, uint8_t *reload_buffer,
+                 uint8_t *leak_source_shadow)
 {
 #if MDS_ATTACK == ENUM_TAA
     BASE_TAA(leak_source, reload_buffer, leak_source_shadow);
@@ -1279,8 +1279,8 @@ void base_attack(unsigned char *leak_source, unsigned char *reload_buffer,
 #endif
 }
 
-void inter_attack(unsigned char *leak_source, unsigned char *reload_buffer,
-                  unsigned char *leak_source_shadow)
+void inter_attack(uint8_t *leak_source, uint8_t *reload_buffer,
+                  uint8_t *leak_source_shadow)
 {
 #if MDS_ATTACK == ENUM_TAA
     INTER_TAA(leak_source, reload_buffer, leak_source_shadow);
@@ -1289,8 +1289,8 @@ void inter_attack(unsigned char *leak_source, unsigned char *reload_buffer,
 #endif
 }
 
-void ult_attack(unsigned char *leak_source, unsigned char *reload_buffer,
-                unsigned char *leak_source_shadow)
+void ult_attack(uint8_t *leak_source, uint8_t *reload_buffer,
+                uint8_t *leak_source_shadow)
 {
 #if MDS_ATTACK == ENUM_TAA
     ULT_TAA(leak_source, reload_buffer, leak_source_shadow);
@@ -1351,9 +1351,9 @@ int sigsegv_signal;
 
 /** ========== */
 
-void step_buffer_grooming(unsigned char *grooming_buffer_1,
-                          unsigned char *grooming_buffer_2,
-                          unsigned char *clear_buffer)
+void step_buffer_grooming(uint8_t *grooming_buffer_1,
+                          uint8_t *grooming_buffer_2,
+                          uint8_t *clear_buffer)
 {
     // #if DOMAIN_SELECT == USE_GENERAL
     first_buffer_grooming(grooming_buffer_1);
@@ -1369,8 +1369,8 @@ void step_buffer_grooming(unsigned char *grooming_buffer_1,
     // #endif
 }
 
-void step_mds_attack(unsigned char *leak_source, unsigned char *reload_buffer,
-                     unsigned char *leak_source_shadow)
+void step_mds_attack(uint8_t *leak_source, uint8_t *reload_buffer,
+                     uint8_t *leak_source_shadow)
 {
     // #if DOMAIN_SELECT == USE_GENERAL
     ult_attack(leak_source, reload_buffer, leak_source_shadow);
@@ -1398,9 +1398,9 @@ void step_mds_attack(unsigned char *leak_source, unsigned char *reload_buffer,
 // }
 // #endif
 
-void combined_steps(unsigned char *grooming_buffer_1, unsigned char *grooming_buffer_2,
-                    unsigned char *clear_buffer, unsigned char *leak_source,
-                    unsigned char *reload_buffer, unsigned char *leak_source_shadow)
+void combined_steps(uint8_t *grooming_buffer_1, uint8_t *grooming_buffer_2,
+                    uint8_t *clear_buffer, uint8_t *leak_source,
+                    uint8_t *reload_buffer, uint8_t *leak_source_shadow)
 {
     // #if DOMAIN_SELECT == USE_SGX_COMBINED
     //     ecall_combined_grooming_attack(global_eid, grooming_buffer_1, grooming_buffer_2, clear_buffer,
@@ -1425,7 +1425,7 @@ void test_app_fini()
     unconfig_environment();
 }
 
-Test(test_sgx_analyser, test_app, .init = test_app_init, .fini = test_app_fini, .disabled = true)
+Test(test_sgx_analyser, test_app, .init = test_app_init, .fini = test_app_fini, .disabled = false)
 {
     reset_reload_results(reload_results);
     for (rep = 0; rep < REPETITION_LIMIT; rep++)
@@ -1517,7 +1517,7 @@ void test_dual_data_fini()
     close_system_file();
 }
 
-Test(test_sgx_analyser, test_dual_data, .init = test_dual_data_init, .fini = test_dual_data_fini, .disabled=_SC_THREAD_ROBUST_PRIO_PROTECT)
+Test(test_sgx_analyser, test_dual_data, .init = test_dual_data_init, .fini = test_dual_data_fini, .disabled=false)
 {
     /** ZERO SUBSTITUTE */
     INFO("ZERO SUBSTITUTE");
