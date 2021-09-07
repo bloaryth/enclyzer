@@ -105,6 +105,7 @@ typedef struct {
 typedef struct {
     int major;      /** different types of attacks have different \p major */
     int minor;      /** different variants of an attack referenced by \p major have different \p minor. */
+    int offset;     /** an offset control argument for attacks */
 } enclyser_attack_t;
 
 /**
