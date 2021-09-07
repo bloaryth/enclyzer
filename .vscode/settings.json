@@ -46,7 +46,8 @@
         "unordered_set": "c",
         "flush_reload.h": "c",
         "ios": "c",
-        "attack.h": "c"
+        "attack.h": "c",
+        "*.tcc": "c"
     },
     "C_Cpp.errorSquiggles": "Enabled"
 }

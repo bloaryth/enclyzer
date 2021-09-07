@@ -12,7 +12,7 @@ void flush_enclyser_buffer(enclyser_buffer_t *enclyser_buffer)
 
     for (i = 0; i < enclyser_buffer->size; i += CACHELINE_SIZE)
     {
-        asm volatile("clflush (%0)\n" ::"r"(enclyser_buffer->buffer + i));  // FIXME shadow -> buffer, incompatible with ACCESS_CTRL
+        asm volatile("clflush (%0)\n" ::"r"(enclyser_buffer->buffer + i)); // FIXME shadow -> buffer, incompatible with ACCESS_CTRL
     }
     asm volatile("mfence\n");
 }
@@ -21,24 +21,30 @@ void assign_enclyser_buffer(enclyser_buffer_t *enclyser_buffer)
 {
     int i;
 
-    for (i = 0; i < enclyser_buffer->size; i++)
+    switch (enclyser_buffer->order)
     {
-        switch (enclyser_buffer->order)
+    case BUFFER_ORDER_NONE:
+        break;
+    case BUFFER_ORDER_CONSTANT:
+        for (i = 0; i < enclyser_buffer->size; i++)
         {
-        case BUFFER_ORDER_NONE:
-            break;
-        case BUFFER_ORDER_CONSTANT:
             enclyser_buffer->buffer[i] = enclyser_buffer->value;
-            break;
-        case BUFFER_ORDER_OFFSET_INLINE:
-            enclyser_buffer->buffer[i] = (enclyser_buffer->value + i) % 0x40;
-            break;
-        case BUFFER_ORDER_LINE_NUM:
-            enclyser_buffer->buffer[i] = enclyser_buffer->value + i / 0x40;
-            break;
-        default:
-            break;
         }
+        break;
+    case BUFFER_ORDER_OFFSET_INLINE:
+        for (i = 0; i < enclyser_buffer->size; i++)
+        {
+            enclyser_buffer->buffer[i] = enclyser_buffer->value + i % 0x40;
+        }
+        break;
+    case BUFFER_ORDER_LINE_NUM:
+        for (i = 0; i < enclyser_buffer->size; i++)
+        {
+            enclyser_buffer->buffer[i] = enclyser_buffer->value + i / 0x40;
+        }
+        break;
+    default:
+        break;
     }
 
     asm volatile("mfence\n");
@@ -95,7 +101,7 @@ void cripple_enclyser_buffer(enclyser_buffer_t *enclyser_buffer)
             break;
         }
 
-        switch (enclyser_buffer->access_ctrl)   // FIXME bit seperation
+        switch (enclyser_buffer->access_ctrl) // FIXME bit seperation
         {
         case BUFFER_ACCESS_CTRL_NONE:
             break;

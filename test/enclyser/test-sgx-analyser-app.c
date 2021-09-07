@@ -1673,6 +1673,8 @@ void test_dual_func_init()
     malloc_enclyser_buffer(&encoding_buffer);
     malloc_enclyser_buffer(&printing_buffer);
 
+    assign_enclyser_buffer(&filling_buffer);
+
     assign_enclyser_buffer(&attaking_buffer); // IMPORTANT, BUT DONT KNOW WHY
 }
 
