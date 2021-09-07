@@ -188,7 +188,7 @@ static void fill_lfb_str_load(int filling_sequence, enclyser_buffer_t *filling_b
 static void fill_lfb_str_store(int filling_sequence, enclyser_buffer_t *filling_buffer)
 {
     int i;
-    uint64_t rdi;
+    uint64_t rdi, rsi, rdx, rcx, r8, r9, rax;
 
     switch (filling_buffer->order)
     {
@@ -206,15 +206,68 @@ static void fill_lfb_str_store(int filling_sequence, enclyser_buffer_t *filling_
         }
         break;
     case BUFFER_ORDER_OFFSET_INLINE:
-        for (i = 0; i < filling_buffer->size; i++)
-        {
-            rdi = (uint64_t)(filling_buffer->buffer + i);
-            asm volatile(
-                "stosb %%al, (%%rdi)\n"
-                : "+D"(rdi)
-                : "a"((filling_buffer->value + i) % 0x40)
-                : "cc");
-        }
+        // /**
+        //  * @brief Fill lfb with stosb.
+        //  * 
+        //  * [r10 = rdi & rcx] [r11 = rsi + r10] [rax = r11] [r12 = rdx]
+        //  * 
+        //  * @param rdi [= filling_buffer->buffer] 
+        //  * @param rsi [= filling_buffer->value] 
+        //  * @param rdx [= filling_buffer->size] 
+        //  * @param rcx [= CACHELINE_SIZE - 1]
+        //  */
+        // rdi = (uint64_t)(filling_buffer->buffer);
+        // rsi = (uint64_t)filling_buffer->value;
+        // rdx = (uint64_t)filling_buffer->size;
+        // rcx = (uint64_t)(CACHELINE_SIZE - 1);
+        // asm volatile(
+        //     "movq %%rdx, %%r12\n"
+        //     "2:cmp $0, %%r12\n"
+        //     "je 1f\n"
+        //     "dec %%r12\n"
+        //     "movq %%rdi, %%r10\n"
+        //     "andq %%rcx, %%r10\n"
+        //     "movq %%rsi, %%r11\n"
+        //     "addq %%r10, %%r11\n"
+        //     "movq %%r11, %%rax\n"
+        //     "stosb\n"
+        //     "jmp 2b\n"
+        //     "1:"
+        //     : "+D"(rdi)
+        //     : "S"(rsi), "d"(rdx), "c"(rcx)
+        //     : "r10", "r11");
+
+        /**
+         * @brief Fill lfb with stosq.
+         * 
+         * [r10 = rdi & rcx] [r11 = rsi + r10] [rax = 0x0706050403020100 + r11] [r12 = rdx]
+         * 
+         * @param rdi [= filling_buffer->buffer] 
+         * @param rsi [= filling_buffer->value] 
+         * @param rdx [= filling_buffer->size] ASSERT(rax & 0x7 == 0)
+         * @param rcx [= CACHELINE_SIZE - 1]
+         */
+        rdi = (uint64_t)(filling_buffer->buffer);
+        rsi = (uint64_t)filling_buffer->value;
+        rdx = (uint64_t)filling_buffer->size;
+        rcx = (uint64_t)(CACHELINE_SIZE - 1);
+        asm volatile(
+            "movq %%rdx, %%r12\n"
+            "2:cmp $0, %%r12\n"
+            "je 1f\n"
+            "sub $8, %%r12\n"
+            "movq %%rdi, %%r10\n"
+            "andq %%rcx, %%r10\n"
+            "movq %%rsi, %%r11\n"
+            "addq %%r10, %%r11\n"
+            "movq $0x0706050403020100, %%rax\n"
+            "addq %%r11, %%rax\n"
+            "stosq\n"
+            "jmp 2b\n"
+            "1:"
+            : "+D"(rdi)
+            : "S"(rsi), "d"(rdx), "c"(rcx)
+            : "r10", "r11");
         break;
     case BUFFER_ORDER_LINE_NUM:
         for (i = 0; i < filling_buffer->size; i++)

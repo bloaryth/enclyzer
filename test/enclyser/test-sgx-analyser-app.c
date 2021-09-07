@@ -1,5 +1,7 @@
 #include <criterion/criterion.h>
 
+#pragma region /** libsgxanalyser */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -787,7 +789,7 @@ uint8_t *reload_results;
 void malloc_flush_reload_buffers(uint8_t **reload_buffer, uint8_t **reload_results)
 {
     *reload_buffer = (uint8_t *)mmap(NULL, RELOAD_BUFFER_SIZE, MMAP_PROT, MMAP_FLAGS,
-                                           -1, 0);
+                                     -1, 0);
     ASSERT(*reload_buffer != MAP_FAILED);
 
     *reload_results = (uint8_t *)malloc(RELOAD_RESULTS_SIZE);
@@ -1411,7 +1413,9 @@ void combined_steps(uint8_t *grooming_buffer_1, uint8_t *grooming_buffer_2,
     // #endif
 }
 
-/* ====== test_app ===== */
+#pragma endregion
+
+#pragma region /** test_app */ 
 
 void test_app_init()
 {
@@ -1425,7 +1429,7 @@ void test_app_fini()
     unconfig_environment();
 }
 
-Test(test_sgx_analyser, test_app, .init = test_app_init, .fini = test_app_fini, .disabled = false)
+Test(test_sgx_analyser, test_app, .init = test_app_init, .fini = test_app_fini, .disabled = true)
 {
     reset_reload_results(reload_results);
     for (rep = 0; rep < REPETITION_LIMIT; rep++)
@@ -1439,7 +1443,9 @@ Test(test_sgx_analyser, test_app, .init = test_app_init, .fini = test_app_fini, 
     print_reload_results(reload_results);
 }
 
-/** ===== test_dual_data ===== */
+#pragma endregion
+
+#pragma region /** test_dual_data */
 
 #include "enclyser/libenclyser/attack.h"
 #include "enclyser/libenclyser/flush_reload.h"
@@ -1473,7 +1479,7 @@ void test_dual_data_init()
         .buffer = NULL,
         .shadow = NULL,
         .size = DEFAULT_ATTACKING_BUFFER_SIZE,
-        .value = 0xff,  // IMPORTANT: MUST BE NON-ZERO VALUE
+        .value = 0xff, // IMPORTANT: MUST BE NON-ZERO VALUE
         .order = BUFFER_ORDER_CONSTANT,
         .mem_type = DEFAULT_BUFFER_MEM_TYPE,
         .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
@@ -1502,7 +1508,7 @@ void test_dual_data_init()
     malloc_enclyser_buffer(&encoding_buffer);
     malloc_enclyser_buffer(&printing_buffer);
 
-    assign_enclyser_buffer(&attaking_buffer);   // IMPORTANT, BUT DONT KNOW WHY
+    assign_enclyser_buffer(&attaking_buffer); // IMPORTANT, BUT DONT KNOW WHY
 }
 
 void test_dual_data_fini()
@@ -1517,7 +1523,7 @@ void test_dual_data_fini()
     close_system_file();
 }
 
-Test(test_sgx_analyser, test_dual_data, .init = test_dual_data_init, .fini = test_dual_data_fini, .disabled=false)
+Test(test_sgx_analyser, test_dual_data, .init = test_dual_data_init, .fini = test_dual_data_fini, .disabled = true)
 {
     /** ZERO SUBSTITUTE */
     INFO("ZERO SUBSTITUTE");
@@ -1600,3 +1606,147 @@ Test(test_sgx_analyser, test_dual_data, .init = test_dual_data_init, .fini = tes
     // print_reload_results(reload_results);
     print_reload_results(printing_buffer.buffer);
 }
+
+#pragma endregion
+
+#pragma region /** test_dual_func */
+
+#include "enclyser/libenclyser/attack.h"
+#include "enclyser/libenclyser/flush_reload.h"
+#include "enclyser/libenclyser/lfb.h"
+
+enclyser_buffer_t filling_buffer;
+
+enclyser_attack_t attack_spec;
+enclyser_buffer_t attaking_buffer;
+enclyser_buffer_t encoding_buffer;
+enclyser_buffer_t printing_buffer;
+
+void test_dual_func_init()
+{
+    open_system_file();
+    config_environment();
+
+    attack_spec = (enclyser_attack_t){
+        .major = ATTACK_MAJOR_TAA,
+        .minor = ATTACK_MINOR_STABLE};
+
+    filling_buffer = (enclyser_buffer_t){
+        .buffer = NULL,
+        .shadow = NULL,
+        .size = DEFAULT_FILLING_BUFFER_SIZE,
+        .value = 0x1,
+        .order = BUFFER_ORDER_OFFSET_INLINE,
+        .mem_type = DEFAULT_BUFFER_MEM_TYPE,
+        .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
+
+    attaking_buffer = (enclyser_buffer_t){
+        .buffer = NULL,
+        .shadow = NULL,
+        .size = DEFAULT_ATTACKING_BUFFER_SIZE,
+        .value = 0xff, // IMPORTANT: MUST BE NON-ZERO VALUE
+        .order = BUFFER_ORDER_CONSTANT,
+        .mem_type = DEFAULT_BUFFER_MEM_TYPE,
+        .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
+
+    encoding_buffer = (enclyser_buffer_t){
+        .buffer = NULL,
+        .shadow = NULL,
+        .size = DEFAULT_ENCODING_BUFFER_SIZE,
+        .value = DEFAULT_BUFFER_VALUE,
+        .order = DEFAULT_BUFFER_ORDER,
+        .mem_type = DEFAULT_BUFFER_MEM_TYPE,
+        .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
+
+    printing_buffer = (enclyser_buffer_t){
+        .buffer = NULL,
+        .shadow = NULL,
+        .size = DEFAULT_PRINTING_BUFFER_SIZE,
+        .value = DEFAULT_BUFFER_VALUE,
+        .order = DEFAULT_BUFFER_ORDER,
+        .mem_type = DEFAULT_BUFFER_MEM_TYPE,
+        .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
+
+    malloc_enclyser_buffer(&filling_buffer);
+
+    malloc_enclyser_buffer(&attaking_buffer);
+    malloc_enclyser_buffer(&encoding_buffer);
+    malloc_enclyser_buffer(&printing_buffer);
+
+    assign_enclyser_buffer(&attaking_buffer); // IMPORTANT, BUT DONT KNOW WHY
+}
+
+void test_dual_func_fini()
+{
+    free_enclyser_buffer(&filling_buffer);
+
+    free_enclyser_buffer(&attaking_buffer);
+    free_enclyser_buffer(&encoding_buffer);
+    free_enclyser_buffer(&printing_buffer);
+
+    unconfig_environment();
+    close_system_file();
+}
+
+Test(test_sgx_analyser, test_dual_func, .init = test_dual_func_init, .fini = test_dual_func_fini)
+{
+    /** ZERO SUBSTITUTE */
+    INFO("ZERO SUBSTITUTE");
+    reset_reload_results(reload_results);
+    for (rep = 0; rep < REPETITION_LIMIT; rep++)
+    {
+        flush_reload_buffer(reload_buffer);
+        step_buffer_grooming(grooming_buffer_1, grooming_buffer_2, clear_buffer);
+        step_mds_attack(leak_source, reload_buffer, leak_source_shadow);
+        reload_reload_buffer(reload_buffer, reload_results);
+    }
+    print_reload_results(reload_results);
+
+    /** FILL SUBSTITUTE */
+    INFO("FILL SUBSTITUTE");
+    reset_reload_results(reload_results);
+    for (rep = 0; rep < REPETITION_LIMIT; rep++)
+    {
+        flush_reload_buffer(reload_buffer);
+        // step_buffer_grooming(grooming_buffer_1, grooming_buffer_2, clear_buffer);
+        fill_lfb(FILLING_SEQUENCE_STR_STORE, &filling_buffer);
+        step_mds_attack(leak_source, reload_buffer, leak_source_shadow);
+        reload_reload_buffer(reload_buffer, reload_results);
+    }
+    print_reload_results(reload_results);
+
+    /** ATTACK & RELOAD SUBSTITUTE */
+    INFO("ATTACK & RELOAD SUBSTITUTE");
+    // reset_reload_results(reload_results);
+    for (rep = 0; rep < REPETITION_LIMIT; rep++)
+    {
+        // flush_reload_buffer(reload_buffer);
+        flush_enclyser_buffer(&encoding_buffer);
+        step_buffer_grooming(grooming_buffer_1, grooming_buffer_2, clear_buffer);
+        // step_mds_attack(leak_source, reload_buffer, leak_source_shadow);
+        attack(&attack_spec, &attaking_buffer, &encoding_buffer);
+        // reload_reload_buffer(reload_buffer, reload_results);
+        reload(&encoding_buffer, &printing_buffer);
+    }
+    // print_reload_results(reload_results);
+    print(&printing_buffer);
+
+    /** FULL SUBSTITUTE */
+    INFO("FULL SUBSTITUTE");
+    // reset_reload_results(reload_results);
+    for (rep = 0; rep < REPETITION_LIMIT; rep++)
+    {
+        // flush_reload_buffer(reload_buffer);
+        flush_enclyser_buffer(&encoding_buffer);
+        // step_buffer_grooming(grooming_buffer_1, grooming_buffer_2, clear_buffer);
+        fill_lfb(FILLING_SEQUENCE_STR_STORE, &filling_buffer);
+        // step_mds_attack(leak_source, reload_buffer, leak_source_shadow);
+        attack(&attack_spec, &attaking_buffer, &encoding_buffer);
+        // reload_reload_buffer(reload_buffer, reload_results);
+        reload(&encoding_buffer, &printing_buffer);
+    }
+    // print_reload_results(reload_results);
+    print(&printing_buffer);
+}
+
+#pragma endregion

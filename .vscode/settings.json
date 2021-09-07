@@ -45,7 +45,8 @@
         "unordered_map": "c",
         "unordered_set": "c",
         "flush_reload.h": "c",
-        "ios": "c"
+        "ios": "c",
+        "attack.h": "c"
     },
     "C_Cpp.errorSquiggles": "Enabled"
 }
