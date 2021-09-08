@@ -33,7 +33,7 @@ void test_fill_lfb_log_fini()
     close_system_file();
 }
 
-Test(suite_lfb, test_fill_lfb_log, .init = test_fill_lfb_log_init, .fini = test_fill_lfb_log_fini, .disabled=true)
+Test(suite_lfb, test_fill_lfb_log, .init = test_fill_lfb_log_init, .fini = test_fill_lfb_log_fini, .disabled=false)
 {
     int i;
     int filling_sequence;
@@ -237,7 +237,7 @@ void test_fill_lfb_arch_fini()
     close_system_file();
 }
 
-Test(suite_lfb, test_fill_lfb_arch, .init = test_fill_lfb_arch_init, .fini = test_fill_lfb_arch_fini, .disabled=true)
+Test(suite_lfb, test_fill_lfb_arch, .init = test_fill_lfb_arch_init, .fini = test_fill_lfb_arch_fini, .disabled=false)
 {
     int i, j, offset, allowance;
     int filling_sequence_array[6] = {FILLING_SEQUENCE_GP_LOAD, FILLING_SEQUENCE_GP_STORE,
@@ -246,7 +246,7 @@ Test(suite_lfb, test_fill_lfb_arch, .init = test_fill_lfb_arch_init, .fini = tes
 
     for (j = 0; j < 6; j++)
     {
-        allowance = 8; /** A manual settting to allow expectation failure */
+        allowance = 8;
         for (offset = 0; offset < 64; offset++)
         {
             attack_spec.offset = offset;
@@ -357,7 +357,7 @@ void test_clear_lfb_fini()
     close_system_file();
 }
 
-Test(suite_lfb, test_clear_lfb, .init = test_clear_lfb_init, .fini = test_clear_lfb_fini, .disabled=true)
+Test(suite_lfb, test_clear_lfb, .init = test_clear_lfb_init, .fini = test_clear_lfb_fini, .disabled=false)
 {
     int i, j, offset;
     int filling_sequence_array[6] = {FILLING_SEQUENCE_GP_LOAD, FILLING_SEQUENCE_GP_STORE,

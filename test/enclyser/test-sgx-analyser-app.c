@@ -1429,7 +1429,7 @@ void test_app_fini()
     unconfig_environment();
 }
 
-Test(test_sgx_analyser, test_app, .init = test_app_init, .fini = test_app_fini, .disabled = true)
+Test(suit_sgx_analyser, test_app, .init = test_app_init, .fini = test_app_fini, .disabled = true)
 {
     reset_reload_results(reload_results);
     for (rep = 0; rep < REPETITION_LIMIT; rep++)
@@ -1523,7 +1523,7 @@ void test_dual_data_fini()
     close_system_file();
 }
 
-Test(test_sgx_analyser, test_dual_data, .init = test_dual_data_init, .fini = test_dual_data_fini, .disabled = true)
+Test(suit_sgx_analyser, test_dual_data, .init = test_dual_data_init, .fini = test_dual_data_fini, .disabled = true)
 {
     /** ZERO SUBSTITUTE */
     INFO("ZERO SUBSTITUTE");
@@ -1690,7 +1690,7 @@ void test_dual_func_fini()
     close_system_file();
 }
 
-Test(test_sgx_analyser, test_dual_func, .init = test_dual_func_init, .fini = test_dual_func_fini)
+Test(suit_sgx_analyser, test_dual_func, .init = test_dual_func_init, .fini = test_dual_func_fini)
 {
     /** ZERO SUBSTITUTE */
     INFO("ZERO SUBSTITUTE");
