@@ -61,7 +61,7 @@ static void mds_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaki
 {
     uint64_t rdi, rsi, rdx, rcx, r8;
 
-    ASSERT((0 < attack_spec->offset) && (attack_spec->offset < attaking_buffer->size));
+    ASSERT((0 <= attack_spec->offset) && (attack_spec->offset < attaking_buffer->size));
 
     rdi = (uint64_t)attack_spec->offset;     /** consistent during the process */
     rsi = (uint64_t)attaking_buffer->buffer; /** consistent during the process */
@@ -107,7 +107,7 @@ static void taa_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaki
 {
     uint64_t rdi, rsi, rdx, rcx, r8;
 
-    ASSERT((0 < attack_spec->offset) && (attack_spec->offset < attaking_buffer->size));
+    ASSERT((0 <= attack_spec->offset) && (attack_spec->offset < attaking_buffer->size));
 
     rdi = (uint64_t)attack_spec->offset;     /** consistent during the process */
     rsi = (uint64_t)attaking_buffer->buffer; /** consistent during the process */

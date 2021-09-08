@@ -54,8 +54,7 @@ static void fill_lfb_gp_store(int filling_sequence, enclyser_buffer_t *filling_b
             "2:cmp $0, %%r10\n"
             "je 1f\n"
             "subq $8, %%r10\n"
-            "movq %%rsi, %%rax\n"
-            "andq %%rcx, %%rax\n" /** rax = rsi & rcx */
+            "movq %%rsi, %%rax\n" /** rax = rsi */
             "movq $0x0101010101010101, %%r11\n"
             "imul %%r11, %%rax\n" /** rax = rax * 0x0101010101010101 */
             "movq %%rax, (%%rdi)\n"
@@ -72,9 +71,9 @@ static void fill_lfb_gp_store(int filling_sequence, enclyser_buffer_t *filling_b
             "2:cmp $0, %%r10\n"
             "je 1f\n"
             "subq $8, %%r10\n"
-            "movq %%rsi, %%rax\n"
-            "addq %%rdi, %%rax\n"
-            "andq %%rcx, %%rax\n" /** rax = (rsi + rdi) & rcx */
+            "movq %%rdi, %%rax\n"
+            "andq %%rcx, %%rax\n"
+            "addq %%rsi, %%rax\n" /** rax = rsi + rdi & rcx */
             "movq $0x0101010101010101, %%r11\n"
             "imul %%r11, %%rax\n" /** rax = rax * 0x0101010101010101 */
             "movq $0x0706050403020100, %%r11\n"
@@ -140,8 +139,7 @@ static void fill_lfb_nt_store(int filling_sequence, enclyser_buffer_t *filling_b
             "2:cmp $0, %%r10\n"
             "je 1f\n"
             "subq $8, %%r10\n"
-            "movq %%rsi, %%rax\n"
-            "andq %%rcx, %%rax\n" /** rax = rsi & rcx */
+            "movq %%rsi, %%rax\n" /** rax = rsi */
             "movq $0x0101010101010101, %%r11\n"
             "imul %%r11, %%rax\n" /** rax = rax * 0x0101010101010101 */
             "movnti %%rax, (%%rdi)\n"
@@ -158,9 +156,9 @@ static void fill_lfb_nt_store(int filling_sequence, enclyser_buffer_t *filling_b
             "2:cmp $0, %%r10\n"
             "je 1f\n"
             "subq $8, %%r10\n"
-            "movq %%rsi, %%rax\n"
-            "addq %%rdi, %%rax\n"
-            "andq %%rcx, %%rax\n" /** rax = (rsi + rdi) & rcx */
+            "movq %%rdi, %%rax\n"
+            "andq %%rcx, %%rax\n"
+            "addq %%rsi, %%rax\n" /** rax = rsi + rdi & rcx */
             "movq $0x0101010101010101, %%r11\n"
             "imul %%r11, %%rax\n" /** rax = rax * 0x0101010101010101 */
             "movq $0x0706050403020100, %%r11\n"
@@ -225,8 +223,7 @@ static void fill_lfb_str_store(int filling_sequence, enclyser_buffer_t *filling_
             "2:cmp $0, %%r10\n"
             "je 1f\n"
             "subq $8, %%r10\n"
-            "movq %%rsi, %%rax\n"
-            "andq %%rcx, %%rax\n" /** rax = rsi & rcx */
+            "movq %%rsi, %%rax\n" /** rax = rsi */
             "movq $0x0101010101010101, %%r11\n"
             "imul %%r11, %%rax\n" /** rax = rax * 0x0101010101010101 */
             "stosq\n"
@@ -242,9 +239,9 @@ static void fill_lfb_str_store(int filling_sequence, enclyser_buffer_t *filling_
             "2:cmp $0, %%r10\n"
             "je 1f\n"
             "subq $8, %%r10\n"
-            "movq %%rsi, %%rax\n"
-            "addq %%rdi, %%rax\n"
-            "andq %%rcx, %%rax\n" /** rax = (rsi + rdi) & rcx */
+            "movq %%rdi, %%rax\n"
+            "andq %%rcx, %%rax\n"
+            "addq %%rsi, %%rax\n" /** rax = rsi + rdi & rcx */
             "movq $0x0101010101010101, %%r11\n"
             "imul %%r11, %%rax\n" /** rax = rax * 0x0101010101010101 */
             "movq $0x0706050403020100, %%r11\n"
@@ -295,7 +292,7 @@ void fill_lfb(int filling_sequence, enclyser_buffer_t *filling_buffer)
 
 void clear_lfb(int clearing_sequence, enclyser_buffer_t *clearing_buffer)
 {
-    // flush_enclyser_buffer(clearing_buffer);
+    flush_enclyser_buffer(clearing_buffer);
 
     switch (clearing_sequence)
     {
@@ -309,14 +306,14 @@ void clear_lfb(int clearing_sequence, enclyser_buffer_t *clearing_buffer)
             "add $8, %rsp");
         break;
     case CLEARING_SEQUENCE_ORPD:
-        asm volatile(
-            "orpd (%0), %%xmm0\n"
-            "orpd (%0), %%xmm0\n"
-            "mfence\n"
-            :
-            : "r"(clearing_buffer->buffer)
-            : "xmm0");
         /** TODO orpd according to avx support */
+        // asm volatile(
+        //     "orpd (%0), %%xmm0\n"
+        //     "orpd (%0), %%xmm0\n"
+        //     "mfence\n"
+        //     :
+        //     : "r"(clearing_buffer->buffer)
+        //     : "xmm0");
         break;
     default:
         break;

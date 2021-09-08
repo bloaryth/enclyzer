@@ -41,13 +41,6 @@ extern "C" {
 #define TIME_LIMIT  120
 
 /**
- * @brief A set of defines that collaborately defines the recovery rate.
- * 
- */
-#define RECOVERY_NUMERATOR      1
-#define RECOVERY_DINOMINATOR    100
-
-/**
  * @brief The FLUSH phase of the FLUSH+RELOAD technique.
  * 
  * @param encoding_buffer the buffer that contains temporary data
@@ -64,11 +57,19 @@ void flush(enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffe
 void reload(enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffer);
 
 /**
- * @brief Print the printing_buffer in a clear and concise way.
+ * @brief Reset all of the accumulated data to zero.
  * 
  * @param printing_buffer the buffer that accumulates persistent data
  */
-void print(enclyser_buffer_t *printing_buffer);
+void reset(enclyser_buffer_t *printing_buffer);
+
+/**
+ * @brief Print the printing_buffer in a clear and concise way.
+ * 
+ * @param printing_buffer the buffer that accumulates persistent data
+ * @param printing_bar it decides whether an answer should be printed
+ */
+void print(enclyser_buffer_t *printing_buffer, uint8_t printing_bar);
 
 #endif
 

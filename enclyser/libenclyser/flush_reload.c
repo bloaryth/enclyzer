@@ -78,16 +78,10 @@ void reload(enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buff
         {
             printing_buffer->buffer[i / ENCODING_BUFFER_SLOT_SIZE]++;
         }
-        // INFO("i: %x, dt: %lu, %d", i, dt, i / ENCODING_BUFFER_SLOT_SIZE);
     }
 }
 
-/**
- * @brief Reset all of the accumulated data to zero.
- * 
- * @param printing_buffer the buffer that accumulates persistent data
- */
-static void reset_printing_buffer(enclyser_buffer_t *printing_buffer)
+void reset(enclyser_buffer_t *printing_buffer)
 {
     int i;
 
@@ -97,15 +91,14 @@ static void reset_printing_buffer(enclyser_buffer_t *printing_buffer)
     }
 }
 
-void print(enclyser_buffer_t *printing_buffer)
+void print(enclyser_buffer_t *printing_buffer, uint8_t printing_bar)
 {
     int i;
 
     printf("{--------------------\n");
     for (i = 0; i < printing_buffer->size; i++)
     {
-        if (printing_buffer->buffer[i] > 0)
-        // if (printing_buffer->buffer[i] * RECOVERY_DINOMINATOR >  RECOVERY_NUMERATOR * REPETITION_TIME)
+        if (printing_buffer->buffer[i] > printing_bar)
         {
             printf("%08u: %02x (%c)\n", printing_buffer->buffer[i], (uint32_t)i,
                    isprint(i) ? (uint32_t)i : '?');
@@ -113,7 +106,7 @@ void print(enclyser_buffer_t *printing_buffer)
     }
     printf("--------------------}\n\n");
 
-    reset_printing_buffer(printing_buffer);
+    reset(printing_buffer);
 }
 
 #endif
