@@ -288,7 +288,7 @@ Test(suite_memory, test_assign_enclyser_buffer)
     assign_enclyser_buffer(&enclyser_buffer);
     for (i = 0; i < enclyser_buffer.size; i++)
     {
-        cr_expect(enclyser_buffer.buffer[i] == (enclyser_buffer.value + i) % 0x40);
+        cr_expect(enclyser_buffer.buffer[i] == enclyser_buffer.value + i % 0x40);
     }
 
     enclyser_buffer.value = 0x30;

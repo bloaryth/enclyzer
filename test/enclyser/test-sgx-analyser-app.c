@@ -1690,7 +1690,7 @@ void test_dual_func_fini()
     close_system_file();
 }
 
-Test(suit_sgx_analyser, test_dual_func, .init = test_dual_func_init, .fini = test_dual_func_fini)
+Test(suit_sgx_analyser, test_dual_func, .init = test_dual_func_init, .fini = test_dual_func_fini, .disabled = true)
 {
     /** ZERO SUBSTITUTE */
     INFO("ZERO SUBSTITUTE");
@@ -1731,7 +1731,7 @@ Test(suit_sgx_analyser, test_dual_func, .init = test_dual_func_init, .fini = tes
         reload(&encoding_buffer, &printing_buffer);
     }
     // print_reload_results(reload_results);
-    print(&printing_buffer);
+    print(&printing_buffer, 0);
 
     /** FULL SUBSTITUTE */
     INFO("FULL SUBSTITUTE");
@@ -1748,7 +1748,7 @@ Test(suit_sgx_analyser, test_dual_func, .init = test_dual_func_init, .fini = tes
         reload(&encoding_buffer, &printing_buffer);
     }
     // print_reload_results(reload_results);
-    print(&printing_buffer);
+    print(&printing_buffer, 0);
 }
 
 #pragma endregion
