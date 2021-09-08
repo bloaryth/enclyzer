@@ -50,6 +50,9 @@ extern int fd_mem;
  */
 #define FD_UNINITIALIZED    -1
 
+
+char command_output[1024];
+
 /**
  * @brief Open the file required by the project.
  * 
@@ -63,10 +66,30 @@ void open_system_file();
 void close_system_file();
 
 /**
- * @brief Print the system information that is related to the project.
+ * @brief a function of the cpuid instruction
  * 
+ * @param eax the eax register
+ * @param ebx the ebx register
+ * @param ecx the ecx register
+ * @param edx the edx register
  */
-void print_system_info();
+void native_cpuid(uint32_t *eax, uint32_t *ebx, uint32_t *ecx, uint32_t *edx);
+
+/**
+ * @brief a function of the rdmsr instruction
+ * 
+ * @param eax the eax register
+ * @param ecx the ecx register
+ * @param edx the edx register
+ */
+void native_rdmsr(uint32_t *eax, uint32_t *ecx, uint32_t *edx);
+
+/**
+ * @brief Execute shell command and store output to \p command_output.
+ * 
+ * @param command the command string to execute
+ */
+void execute_command(char *command);
 
 #endif
 

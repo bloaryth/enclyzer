@@ -36,8 +36,11 @@ static void fill_lfb_gp_store(int filling_sequence, enclyser_buffer_t *filling_b
 {
     uint64_t rdi, rsi, rdx, rcx;
 
-    ASSERT(filling_buffer->size % 8 == 0); /** must be 8 byte aligned */
-    ASSERT(CACHELINE_SIZE == 64);          /** must be 64 byte aligned, a temporary requirement */
+    if (filling_buffer->size % 8 != 0)
+    {
+        // INFO("filling_buffer->size must be 8 byte aligned");
+        return;
+    }
 
     rdi = (uint64_t)filling_buffer->buffer; /** incremented during the process */
     rsi = (uint64_t)filling_buffer->value;  /** consistent during the process */
@@ -121,8 +124,11 @@ static void fill_lfb_nt_store(int filling_sequence, enclyser_buffer_t *filling_b
 {
     uint64_t rdi, rsi, rdx, rcx;
 
-    ASSERT(filling_buffer->size % 8 == 0); /** must be 8 byte aligned */
-    ASSERT(CACHELINE_SIZE == 64);          /** must be 64 byte aligned, a temporary requirement */
+    if (filling_buffer->size % 8 != 0)
+    {
+        // INFO("filling_buffer->size must be 8 byte aligned");
+        return;
+    }
 
     rdi = (uint64_t)filling_buffer->buffer; /** incremented during the process */
     rsi = (uint64_t)filling_buffer->value;  /** consistent during the process */
@@ -205,8 +211,11 @@ static void fill_lfb_str_store(int filling_sequence, enclyser_buffer_t *filling_
 {
     uint64_t rdi, rsi, rdx, rcx;
 
-    ASSERT(filling_buffer->size % 8 == 0); /** must be 8 byte aligned */
-    ASSERT(CACHELINE_SIZE == 64);          /** must be 64 byte aligned, a temporary requirement */
+    if (filling_buffer->size % 8 != 0)
+    {
+        // INFO("filling_buffer->size must be 8 byte aligned");
+        return;
+    }
 
     rdi = (uint64_t)filling_buffer->buffer; /** incremented during the process */
     rsi = (uint64_t)filling_buffer->value;  /** consistent during the process */

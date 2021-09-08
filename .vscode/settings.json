@@ -47,7 +47,9 @@
         "flush_reload.h": "c",
         "ios": "c",
         "attack.h": "c",
-        "*.tcc": "c"
+        "*.tcc": "c",
+        "info.h": "c",
+        "stdint.h": "c"
     },
     "C_Cpp.errorSquiggles": "Enabled"
 }

@@ -37,12 +37,12 @@ void assign_enclyser_buffer(enclyser_buffer_t *enclyser_buffer)
             enclyser_buffer->buffer[i] = enclyser_buffer->value + i % 0x40;
         }
         break;
-    case BUFFER_ORDER_LINE_NUM:
-        for (i = 0; i < enclyser_buffer->size; i++)
-        {
-            enclyser_buffer->buffer[i] = enclyser_buffer->value + i / 0x40;
-        }
-        break;
+    // case BUFFER_ORDER_LINE_NUM:
+    //     for (i = 0; i < enclyser_buffer->size; i++)
+    //     {
+    //         enclyser_buffer->buffer[i] = enclyser_buffer->value + i / 0x40;
+    //     }
+    //     break;
     default:
         break;
     }

@@ -16,8 +16,6 @@ extern "C" {
  */
 #ifdef NAMESPACE_SGX_SHARED
 
-
-
 /**
  * @brief Fill the internal buffer LFB via different sequences.
  * 

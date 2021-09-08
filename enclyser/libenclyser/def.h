@@ -59,7 +59,7 @@ typedef struct {
 #define BUFFER_ORDER_NONE           0x0
 #define BUFFER_ORDER_CONSTANT       0x1
 #define BUFFER_ORDER_OFFSET_INLINE  0x2
-#define BUFFER_ORDER_LINE_NUM       0x3
+// #define BUFFER_ORDER_LINE_NUM       0x3
 
 /**
  * @brief the enum defines for \p enclyser_buffer_t->mem_type
@@ -132,6 +132,7 @@ typedef struct {
  */
 #define DEFAULT_ATTACK_MAJOR    ATTACK_MAJOR_NONE
 #define DEFAULT_ATTACK_MINOR    ATTACK_MINOR_NONE
+#define DEFAULT_ATTACK_OFFSET   0
 
 /**
  * @brief The enum defines for different \p filling_sequence.

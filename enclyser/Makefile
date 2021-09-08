@@ -1,22 +1,29 @@
 #################### ADDITIONAL SETTINGS ####################
 
-ADDITIONAL_COMMON_C_FLAGS ?= #EMPTY#
+.PHONY: libenclyser kenclyser disable-prefetcher
+
+ADDITIONAL_APP_RUN_FLAGS := --verbose -j1 
+
+ADDITIONAL_COMMON_C_FLAGS := 
 ADDITIONAL_COMMON_INCLUDE_PATHS := -I.. -I../include
 
 ADDITIONAL_APP_C_FLAGS := -DNAMESPACE_SGX_SHARED -DNAMESPACE_SGX_NO
 ADDITIONAL_ENCLAVE_C_FLAGS := -DNAMESPACE_SGX_SHARED -DNAMESPACE_SGX_YES
 
-ADDITIONAL_APP_LINK_FLAGS := -Llibenclyser -lenclyser_urts
+ADDITIONAL_APP_LINK_FLAGS := -Llibenclyser -lenclyser_urts -lcriterion
 ADDITIONAL_ENCLAVE_LINK_FLAGS := -Llibenclyser -lenclyser_trts
 
-ADDITIONAL_APP_TARGET := libenclyser/libenclyser_urts.a
-ADDITIONAL_ENCLAVE_TARGET := libenclyser/libenclyser_trts.a
+ADDITIONAL_TARGETS := libenclyser kenclyser disable-prefetcher
 
-libenclyser/libenclyser_urts.a:
-	make -C libenclyser
+libenclyser:
+	@make -C ../enclyser/libenclyser --quiet
 
-libenclyser/libenclyser_trts.a:
-	make -C libenclyser
+kenclyser:
+	@sudo make -C ../kenclyser clean all load --quiet
+
+disable-prefetcher:
+	@sudo modprobe msr
+	@sudo wrmsr -a 0x1a4 0xf
 
 #################### COMMANDS TO USE ####################
 
@@ -70,7 +77,7 @@ endif
 APP_C_FILES := app/app.c
 APP_INCLUDE_PATHS := $(ADDITIONAL_COMMON_INCLUDE_PATHS) -Iapp -I$(SGX_SDK)/include
 
-APP_C_FLAGS := $(SGX_COMMON_C_FLAGS) $(ADDITIONAL_APP_C_FLAGS) -fPIC -Wno-attributes $(APP_INCLUDE_PATHS)
+APP_C_FLAGS := $(SGX_COMMON_C_FLAGS) $(ADDITIONAL_APP_C_FLAGS) -fPIC -Wno-attributes -Wno-unknown-pragmas $(APP_INCLUDE_PATHS)
 
 ifeq ($(SGX_DEBUG), 1)
 APP_C_FLAGS += -DDEBUG -UNDEBUG -UEDEBUG
@@ -104,7 +111,7 @@ app/%.o: app/%.c
 	@$(CC) $(APP_C_FLAGS) -c $< -o $@
 	@echo "CC  <=  $<"
 
-$(APP_NAME): app/enclave_u.o $(APP_C_OBJECTS) $(ADDITIONAL_APP_TARGET)
+$(APP_NAME): app/enclave_u.o $(APP_C_OBJECTS)
 	@$(CC) $^ -o $@ $(APP_LINK_FLAGS) -I$(SGX_SDK)/include/
 	@echo "LINK =>  $@"
 
@@ -151,7 +158,7 @@ enclave/%.o: enclave/%.c
 	@$(CC) $(ENCLAVE_C_FLAGS) -c $< -o $@
 	@echo "CC  <=  $<"
 
-$(ENCLAVE_NAME): enclave/enclave_t.o $(ENCLAVE_C_OBJECTS) $(ADDITIONAL_ENCLAVE_TARGET)
+$(ENCLAVE_NAME): enclave/enclave_t.o $(ENCLAVE_C_OBJECTS)
 	@$(CC) $^ -o $@ $(ENCLAVE_LINK_FLAGS)
 	@echo "LINK =>  $@"
 
@@ -180,7 +187,7 @@ endif
 endif
 
 ifeq ($(build_mode), HW_RELEASE)
-all: $(APP_NAME) $(ENCLAVE_NAME)
+all: $(ADDITIONAL_TARGETS) $(APP_NAME) $(ENCLAVE_NAME)
 	@echo "The project has been built in release hardware mode."
 	@echo "Please sign the $(ENCLAVE_NAME) first with your signing key before you run the $(APP_NAME) to launch and access the enclave."
 	@echo "To sign the enclave use the command:"
@@ -188,7 +195,7 @@ all: $(APP_NAME) $(ENCLAVE_NAME)
 	@echo "You can also sign the enclave using an external signing tool."
 	@echo "To build the project in simulation mode set SGX_MODE=SIM. To build the project in prerelease mode set SGX_PRERELEASE=1 and SGX_MODE=HW."
 else
-all: $(APP_NAME) $(SIGNED_ENCLAVE_NAME)
+all: $(ADDITIONAL_TARGETS) $(APP_NAME) $(SIGNED_ENCLAVE_NAME)
 ifeq ($(build_mode), HW_DEBUG)
 	@echo "The project has been built in debug hardware mode."
 else ifeq ($(build_mode), SIM_DEBUG)
@@ -204,7 +211,8 @@ endif
 
 run: all
 ifneq ($(build_mode), HW_RELEASE)
-	@$(CURDIR)/$(APP_NAME) > $(APP_NAME).txt
+	@-$(CURDIR)/$(APP_NAME) $(ADDITIONAL_APP_RUN_FLAGS) > $(APP_NAME).txt 2>&1
+	@sed -i -r "s/\x1B\[(([0-9]{1,2})?(;)?([0-9]{1,2})?)?[m,K,H,f,J]//g" $(APP_NAME).txt
 	@echo "RUN  =>  $(APP_NAME) [$(SGX_MODE)|$(SGX_ARCH), OK]"
 endif
 
