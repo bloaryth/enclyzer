@@ -96,7 +96,7 @@ static void construct_app_environment()
 
     ASSERT(signal(SIGSEGV, sigsegv_handler) != SIG_ERR);
 
-    sleep(1); // IMPORTANT! FIXME robust against signals */
+    sleep(2); // IMPORTANT! FIXME robust against signals */
 }
 
 /**

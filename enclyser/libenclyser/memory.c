@@ -68,7 +68,7 @@ void assign_enclyser_buffer(enclyser_buffer_t *enclyser_buffer)
 
 void malloc_enclyser_buffer(enclyser_buffer_t *enclyser_buffer)
 {
-    enclyser_buffer->buffer = (uint8_t *)mmap(NULL, enclyser_buffer->size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_PRIVATE | MAP_POPULATE, -1, 0);
+    enclyser_buffer->buffer = (uint8_t *)mmap(NULL, enclyser_buffer->size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_SHARED | MAP_POPULATE, -1, 0);
     enclyser_buffer->shadow = (uint8_t *)remap_page_table_level(enclyser_buffer->buffer, PAGE);
     ASSERT(enclyser_buffer->buffer != MAP_FAILED);
 }
