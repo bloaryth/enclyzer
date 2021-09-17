@@ -19,6 +19,15 @@ extern "C" {
  */
 void ecall_grooming(int filling_sequence, enclyser_buffer_t *filling_buffer, int clearing_sequence, enclyser_buffer_t *clearing_buffer, enclyser_buffer_t *faulting_buffer);
 
+/**
+ * @brief Invokes OCALL to display the enclave buffer to the terminal.
+ * 
+ * @param fmt the format string to written to stdout
+ * @param ... a list of values to be used to replace a format specifier in the format string
+ * @return int On success, the total number of characters written is returned.
+ */
+int printf(const char* fmt, ...);
+
 #ifdef __cplusplus
 }
 #endif

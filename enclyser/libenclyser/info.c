@@ -14,17 +14,6 @@
  */
 #ifdef NAMESPACE_SGX_YES
 
-int printf(const char* fmt, ...)
-{
-    char buf[PRINTF_BUF_SIZE] = { '\0' };
-    va_list ap;
-    va_start(ap, fmt);
-    vsnprintf(buf, PRINTF_BUF_SIZE, fmt, ap);
-    va_end(ap);
-    ocall_print_string(buf);
-    return (int)strnlen(buf, PRINTF_BUF_SIZE - 1) + 1;
-}
-
 #endif
 
 /**

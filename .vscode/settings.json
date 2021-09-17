@@ -49,7 +49,9 @@
         "attack.h": "c",
         "*.tcc": "c",
         "info.h": "c",
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "enclave.h": "c",
+        "enclave_u.h": "c"
     },
     "C_Cpp.errorSquiggles": "Enabled"
 }

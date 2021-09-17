@@ -45,24 +45,6 @@ extern "C" {
  */
 #ifdef NAMESPACE_SGX_YES
 
-/**
- * @brief the define that limit the maximun length of an print string
- * 
- */
-#define PRINTF_BUF_SIZE 256
-
-#include <stdarg.h>
-#include <string.h>
-
-/**
- * @brief Invokes OCALL to display the enclave buffer to the terminal.
- * 
- * @param fmt the format string to written to stdout
- * @param ... a list of values to be used to replace a format specifier in the format string
- * @return int On success, the total number of characters written is returned.
- */
-int printf(const char* fmt, ...);
-
 #endif
 
 /**
