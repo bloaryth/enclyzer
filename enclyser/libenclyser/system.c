@@ -78,4 +78,9 @@ void execute_command(char *command)
     pclose(fp); /* close */
 }
 
+void get_system_info(enclyser_sysinfo_t *sysinfo)
+{
+    
+}
+
 #endif

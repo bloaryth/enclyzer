@@ -91,6 +91,13 @@ void native_rdmsr(uint32_t *eax, uint32_t *ecx, uint32_t *edx);
  */
 void execute_command(char *command);
 
+/**
+ * @brief Get the system info of the current platform.
+ * 
+ * @param sysinfo a struct that describes the system
+ */
+void get_system_info(enclyser_sysinfo_t *sysinfo);
+
 #endif
 
 #ifdef __cplusplus

@@ -170,6 +170,14 @@ typedef struct {
  */
 #ifdef NAMESPACE_SGX_NO
 
+/**
+ * @brief the struct used to describe the system info on the current platform
+ * 
+ */
+typedef struct {
+
+} enclyser_sysinfo_t;
+
 #endif
 
 #ifdef __cplusplus
