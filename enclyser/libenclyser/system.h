@@ -31,8 +31,9 @@ extern "C" {
  */
 #ifdef NAMESPACE_SGX_NO
 
-#include <fcntl.h> // open function
-#include <unistd.h> // close function
+#include <string.h>     /** strcpy() */
+#include <fcntl.h>      /** open() */
+#include <unistd.h>     /** close() */
 #include <sys/ioctl.h>
 
 #include "kenclyser/kenclyser_ioctl.h"
@@ -97,6 +98,13 @@ void execute_command(char *command);
  * @param sysinfo a struct that describes the system
  */
 void get_system_info(enclyser_sysinfo_t *sysinfo);
+
+/**
+ * @brief Print the system information that is related to the project.
+ * 
+ * @param sysinfo a struct that describes the system
+ */
+void print_system_info(enclyser_sysinfo_t *sysinfo);
 
 #endif
 

@@ -171,11 +171,70 @@ typedef struct {
 #ifdef NAMESPACE_SGX_NO
 
 /**
+ * @brief A bunch of useful msrs.
+ * 
+ */
+typedef struct {
+    int ibrs;               /** IA32_SPEC_CTRL[0] */
+    int stibp;              /** IA32_SPEC_CTRL[1] */
+    int ssbd;               /** IA32_SPEC_CTRL[2] */
+} enclyser_ia32_spec_ctrl_msr;
+
+typedef struct {
+    int rdcl_no;            /** IA32_ARCH_CAPABILITIES[0] */
+    int ibrs_all;           /** IA32_ARCH_CAPABILITIES[1] */
+    int rsba;               /** IA32_ARCH_CAPABILITIES[2] */
+    int skip_l1dfl_vmentry; /** IA32_ARCH_CAPABILITIES[3] */
+    int ssb_no;             /** IA32_ARCH_CAPABILITIES[4] */
+    int mds_no;             /** IA32_ARCH_CAPABILITIES[5] */
+    int if_pschange_mc_no;  /** IA32_ARCH_CAPABILITIES[6] */
+    int tsx_ctrl;           /** IA32_ARCH_CAPABILITIES[7] */
+    int taa_no;             /** IA32_ARCH_CAPABILITIES[8] */
+} enclyser_ia32_arch_capabilities_msr;
+
+typedef struct {
+    int rtm_force_abort;    /** TSX_FORCE_ABORT[0] */
+    int tsx_cpuid_clear;    /** TSX_FORCE_ABORT[1] */
+    int sdv_enable_rtm;     /** TSX_FORCE_ABORT[2] */
+} enclyser_tsx_force_abort_msr;
+
+typedef struct {
+    int rtm_disable;        /** IA32_TSX_CTRL[0] */
+    int tsx_cpuid_clear;    /** IA32_TSX_CTRL[1] */
+} enclyser_ia32_tsx_ctrl_msr;
+
+typedef struct {
+    int rngds_mitg_dis;     /** IA32_MCU_OPT_CTRL[0] */
+} enclyser_ia32_mcu_opt_ctrl_msr;
+
+/**
  * @brief the struct used to describe the system info on the current platform
  * 
  */
 typedef struct {
-
+    int sse2;                   /** CPUID.(EAX=01H,ECX=0H):EDX[26] */
+    int avx;                    /** CPUID.(EAX=01H,ECX=0H):ECX[28] */
+    int hle;                    /** CPUID.(EAX=07H,ECX=0H):EBX[4] */
+    int rtm;                    /** CPUID.(EAX=07H,ECX=0H):EBX[11] */
+    int avx512dq;               /** CPUID.(EAX=07H,ECX=0H):EBX[17] */
+    int srbds_ctrl;             /** CPUID.(EAX=07H,ECX=0H):EDX[9] */
+    int md_clear;               /** CPUID.(EAX=07H,ECX=0H):EDX[10] */
+    int rtm_always_abort;       /** CPUID.(EAX=07H,ECX=0H):EDX[11] */
+    int tsx_force_abort;        /** CPUID.(EAX=07H,ECX=0H):EDX[13] */
+    int ibrs_ibpb;              /** CPUID.(EAX=07H,ECX=0H):EDX[26] */
+    int stibp;                  /** CPUID.(EAX=07H,ECX=0H):EDX[27] */
+    int l1d_flush;              /** CPUID.(EAX=07H,ECX=0H):EDX[28] */
+    int ia32_arch_capabilities; /** CPUID.(EAX=07H,ECX=0H):EDX[29] */
+    int ssbd;                   /** CPUID.(EAX=07H,ECX=0H):EDX[31] */
+    enclyser_ia32_spec_ctrl_msr ia32_spec_ctrl_msr;                     /** RDMSR.(ECX=0x48):EAX */
+    enclyser_ia32_arch_capabilities_msr ia32_arch_capabilities_msr;     /** RDMSR.(ECX=0x10a):EAX */
+    enclyser_tsx_force_abort_msr tsx_force_abort_msr;                   /** RDMSR.(ECX=0x10f):EAX */
+    enclyser_ia32_tsx_ctrl_msr ia32_tsx_ctrl_msr;                       /** RDMSR.(ECX=0x122):EAX */
+    enclyser_ia32_mcu_opt_ctrl_msr ia32_mcu_opt_ctrl_msr;               /** RDMSR.(ECX=0x123):EAX */
+    char model_name[64];        /** cat /proc/cpuinfo | grep 'model name' -m 1 | sed 's/model name\t: //' */
+    char microcode_version[64]; /** cat /proc/cpuinfo | grep microcode -m 1 | awk '{print $3;}' */
+    int nr_logical_cores;       /** grep -c ^processor /proc/cpuinfo */
+    int nr_cores;               /** grep 'cpu cores' /proc/cpuinfo -m 1 | awk '{print $4}' */
 } enclyser_sysinfo_t;
 
 #endif

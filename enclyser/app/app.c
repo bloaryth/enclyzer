@@ -61,6 +61,8 @@ enclyser_buffer_t app_printing_buffer = {
     .mem_type = DEFAULT_BUFFER_MEM_TYPE,
     .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
+enclyser_sysinfo_t app_sysinfo = {};
+
 int sigsegv_signal;
 
 void sigsegv_handler(int signal)
@@ -83,6 +85,8 @@ void sigsegv_handler(int signal)
  */
 static void construct_app_environment()
 {
+    get_system_info(&app_sysinfo);
+
     ret = sgx_create_enclave(ENCLAVE_FILENAME, SGX_DEBUG_FLAG, &token, &updated, &global_eid, NULL);
     ASSERT(ret == SGX_SUCCESS);
 
@@ -128,143 +132,12 @@ static void desctruct_app_environment()
 
 #pragma region _system
 
-/**
- * @brief Print the system information that is related to the project.
- * 
- */
-static void print_system_info()
-{
-    uint32_t eax, ebx, ecx, edx;
-
-    eax = 7;
-    ecx = 0;
-
-    native_cpuid(&eax, &ebx, &ecx, &edx);
-
-    cr_log_info("HLE: %d", (ebx >> 4) & 0x1);
-    cr_log_info("RTM: %d", (ebx >> 11) & 0x1);
-    cr_log_info("RTM_ALWAYS_ABORT: %d", (edx >> 11) & 0x1);
-    cr_log_info("TSX_FORCE_ABORT: %d", (edx >> 13) & 0x1);
-
-    if ((edx >> 13) & 0x1) /** TSX_FORCE_ABORT MSR */
-    {
-        uint32_t eax, ecx, edx;
-        ecx = 0x10f;
-
-        native_rdmsr(&eax, &ecx, &edx);
-
-        cr_log_info("TSX_FORCE_ABORT MSR");
-        cr_log_info("    RTM_FORCE_ABORT: %d", (eax >> 0) & 0x1);
-        cr_log_info("    TSX_CPUID_CLEAR: %d", (eax >> 1) & 0x1);
-        cr_log_info("    SDV_ENABLE_RTM: %d", (eax >> 2) & 0x1);
-    }
-
-    cr_log_info("SRBDS_CTRL: %d", (edx >> 9) & 0x1);
-    cr_log_info("MD_CLEAR: %d", (edx >> 10) & 0x1);
-    cr_log_info("IBRS & IBPB: %d", (edx >> 26) & 0x1);
-    cr_log_info("STIBP: %d", (edx >> 27) & 0x1);
-    cr_log_info("L1D_FLUSH: %d", (edx >> 28) & 0x1);
-    cr_log_info("IA32_ARCH_CAPABILITIES: %d", (edx >> 29) & 0x1);
-    cr_log_info("SSBD: %d", (edx >> 31) & 0x1);
-
-    if ((edx >> 29) & 0x1) /** IA32_ARCH_CAPABILITIES MSR */
-    {
-        uint32_t eax, ecx, edx;
-        ecx = 0x10a;
-
-        native_rdmsr(&eax, &ecx, &edx);
-
-        cr_log_info("IA32_ARCH_CAPABILITIES MSR");
-        cr_log_info("    RDCL_NO: %d", (eax >> 0) & 0x1);
-        cr_log_info("    IBRS_ALL: %d", (eax >> 1) & 0x1);
-        cr_log_info("    RSBA: %d", (eax >> 2) & 0x1);
-        cr_log_info("    SKIP_L1DFL_VMENTRY: %d", (eax >> 3) & 0x1);
-        cr_log_info("    SSB_NO: %d", (eax >> 4) & 0x1);
-        cr_log_info("    MDS_NO: %d", (eax >> 5) & 0x1);
-        cr_log_info("    IF_PSCHANGE_MC_NO: %d", (eax >> 6) & 0x1);
-        cr_log_info("    TSX_CTRL: %d", (eax >> 7) & 0x1);
-        cr_log_info("    TAA_NO: %d", (eax >> 8) & 0x1);
-
-        if ((eax >> 7) & 0x1) /** IA32_TSX_CTRL MSR */
-        {
-            uint32_t eax, ecx, edx;
-            ecx = 0x10a;
-
-            native_rdmsr(&eax, &ecx, &edx);
-
-            cr_log_info("IA32_TSX_CTRL MSR");
-            cr_log_info("    RTM_DISABLE: %d", (eax >> 0) & 0x1);
-            cr_log_info("    TSX_CPUID_CLEAR: %d", (eax >> 1) & 0x1);
-        }
-    }
-    if (((edx >> 26) & 0x1) | ((edx >> 27) & 0x1) | ((edx >> 31) & 0x1)) /** IA32_SPEC_CTRL MSR */
-    {
-        uint32_t eax, ecx, edx;
-        ecx = 0x48;
-
-        native_rdmsr(&eax, &ecx, &edx);
-
-        cr_log_info("IA32_SPEC_CTRL MSR");
-        cr_log_info("    IBRS: %d", (eax >> 0) & 0x1);
-        cr_log_info("    STIBP: %d", (eax >> 1) & 0x1);
-        cr_log_info("    SSBD: %d", (eax >> 2) & 0x1);
-    }
-
-    // if ((edx >> 26) & 0x1)  /** IA32_PRED_CMD MSR */
-    // {
-    //     uint32_t eax, ecx, edx;
-    //     ecx = 0x49;
-
-    //     native_rdmsr(&eax, &ecx, &edx);
-
-    //     cr_log_info("IA32_PRED_CMD MSR");
-    //     if ((edx >> 26) & 0x1)
-    //         cr_log_info("    IBPB: %d", (eax >> 0) & 0x1);
-    // }
-
-    if ((edx >> 9) & 0x1) /** IA32_MCU_OPT_CTRL MSR */
-    {
-        uint32_t eax, ecx, edx;
-        ecx = 0x123;
-
-        native_rdmsr(&eax, &ecx, &edx);
-
-        cr_log_info("IA32_MCU_OPT_CTRL MSR");
-        if ((edx >> 9) & 0x1)
-            cr_log_info("    RNGDS_MITG_DIS: %d", (eax >> 0) & 0x1);
-    }
-
-    eax = 1;
-    ecx = 0;
-
-    native_cpuid(&eax, &ebx, &ecx, &edx);
-
-    cr_log_info("SSE2: %d", (edx >> 26) & 0x1);
-    cr_log_info("AVX: %d", (ecx >> 28) & 0x1);
-
-    eax = 7;
-    ecx = 0;
-
-    native_cpuid(&eax, &ebx, &ecx, &edx);
-
-    cr_log_info("AVX512DQ: %d", (ebx >> 17) & 0x1);
-}
-
-Test(_system, print_system_info, .disabled = true)
+Test(_system, print_system_info, .disabled = false)
 {
     open_system_file();
 
-    execute_command("cat /proc/cpuinfo | grep 'model name' -m 1 | sed 's/model name\t: //'");
-    cr_log_info("cpu model name: %s", command_output);
-    execute_command("cat /proc/cpuinfo | grep microcode -m 1 | awk '{print $3;}'");
-    cr_log_info("microcode version: %s", command_output);
-
-    execute_command("grep -c ^processor /proc/cpuinfo");
-    cr_log_info("number of logical cores: %s", command_output);
-    execute_command("grep 'cpu cores' /proc/cpuinfo -m 1 | awk '{print $4}'");
-    cr_log_info("number of physical cores: %s", command_output);
-
-    print_system_info();
+    get_system_info(&app_sysinfo);
+    print_system_info(&app_sysinfo);
 
     close_system_file();
 }
@@ -343,12 +216,10 @@ Test(taa, taa_same_thread_is_effective, .disabled = true)
  */
 static int test_core_taa_cross_thread_is_effective()
 {
-
 }
 
 Test(taa, taa_cross_thread_is_effective, .disabled = true)
 {
-
 }
 
 /**
@@ -358,12 +229,10 @@ Test(taa, taa_cross_thread_is_effective, .disabled = true)
  */
 static int test_core_taa_cross_core_is_effective()
 {
-
 }
 
 Test(taa, taa_cross_core_is_effective, .disabled = true)
 {
-
 }
 
 /**
@@ -434,27 +303,10 @@ Test(taa, taa_eexit_same_thread_is_effective, .disabled = true)
  */
 static int test_core_taa_eexit_cross_thread_is_effective()
 {
-
 }
 
 Test(taa, taa_eexit_cross_thread_is_effective, .disabled = true)
 {
-
-}
-
-/**
- * @brief Test if taa_eexit_cross_thread is effective with a successful rate above 75% for at least 75% offset.
- * 
- * @return int 0 if passed, -1 if failed.
- */
-static int test_core_taa_eexit_cross_thread_is_effective()
-{
-
-}
-
-Test(taa, taa_eexit_cross_thread_is_effective, .disabled = true)
-{
-
 }
 
 /**
@@ -464,12 +316,10 @@ Test(taa, taa_eexit_cross_thread_is_effective, .disabled = true)
  */
 static int test_core_taa_eexit_cross_core_is_effective()
 {
-
 }
 
 Test(taa, taa_eexit_cross_core_is_effective, .disabled = true)
 {
-
 }
 
 /**
@@ -539,12 +389,10 @@ Test(taa, taa_aex_same_thread_is_effective, .disabled = true)
  */
 static int test_core_taa_aex_cross_thread_is_effective()
 {
-
 }
 
 Test(taa, taa_aex_cross_thread_is_effective, .disabled = true)
 {
-
 }
 
 /**
@@ -554,12 +402,10 @@ Test(taa, taa_aex_cross_thread_is_effective, .disabled = true)
  */
 static int test_core_taa_aex_cross_core_is_effective()
 {
-
 }
 
 Test(taa, taa_aex_cross_core_is_effective, .disabled = true)
 {
-
 }
 
 #pragma endregion
@@ -638,12 +484,10 @@ Test(mds, mds_same_thread_is_effective)
  */
 static int test_core_mds_corss_thread_is_effective()
 {
-
 }
 
 Test(mds, mds_corss_thread_is_effective)
 {
-
 }
 
 /**
@@ -653,12 +497,10 @@ Test(mds, mds_corss_thread_is_effective)
  */
 static int test_core_mds_corss_core_is_effective()
 {
-
 }
 
 Test(mds, mds_corss_core_is_effective)
 {
-
 }
 
 /**
@@ -731,12 +573,10 @@ Test(mds, mds_eexit_same_thread_is_effective, .disabled = true)
  */
 static int test_core_mds_eexit_corss_thread_is_effective()
 {
-
 }
 
 Test(mds, mds_eexit_corss_thread_is_effective)
 {
-
 }
 
 /**
@@ -746,12 +586,10 @@ Test(mds, mds_eexit_corss_thread_is_effective)
  */
 static int test_core_mds_eexit_corss_core_is_effective()
 {
-
 }
 
 Test(mds, mds_eexit_corss_core_is_effective)
 {
-
 }
 
 /**
@@ -823,12 +661,10 @@ Test(mds, mds_aex_same_thread_is_effective, .disabled = true)
  */
 static int test_core_mds_aex_corss_thread_is_effective()
 {
-
 }
 
 Test(mds, mds_aex_corss_thread_is_effective)
 {
-
 }
 
 /**
@@ -838,12 +674,10 @@ Test(mds, mds_aex_corss_thread_is_effective)
  */
 static int test_core_mds_aex_corss_core_is_effective()
 {
-
 }
 
 Test(mds, mds_aex_corss_core_is_effective)
 {
-
 }
 
 #pragma endregion
