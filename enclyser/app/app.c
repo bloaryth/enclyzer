@@ -81,8 +81,6 @@ void sigsegv_handler(int signal)
     sigsegv_signal = 0;
 }
 
-pthread_barrier_t barrier_1;
-
 /**
  * @brief A helpher function that sets up the runnning environment.
  * 
@@ -215,11 +213,15 @@ Test(taa, taa_same_thread_is_effective, .disabled = true)
     cr_expect(test_core_taa_same_thread_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
-void *test_core_taa_cross_thread_is_effective_victim_thread(void *arg)
+/**
+ * @brief 
+ * 
+ * @param arg data passed to the thread function
+ * @return void* always return NULL
+ */
+static void *test_core_taa_cross_thread_is_effective_victim_thread(void *arg)
 {
     int i;
-
-    pthread_barrier_wait(&barrier_1);
 
     for (i = 0; i < REPETITION_TIME * 100; i++)
     {
@@ -229,11 +231,15 @@ void *test_core_taa_cross_thread_is_effective_victim_thread(void *arg)
     return NULL;
 }
 
-void *test_core_taa_cross_thread_is_effective_adversary_thread(void *arg)
+/**
+ * @brief 
+ * 
+ * @param arg data passed to the thread function
+ * @return void* always return NULL
+ */
+static void *test_core_taa_cross_thread_is_effective_adversary_thread(void *arg)
 {
     int i;
-
-    pthread_barrier_wait(&barrier_1);
 
     for (i = 0; i < REPETITION_TIME; i++)
     {
@@ -246,7 +252,7 @@ void *test_core_taa_cross_thread_is_effective_adversary_thread(void *arg)
 }
 
 /**
- * @brief Test if taa_cross_thread is effective with a successful rate above 2% for at least 75% offset.
+ * @brief Test if taa_cross_thread is effective with a successful rate above or equal to 2% for at least 75% offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
@@ -265,8 +271,6 @@ static int test_core_taa_cross_thread_is_effective()
     CPU_SET(victim_core, &victim_cpuset);
     CPU_SET(adversary_core, &adversary_cpuset);
 
-    pthread_barrier_init(&barrier_1, NULL, 3);
-
     allowance = 16;
     for (offset = 0; offset < 64; offset++)
     {
@@ -278,15 +282,13 @@ static int test_core_taa_cross_thread_is_effective()
         ASSERT(!pthread_setaffinity_np(victim_thread, sizeof(cpu_set_t), &victim_cpuset));
         ASSERT(!pthread_setaffinity_np(adversary_thread, sizeof(cpu_set_t), &adversary_cpuset));
 
-        pthread_barrier_wait(&barrier_1);
-
         pthread_join(adversary_thread, NULL);
         pthread_join(victim_thread, NULL);
 
-        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] > 2 || allowance--))
+        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 2 || allowance--))
         {
-            INFO("offset: 0x%x", offset);
-            print(&app_printing_buffer, 0);
+            // INFO("offset: 0x%x", offset);
+            // print(&app_printing_buffer, 0);
             return -1;
         }
         reset(&app_printing_buffer);

@@ -211,7 +211,7 @@ endif
 
 run: all
 ifneq ($(build_mode), HW_RELEASE)
-	@-$(CURDIR)/$(APP_NAME) $(ADDITIONAL_APP_RUN_FLAGS) #> $(APP_NAME).txt 2>&1
+	@-$(CURDIR)/$(APP_NAME) $(ADDITIONAL_APP_RUN_FLAGS) > $(APP_NAME).txt 2>&1
 	@sed -i -r "s/\x1B\[(([0-9]{1,2})?(;)?([0-9]{1,2})?)?[m,K,H,f,J]//g" $(APP_NAME).txt
 	@echo "RUN  =>  $(APP_NAME) [$(SGX_MODE)|$(SGX_ARCH), OK]"
 endif
