@@ -181,7 +181,7 @@ static int test_core_taa_same_thread_is_effective()
     return 0;
 }
 
-Test(taa, taa_same_thread_is_effective, .disabled = true)
+Test(taa, taa_same_thread_is_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_TAA;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -338,7 +338,7 @@ Test(taa, taa_cross_thread_is_effective, .disabled = false)
 // {
 // }
 
-// Test(taa, taa_cross_core_is_effective, .disabled = true)
+// Test(taa, taa_cross_core_is_effective, .disabled = false)
 // {
 // }
 
@@ -371,7 +371,7 @@ static int test_core_taa_eexit_same_thread_is_effective()
     return 0;
 }
 
-Test(taa, taa_eexit_same_thread_is_effective, .disabled = true)
+Test(taa, taa_eexit_same_thread_is_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_TAA;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -412,7 +412,7 @@ Test(taa, taa_eexit_same_thread_is_effective, .disabled = true)
 // {
 // }
 
-// Test(taa, taa_eexit_cross_thread_is_effective, .disabled = true)
+// Test(taa, taa_eexit_cross_thread_is_effective, .disabled = false)
 // {
 // }
 
@@ -425,7 +425,7 @@ Test(taa, taa_eexit_same_thread_is_effective, .disabled = true)
 // {
 // }
 
-// Test(taa, taa_eexit_cross_core_is_effective, .disabled = true)
+// Test(taa, taa_eexit_cross_core_is_effective, .disabled = false)
 // {
 // }
 
@@ -457,7 +457,7 @@ static int test_core_taa_aex_same_thread_is_effective()
     return 0;
 }
 
-Test(taa, taa_aex_same_thread_is_effective, .disabled = true)
+Test(taa, taa_aex_same_thread_is_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_TAA;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -498,7 +498,7 @@ Test(taa, taa_aex_same_thread_is_effective, .disabled = true)
 // {
 // }
 
-// Test(taa, taa_aex_cross_thread_is_effective, .disabled = true)
+// Test(taa, taa_aex_cross_thread_is_effective, .disabled = false)
 // {
 // }
 
@@ -511,7 +511,7 @@ Test(taa, taa_aex_same_thread_is_effective, .disabled = true)
 // {
 // }
 
-// Test(taa, taa_aex_cross_core_is_effective, .disabled = true)
+// Test(taa, taa_aex_cross_core_is_effective, .disabled = false)
 // {
 // }
 
@@ -550,7 +550,7 @@ static int test_core_mds_same_thread_is_effective()
     return 0;
 }
 
-Test(mds, mds_same_thread_is_effective, .disabled = true)
+Test(mds, mds_same_thread_is_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_MDS;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -593,7 +593,7 @@ Test(mds, mds_same_thread_is_effective, .disabled = true)
 // {
 // }
 
-// Test(mds, mds_corss_thread_is_effective, .disabled = true)
+// Test(mds, mds_corss_thread_is_effective, .disabled = false)
 // {
 // }
 
@@ -606,7 +606,7 @@ Test(mds, mds_same_thread_is_effective, .disabled = true)
 // {
 // }
 
-// Test(mds, mds_corss_core_is_effective, .disabled = true)
+// Test(mds, mds_corss_core_is_effective, .disabled = false)
 // {
 // }
 
@@ -639,7 +639,7 @@ static int test_core_mds_eexit_same_thread_is_effective()
     return 0;
 }
 
-Test(mds, mds_eexit_same_thread_is_effective, .disabled = true)
+Test(mds, mds_eexit_same_thread_is_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_TAA;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -682,7 +682,7 @@ Test(mds, mds_eexit_same_thread_is_effective, .disabled = true)
 // {
 // }
 
-// Test(mds, mds_eexit_corss_thread_is_effective, .disabled = true)
+// Test(mds, mds_eexit_corss_thread_is_effective, .disabled = false)
 // {
 // }
 
@@ -695,7 +695,7 @@ Test(mds, mds_eexit_same_thread_is_effective, .disabled = true)
 // {
 // }
 
-// Test(mds, mds_eexit_corss_core_is_effective, .disabled = true)
+// Test(mds, mds_eexit_corss_core_is_effective, .disabled = false)
 // {
 // }
 
@@ -727,7 +727,7 @@ static int test_core_mds_aex_same_thread_is_effective()
     return 0;
 }
 
-Test(mds, mds_aex_same_thread_is_effective, .disabled = true)
+Test(mds, mds_aex_same_thread_is_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_TAA;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -770,7 +770,7 @@ Test(mds, mds_aex_same_thread_is_effective, .disabled = true)
 // {
 // }
 
-// Test(mds, mds_aex_corss_thread_is_effective, .disabled = true)
+// Test(mds, mds_aex_corss_thread_is_effective, .disabled = false)
 // {
 // }
 
@@ -783,7 +783,7 @@ Test(mds, mds_aex_same_thread_is_effective, .disabled = true)
 // {
 // }
 
-// Test(mds, mds_aex_corss_core_is_effective, .disabled = true)
+// Test(mds, mds_aex_corss_core_is_effective, .disabled = false)
 // {
 // }
 
@@ -823,7 +823,7 @@ static int test_core_verw_against_taa_same_thread_is_effective()
     return 0;
 }
 
-Test(verw, verw_against_taa_same_thread_is_effective, .disabled = true)
+Test(verw, verw_against_taa_same_thread_is_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_TAA;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -887,7 +887,7 @@ static int test_core_verw_against_mds_same_thread_is_effective()
     return 0;
 }
 
-Test(verw, verw_against_mds_same_thread_is_effective, .disabled = true)
+Test(verw, verw_against_mds_same_thread_is_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_MDS;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;

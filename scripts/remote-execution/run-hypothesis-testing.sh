@@ -8,7 +8,8 @@ exit 1
 fi
 
 for SSH_TARGET in "${SSH_TARGET_ARR[@]}"; do
+    mkdir -p ~/Documents/enclyser-results
     ssh $SSH_TARGET 'cd enclyser; git pull;'
     echo $PASSWORD | ssh $SSH_TARGET -tt 'sudo make -C enclyser/enclyser clean all run'
-    scp $SSH_TARGET:enclyser/enclyser/sgx_app.txt $SSH_TARGET.txt
+    scp $SSH_TARGET:enclyser/enclyser/sgx_app.txt ~/Documents/enclyser-results/$SSH_TARGET.txt
 done
