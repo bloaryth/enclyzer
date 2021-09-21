@@ -75,6 +75,8 @@ void execute_command(char *command)
     while (fgets(command_output, sizeof(command_output), fp) != NULL)
         ; /* read the output a line at a time - output it. */
 
+    command_output[strcspn(command_output, "\n")] = 0;
+
     pclose(fp); /* close */
 }
 

@@ -1,10 +1,14 @@
 #pragma region shared
 
-#include <criterion/criterion.h>
+#define _GNU_SOURCE
 
 #include "enclyser/app/app.h"
 #include "enclyser/app/enclave_u.h"
-#include "signal.h"
+
+#include <criterion/criterion.h>
+#include <signal.h>
+#include <sched.h>
+#include <pthread.h>
 
 sgx_enclave_id_t global_eid;
 sgx_launch_token_t token;
@@ -77,6 +81,8 @@ void sigsegv_handler(int signal)
     sigsegv_signal = 0;
 }
 
+pthread_barrier_t barrier_1;
+
 /**
  * @brief A helpher function that sets up the runnning environment.
  * 
@@ -85,12 +91,12 @@ void sigsegv_handler(int signal)
  */
 static void construct_app_environment()
 {
-    get_system_info(&app_sysinfo);
-
     ret = sgx_create_enclave(ENCLAVE_FILENAME, SGX_DEBUG_FLAG, &token, &updated, &global_eid, NULL);
     ASSERT(ret == SGX_SUCCESS);
 
     open_system_file();
+
+    get_system_info(&app_sysinfo);
 
     malloc_enclyser_buffer(&app_filling_buffer);
     malloc_enclyser_buffer(&app_clearing_buffer);
@@ -146,7 +152,7 @@ Test(_system, print_system_info, .disabled = false)
 
 #pragma region taa
 
-TestSuite(taa, .init = construct_app_environment, .fini = desctruct_app_environment, .disabled = true);
+TestSuite(taa, .init = construct_app_environment, .fini = desctruct_app_environment, .disabled = false);
 
 /**
  * @brief Test if taa_same_thread is effective with a successful rate above 75% for at least 75% offset.
@@ -209,31 +215,130 @@ Test(taa, taa_same_thread_is_effective, .disabled = true)
     cr_expect(test_core_taa_same_thread_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
+void *test_core_taa_cross_thread_is_effective_victim_thread(void *arg)
+{
+    int i;
+
+    pthread_barrier_wait(&barrier_1);
+
+    for (i = 0; i < REPETITION_TIME * 100; i++)
+    {
+        fill_lfb(app_filling_sequence, &app_filling_buffer);
+    }
+
+    return NULL;
+}
+
+void *test_core_taa_cross_thread_is_effective_adversary_thread(void *arg)
+{
+    int i;
+
+    pthread_barrier_wait(&barrier_1);
+
+    for (i = 0; i < REPETITION_TIME; i++)
+    {
+        flush_enclyser_buffer(&app_encoding_buffer);
+        attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
+        reload(&app_encoding_buffer, &app_printing_buffer);
+    }
+
+    return NULL;
+}
+
 /**
- * @brief Test if taa_cross_thread is effective with a successful rate above 75% for at least 75% offset.
+ * @brief Test if taa_cross_thread is effective with a successful rate above 2% for at least 75% offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
 static int test_core_taa_cross_thread_is_effective()
 {
+    int offset, allowance;
+    int victim_core, adversary_core;
+    pthread_t victim_thread, adversary_thread;
+    cpu_set_t victim_cpuset, adversary_cpuset;
+
+    victim_core = 0;
+    adversary_core = victim_core + app_sysinfo.nr_cores;
+
+    CPU_ZERO(&victim_cpuset);
+    CPU_ZERO(&adversary_cpuset);
+    CPU_SET(victim_core, &victim_cpuset);
+    CPU_SET(adversary_core, &adversary_cpuset);
+
+    pthread_barrier_init(&barrier_1, NULL, 3);
+
+    allowance = 16;
+    for (offset = 0; offset < 64; offset++)
+    {
+        app_attack_spec.offset = offset;
+
+        ASSERT(!pthread_create(&victim_thread, NULL, test_core_taa_cross_thread_is_effective_victim_thread, NULL));
+        ASSERT(!pthread_create(&adversary_thread, NULL, test_core_taa_cross_thread_is_effective_adversary_thread, NULL));
+
+        ASSERT(!pthread_setaffinity_np(victim_thread, sizeof(cpu_set_t), &victim_cpuset));
+        ASSERT(!pthread_setaffinity_np(adversary_thread, sizeof(cpu_set_t), &adversary_cpuset));
+
+        pthread_barrier_wait(&barrier_1);
+
+        pthread_join(adversary_thread, NULL);
+        pthread_join(victim_thread, NULL);
+
+        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] > 2 || allowance--))
+        {
+            INFO("offset: 0x%x", offset);
+            print(&app_printing_buffer, 0);
+            return -1;
+        }
+        reset(&app_printing_buffer);
+    }
+    return 0;
+    
 }
 
-Test(taa, taa_cross_thread_is_effective, .disabled = true)
+Test(taa, taa_cross_thread_is_effective, .disabled = false)
 {
+    app_attack_spec.major = ATTACK_MAJOR_TAA;
+    app_attack_spec.minor = ATTACK_MINOR_STABLE;
+
+    app_filling_buffer.value = 0x1;
+    app_filling_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
+    assign_enclyser_buffer(&app_filling_buffer);
+
+    app_attaking_buffer.value = 0xff; // IMPORTANT: MUST BE NON-ZERO VALUE
+    app_attaking_buffer.order = BUFFER_ORDER_CONSTANT;
+    assign_enclyser_buffer(&app_attaking_buffer);
+
+    app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
+    cr_expect(test_core_taa_cross_thread_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+
+    app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
+    cr_expect(test_core_taa_cross_thread_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+
+    app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
+    cr_expect(test_core_taa_cross_thread_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+
+    app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
+    cr_expect(test_core_taa_cross_thread_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+
+    app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
+    cr_expect(test_core_taa_cross_thread_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+
+    app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
+    cr_expect(test_core_taa_cross_thread_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
-/**
- * @brief Test if taa_cross_core is effective with a successful rate above 75% for at least 75% offset.
- * 
- * @return int 0 if passed, -1 if failed.
- */
-static int test_core_taa_cross_core_is_effective()
-{
-}
+// /**
+//  * @brief Test if taa_cross_core is effective with a successful rate above 75% for at least 75% offset.
+//  * 
+//  * @return int 0 if passed, -1 if failed.
+//  */
+// static int test_core_taa_cross_core_is_effective()
+// {
+// }
 
-Test(taa, taa_cross_core_is_effective, .disabled = true)
-{
-}
+// Test(taa, taa_cross_core_is_effective, .disabled = true)
+// {
+// }
 
 /**
  * @brief Test if taa_eexit_same_thread is effective with a successful rate above 75% for at least 75% offset.
@@ -296,31 +401,31 @@ Test(taa, taa_eexit_same_thread_is_effective, .disabled = true)
     cr_expect(test_core_taa_eexit_same_thread_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
-/**
- * @brief Test if taa_eexit_cross_thread is effective with a successful rate above 75% for at least 75% offset.
- * 
- * @return int 0 if passed, -1 if failed.
- */
-static int test_core_taa_eexit_cross_thread_is_effective()
-{
-}
+// /**
+//  * @brief Test if taa_eexit_cross_thread is effective with a successful rate above 75% for at least 75% offset.
+//  * 
+//  * @return int 0 if passed, -1 if failed.
+//  */
+// static int test_core_taa_eexit_cross_thread_is_effective()
+// {
+// }
 
-Test(taa, taa_eexit_cross_thread_is_effective, .disabled = true)
-{
-}
+// Test(taa, taa_eexit_cross_thread_is_effective, .disabled = true)
+// {
+// }
 
-/**
- * @brief Test if taa_eexit_cross_core is effective with a successful rate above 75% for at least 75% offset.
- * 
- * @return int 0 if passed, -1 if failed.
- */
-static int test_core_taa_eexit_cross_core_is_effective()
-{
-}
+// /**
+//  * @brief Test if taa_eexit_cross_core is effective with a successful rate above 75% for at least 75% offset.
+//  * 
+//  * @return int 0 if passed, -1 if failed.
+//  */
+// static int test_core_taa_eexit_cross_core_is_effective()
+// {
+// }
 
-Test(taa, taa_eexit_cross_core_is_effective, .disabled = true)
-{
-}
+// Test(taa, taa_eexit_cross_core_is_effective, .disabled = true)
+// {
+// }
 
 /**
  * @brief Test if taa_aex_same_thread is effective with a successful rate above 75% for at least 75% offset.
@@ -382,37 +487,37 @@ Test(taa, taa_aex_same_thread_is_effective, .disabled = true)
     cr_expect(test_core_taa_aex_same_thread_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
-/**
- * @brief Test if taa_aex_cross_thread is effective with a successful rate above 75% for at least 75% offset.
- * 
- * @return int 0 if passed, -1 if failed.
- */
-static int test_core_taa_aex_cross_thread_is_effective()
-{
-}
+// /**
+//  * @brief Test if taa_aex_cross_thread is effective with a successful rate above 75% for at least 75% offset.
+//  * 
+//  * @return int 0 if passed, -1 if failed.
+//  */
+// static int test_core_taa_aex_cross_thread_is_effective()
+// {
+// }
 
-Test(taa, taa_aex_cross_thread_is_effective, .disabled = true)
-{
-}
+// Test(taa, taa_aex_cross_thread_is_effective, .disabled = true)
+// {
+// }
 
-/**
- * @brief Test if taa_aex_cross_core is effective with a successful rate above 75% for at least 75% offset.
- * 
- * @return int 0 if passed, -1 if failed.
- */
-static int test_core_taa_aex_cross_core_is_effective()
-{
-}
+// /**
+//  * @brief Test if taa_aex_cross_core is effective with a successful rate above 75% for at least 75% offset.
+//  * 
+//  * @return int 0 if passed, -1 if failed.
+//  */
+// static int test_core_taa_aex_cross_core_is_effective()
+// {
+// }
 
-Test(taa, taa_aex_cross_core_is_effective, .disabled = true)
-{
-}
+// Test(taa, taa_aex_cross_core_is_effective, .disabled = true)
+// {
+// }
 
 #pragma endregion
 
 #pragma region msd
 
-TestSuite(mds, .init = construct_app_environment, .fini = desctruct_app_environment, .disabled = true);
+TestSuite(mds, .init = construct_app_environment, .fini = desctruct_app_environment, .disabled = false);
 
 /**
  * @brief Test if mds_same_thread is effective with a successful rate above 50% for at least 50% offset.
@@ -443,7 +548,7 @@ static int test_core_mds_same_thread_is_effective()
     return 0;
 }
 
-Test(mds, mds_same_thread_is_effective)
+Test(mds, mds_same_thread_is_effective, .disabled = true)
 {
     app_attack_spec.major = ATTACK_MAJOR_MDS;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -477,31 +582,31 @@ Test(mds, mds_same_thread_is_effective)
     cr_expect(test_core_mds_same_thread_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
-/**
- * @brief Test if mds_corss_thread is effective with a successful rate above 50% for at least 50% offset.
- * 
- * @return int 0 if passed, -1 if failed.
- */
-static int test_core_mds_corss_thread_is_effective()
-{
-}
+// /**
+//  * @brief Test if mds_corss_thread is effective with a successful rate above 50% for at least 50% offset.
+//  * 
+//  * @return int 0 if passed, -1 if failed.
+//  */
+// static int test_core_mds_corss_thread_is_effective()
+// {
+// }
 
-Test(mds, mds_corss_thread_is_effective)
-{
-}
+// Test(mds, mds_corss_thread_is_effective, .disabled = true)
+// {
+// }
 
-/**
- * @brief Test if mds_corss_core is effective with a successful rate above 50% for at least 50% offset.
- * 
- * @return int 0 if passed, -1 if failed.
- */
-static int test_core_mds_corss_core_is_effective()
-{
-}
+// /**
+//  * @brief Test if mds_corss_core is effective with a successful rate above 50% for at least 50% offset.
+//  * 
+//  * @return int 0 if passed, -1 if failed.
+//  */
+// static int test_core_mds_corss_core_is_effective()
+// {
+// }
 
-Test(mds, mds_corss_core_is_effective)
-{
-}
+// Test(mds, mds_corss_core_is_effective, .disabled = true)
+// {
+// }
 
 /**
  * @brief Test if mds_eexit_same_thread is effective with a successful rate above 50% for at least 50% offset.
@@ -566,31 +671,31 @@ Test(mds, mds_eexit_same_thread_is_effective, .disabled = true)
     cr_expect(test_core_mds_eexit_same_thread_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
-/**
- * @brief Test if mds_eexit_corss_thread is effective with a successful rate above 50% for at least 50% offset.
- * 
- * @return int 0 if passed, -1 if failed.
- */
-static int test_core_mds_eexit_corss_thread_is_effective()
-{
-}
+// /**
+//  * @brief Test if mds_eexit_corss_thread is effective with a successful rate above 50% for at least 50% offset.
+//  * 
+//  * @return int 0 if passed, -1 if failed.
+//  */
+// static int test_core_mds_eexit_corss_thread_is_effective()
+// {
+// }
 
-Test(mds, mds_eexit_corss_thread_is_effective)
-{
-}
+// Test(mds, mds_eexit_corss_thread_is_effective, .disabled = true)
+// {
+// }
 
-/**
- * @brief Test if mds_eexit_corss_core is effective with a successful rate above 50% for at least 50% offset.
- * 
- * @return int 0 if passed, -1 if failed.
- */
-static int test_core_mds_eexit_corss_core_is_effective()
-{
-}
+// /**
+//  * @brief Test if mds_eexit_corss_core is effective with a successful rate above 50% for at least 50% offset.
+//  * 
+//  * @return int 0 if passed, -1 if failed.
+//  */
+// static int test_core_mds_eexit_corss_core_is_effective()
+// {
+// }
 
-Test(mds, mds_eexit_corss_core_is_effective)
-{
-}
+// Test(mds, mds_eexit_corss_core_is_effective, .disabled = true)
+// {
+// }
 
 /**
  * @brief Test if mds_aex_same_thread is effective with a successful rate above 50% for at least 50% offset.
@@ -654,37 +759,37 @@ Test(mds, mds_aex_same_thread_is_effective, .disabled = true)
     cr_expect(test_core_mds_aex_same_thread_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
-/**
- * @brief Test if mds_aex_corss_thread is effective with a successful rate above 50% for at least 50% offset.
- * 
- * @return int 0 if passed, -1 if failed.
- */
-static int test_core_mds_aex_corss_thread_is_effective()
-{
-}
+// /**
+//  * @brief Test if mds_aex_corss_thread is effective with a successful rate above 50% for at least 50% offset.
+//  * 
+//  * @return int 0 if passed, -1 if failed.
+//  */
+// static int test_core_mds_aex_corss_thread_is_effective()
+// {
+// }
 
-Test(mds, mds_aex_corss_thread_is_effective)
-{
-}
+// Test(mds, mds_aex_corss_thread_is_effective, .disabled = true)
+// {
+// }
 
-/**
- * @brief Test if mds_aex_corss_core is effective with a successful rate above 50% for at least 50% offset.
- * 
- * @return int 0 if passed, -1 if failed.
- */
-static int test_core_mds_aex_corss_core_is_effective()
-{
-}
+// /**
+//  * @brief Test if mds_aex_corss_core is effective with a successful rate above 50% for at least 50% offset.
+//  * 
+//  * @return int 0 if passed, -1 if failed.
+//  */
+// static int test_core_mds_aex_corss_core_is_effective()
+// {
+// }
 
-Test(mds, mds_aex_corss_core_is_effective)
-{
-}
+// Test(mds, mds_aex_corss_core_is_effective, .disabled = true)
+// {
+// }
 
 #pragma endregion
 
 #pragma region verw
 
-TestSuite(verw, .init = construct_app_environment, .fini = desctruct_app_environment, .disabled = true);
+TestSuite(verw, .init = construct_app_environment, .fini = desctruct_app_environment, .disabled = false);
 
 /**
  * @brief Test if verw is effective against taa_same_thread with a successful rate above 90% for all offset.
@@ -780,7 +885,7 @@ static int test_core_verw_against_mds_same_thread_is_effective()
     return 0;
 }
 
-Test(verw, verw_against_mds_same_thread_is_effective)
+Test(verw, verw_against_mds_same_thread_is_effective, .disabled = true)
 {
     app_attack_spec.major = ATTACK_MAJOR_MDS;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;

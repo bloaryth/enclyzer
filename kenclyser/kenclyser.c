@@ -186,20 +186,11 @@ long kenclyser_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
 
 int pmc_open(struct inode *inode, struct file *file)
 {
-    if (target_cpu != -1)
-    {
-        err("Device is already opened");
-        return -EBUSY;
-    }
-    target_cpu = smp_processor_id();
-
     return 0;
 }
 
 int pmc_release(struct inode *inode, struct file *file)
 {
-    target_cpu = -1;
-
     return 0;
 }
 
