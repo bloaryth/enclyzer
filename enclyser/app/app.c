@@ -152,14 +152,14 @@ Test(_system, print_system_info, .disabled = false)
 
 TestSuite(taa, .init = construct_app_environment, .fini = desctruct_app_environment);
 
-#pragma region same_thread_taa_nosgx_is_effective
+#pragma region same_thread_taa_nosgx_is_10_percent_effective
 
 /**
  * @brief Test if same_thread_taa_nosgx is effective with a successful rate above or equal to 10% for at least 75% offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_same_thread_taa_nosgx_is_effective()
+static int test_core_same_thread_taa_nosgx_is_10_percent_effective()
 {
     int i, offset, allowance;
     int core;
@@ -192,7 +192,7 @@ static int test_core_same_thread_taa_nosgx_is_effective()
     return 0;
 }
 
-Test(taa, same_thread_taa_nosgx_is_effective, .disabled = false)
+Test(taa, same_thread_taa_nosgx_is_10_percent_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_TAA;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -206,34 +206,34 @@ Test(taa, same_thread_taa_nosgx_is_effective, .disabled = false)
     assign_enclyser_buffer(&app_attaking_buffer);
 
     app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
-    cr_expect(test_core_same_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+    cr_expect(test_core_same_thread_taa_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
-    cr_expect(test_core_same_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+    cr_expect(test_core_same_thread_taa_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
-    cr_expect(test_core_same_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+    cr_expect(test_core_same_thread_taa_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
-    cr_expect(test_core_same_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+    cr_expect(test_core_same_thread_taa_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
-    cr_expect(test_core_same_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+    cr_expect(test_core_same_thread_taa_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
-    cr_expect(test_core_same_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+    cr_expect(test_core_same_thread_taa_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
 #pragma endregion
 
-#pragma region same_thread_taa_eexit_is_effective
+#pragma region same_thread_taa_eexit_is_10_percent_effective
 
 /**
  * @brief Test if same_thread_taa_eexit is effective with a successful rate above or equal to 10% for at least 75% offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_same_thread_taa_eexit_is_effective()
+static int test_core_same_thread_taa_eexit_is_10_percent_effective()
 {
     int i, offset, allowance;
     int core;
@@ -266,7 +266,7 @@ static int test_core_same_thread_taa_eexit_is_effective()
     return 0;
 }
 
-Test(taa, same_thread_taa_eexit_is_effective, .disabled = false)
+Test(taa, same_thread_taa_eexit_is_10_percent_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_TAA;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -280,34 +280,34 @@ Test(taa, same_thread_taa_eexit_is_effective, .disabled = false)
     assign_enclyser_buffer(&app_attaking_buffer);
 
     app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
-    cr_expect(test_core_same_thread_taa_eexit_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+    cr_expect(test_core_same_thread_taa_eexit_is_10_percent_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
-    cr_expect(test_core_same_thread_taa_eexit_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+    cr_expect(test_core_same_thread_taa_eexit_is_10_percent_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
-    cr_expect(test_core_same_thread_taa_eexit_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+    cr_expect(test_core_same_thread_taa_eexit_is_10_percent_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
-    cr_expect(test_core_same_thread_taa_eexit_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+    cr_expect(test_core_same_thread_taa_eexit_is_10_percent_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
-    cr_expect(test_core_same_thread_taa_eexit_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+    cr_expect(test_core_same_thread_taa_eexit_is_10_percent_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
-    cr_expect(test_core_same_thread_taa_eexit_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+    cr_expect(test_core_same_thread_taa_eexit_is_10_percent_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
 #pragma endregion
 
-#pragma region same_thread_taa_aex_is_effective
+#pragma region same_thread_taa_aex_is_10_percent_effective
 
 /**
  * @brief Test if same_thread_taa_aex is effective with a successful rate above 10% for at least 75% offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_same_thread_taa_aex_is_effective()
+static int test_core_same_thread_taa_aex_is_10_percent_effective()
 {
     int i, offset, allowance;
     int core;
@@ -339,7 +339,7 @@ static int test_core_same_thread_taa_aex_is_effective()
     return 0;
 }
 
-Test(taa, same_thread_taa_aex_is_effective, .disabled = false)
+Test(taa, same_thread_taa_aex_is_10_percent_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_TAA;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -353,27 +353,27 @@ Test(taa, same_thread_taa_aex_is_effective, .disabled = false)
     assign_enclyser_buffer(&app_attaking_buffer);
 
     app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
-    cr_expect(test_core_same_thread_taa_aex_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+    cr_expect(test_core_same_thread_taa_aex_is_10_percent_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
-    cr_expect(test_core_same_thread_taa_aex_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+    cr_expect(test_core_same_thread_taa_aex_is_10_percent_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
-    cr_expect(test_core_same_thread_taa_aex_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+    cr_expect(test_core_same_thread_taa_aex_is_10_percent_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
-    cr_expect(test_core_same_thread_taa_aex_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+    cr_expect(test_core_same_thread_taa_aex_is_10_percent_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
-    cr_expect(test_core_same_thread_taa_aex_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+    cr_expect(test_core_same_thread_taa_aex_is_10_percent_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
-    cr_expect(test_core_same_thread_taa_aex_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+    cr_expect(test_core_same_thread_taa_aex_is_10_percent_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
 #pragma endregion
 
-#pragma region cross_thread_taa_nosgx_is_effective
+#pragma region cross_thread_taa_nosgx_is_1_percent_effective
 
 /**
  * @brief The victim function run by pthread
@@ -381,7 +381,7 @@ Test(taa, same_thread_taa_aex_is_effective, .disabled = false)
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_cross_thread_taa_nosgx_is_effective_victim_thread(void *arg)
+static void *test_core_cross_thread_taa_nosgx_is_1_percent_effective_victim_thread(void *arg)
 {
     int i;
 
@@ -399,7 +399,7 @@ static void *test_core_cross_thread_taa_nosgx_is_effective_victim_thread(void *a
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_cross_thread_taa_nosgx_is_effective_adversary_thread(void *arg)
+static void *test_core_cross_thread_taa_nosgx_is_1_percent_effective_adversary_thread(void *arg)
 {
     int i;
 
@@ -418,7 +418,7 @@ static void *test_core_cross_thread_taa_nosgx_is_effective_adversary_thread(void
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_cross_thread_taa_nosgx_is_effective()
+static int test_core_cross_thread_taa_nosgx_is_1_percent_effective()
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -438,8 +438,8 @@ static int test_core_cross_thread_taa_nosgx_is_effective()
     {
         app_attack_spec.offset = offset;
 
-        ASSERT(!pthread_create(&victim_thread, NULL, test_core_cross_thread_taa_nosgx_is_effective_victim_thread, NULL));
-        ASSERT(!pthread_create(&adversary_thread, NULL, test_core_cross_thread_taa_nosgx_is_effective_adversary_thread, NULL));
+        ASSERT(!pthread_create(&victim_thread, NULL, test_core_cross_thread_taa_nosgx_is_1_percent_effective_victim_thread, NULL));
+        ASSERT(!pthread_create(&adversary_thread, NULL, test_core_cross_thread_taa_nosgx_is_1_percent_effective_adversary_thread, NULL));
 
         ASSERT(!pthread_setaffinity_np(victim_thread, sizeof(cpu_set_t), &victim_cpuset));
         ASSERT(!pthread_setaffinity_np(adversary_thread, sizeof(cpu_set_t), &adversary_cpuset));
@@ -458,7 +458,7 @@ static int test_core_cross_thread_taa_nosgx_is_effective()
     return 0;
 }
 
-Test(taa, cross_thread_taa_nosgx_is_effective, .disabled = false)
+Test(taa, cross_thread_taa_nosgx_is_1_percent_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_TAA;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -472,27 +472,27 @@ Test(taa, cross_thread_taa_nosgx_is_effective, .disabled = false)
     assign_enclyser_buffer(&app_attaking_buffer);
 
     app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
-    cr_expect(test_core_cross_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+    cr_expect(test_core_cross_thread_taa_nosgx_is_1_percent_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
-    cr_expect(test_core_cross_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+    cr_expect(test_core_cross_thread_taa_nosgx_is_1_percent_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
-    cr_expect(test_core_cross_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+    cr_expect(test_core_cross_thread_taa_nosgx_is_1_percent_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
-    cr_expect(test_core_cross_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+    cr_expect(test_core_cross_thread_taa_nosgx_is_1_percent_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
-    cr_expect(test_core_cross_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+    cr_expect(test_core_cross_thread_taa_nosgx_is_1_percent_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
-    cr_expect(test_core_cross_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+    cr_expect(test_core_cross_thread_taa_nosgx_is_1_percent_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
 #pragma endregion
 
-#pragma region cross_thread_taa_ecall_is_effective
+#pragma region cross_thread_taa_ecall_is_1_percent_effective
 
 /**
  * @brief The victim function run by pthread
@@ -500,7 +500,7 @@ Test(taa, cross_thread_taa_nosgx_is_effective, .disabled = false)
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_cross_thread_taa_ecall_is_effective_victim_thread(void *arg)
+static void *test_core_cross_thread_taa_ecall_is_1_percent_effective_victim_thread(void *arg)
 {
     ecall_rep_fill_lfb(global_eid, app_filling_sequence, &app_filling_buffer);
 
@@ -513,7 +513,7 @@ static void *test_core_cross_thread_taa_ecall_is_effective_victim_thread(void *a
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_cross_thread_taa_ecall_is_effective_adversary_thread(void *arg)
+static void *test_core_cross_thread_taa_ecall_is_1_percent_effective_adversary_thread(void *arg)
 {
     int i;
 
@@ -532,7 +532,7 @@ static void *test_core_cross_thread_taa_ecall_is_effective_adversary_thread(void
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_cross_thread_taa_ecall_is_effective()
+static int test_core_cross_thread_taa_ecall_is_1_percent_effective()
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -552,8 +552,8 @@ static int test_core_cross_thread_taa_ecall_is_effective()
     {
         app_attack_spec.offset = offset;
 
-        ASSERT(!pthread_create(&victim_thread, NULL, test_core_cross_thread_taa_ecall_is_effective_victim_thread, NULL));
-        ASSERT(!pthread_create(&adversary_thread, NULL, test_core_cross_thread_taa_ecall_is_effective_adversary_thread, NULL));
+        ASSERT(!pthread_create(&victim_thread, NULL, test_core_cross_thread_taa_ecall_is_1_percent_effective_victim_thread, NULL));
+        ASSERT(!pthread_create(&adversary_thread, NULL, test_core_cross_thread_taa_ecall_is_1_percent_effective_adversary_thread, NULL));
 
         ASSERT(!pthread_setaffinity_np(victim_thread, sizeof(cpu_set_t), &victim_cpuset));
         ASSERT(!pthread_setaffinity_np(adversary_thread, sizeof(cpu_set_t), &adversary_cpuset));
@@ -572,7 +572,7 @@ static int test_core_cross_thread_taa_ecall_is_effective()
     return 0;
 }
 
-Test(taa, cross_thread_taa_ecall_is_effective, .disabled = false)
+Test(taa, cross_thread_taa_ecall_is_1_percent_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_TAA;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -586,27 +586,27 @@ Test(taa, cross_thread_taa_ecall_is_effective, .disabled = false)
     assign_enclyser_buffer(&app_attaking_buffer);
 
     app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
-    cr_expect(test_core_cross_thread_taa_ecall_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+    cr_expect(test_core_cross_thread_taa_ecall_is_1_percent_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
-    cr_expect(test_core_cross_thread_taa_ecall_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+    cr_expect(test_core_cross_thread_taa_ecall_is_1_percent_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
-    cr_expect(test_core_cross_thread_taa_ecall_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+    cr_expect(test_core_cross_thread_taa_ecall_is_1_percent_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
-    cr_expect(test_core_cross_thread_taa_ecall_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+    cr_expect(test_core_cross_thread_taa_ecall_is_1_percent_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
-    cr_expect(test_core_cross_thread_taa_ecall_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+    cr_expect(test_core_cross_thread_taa_ecall_is_1_percent_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
-    cr_expect(test_core_cross_thread_taa_ecall_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+    cr_expect(test_core_cross_thread_taa_ecall_is_1_percent_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
 #pragma endregion
 
-#pragma region cross_core_taa_nosgx_is_effective
+#pragma region cross_core_taa_nosgx_is_1_percent_effective
 
 /**
  * @brief The victim function run by pthread
@@ -614,7 +614,7 @@ Test(taa, cross_thread_taa_ecall_is_effective, .disabled = false)
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_cross_core_taa_nosgx_is_effective_victim_thread(void *arg)
+static void *test_core_cross_core_taa_nosgx_is_1_percent_effective_victim_thread(void *arg)
 {
     int i;
 
@@ -632,7 +632,7 @@ static void *test_core_cross_core_taa_nosgx_is_effective_victim_thread(void *arg
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_cross_core_taa_nosgx_is_effective_adversary_thread(void *arg)
+static void *test_core_cross_core_taa_nosgx_is_1_percent_effective_adversary_thread(void *arg)
 {
     int i;
 
@@ -651,7 +651,7 @@ static void *test_core_cross_core_taa_nosgx_is_effective_adversary_thread(void *
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_cross_core_taa_nosgx_is_effective()
+static int test_core_cross_core_taa_nosgx_is_1_percent_effective()
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -671,8 +671,8 @@ static int test_core_cross_core_taa_nosgx_is_effective()
     {
         app_attack_spec.offset = offset;
 
-        ASSERT(!pthread_create(&victim_thread, NULL, test_core_cross_core_taa_nosgx_is_effective_victim_thread, NULL));
-        ASSERT(!pthread_create(&adversary_thread, NULL, test_core_cross_core_taa_nosgx_is_effective_adversary_thread, NULL));
+        ASSERT(!pthread_create(&victim_thread, NULL, test_core_cross_core_taa_nosgx_is_1_percent_effective_victim_thread, NULL));
+        ASSERT(!pthread_create(&adversary_thread, NULL, test_core_cross_core_taa_nosgx_is_1_percent_effective_adversary_thread, NULL));
 
         ASSERT(!pthread_setaffinity_np(victim_thread, sizeof(cpu_set_t), &victim_cpuset));
         ASSERT(!pthread_setaffinity_np(adversary_thread, sizeof(cpu_set_t), &adversary_cpuset));
@@ -691,7 +691,7 @@ static int test_core_cross_core_taa_nosgx_is_effective()
     return 0;
 }
 
-Test(taa, cross_core_taa_nosgx_is_effective, .disabled = false)
+Test(taa, cross_core_taa_nosgx_is_1_percent_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_TAA;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -705,27 +705,27 @@ Test(taa, cross_core_taa_nosgx_is_effective, .disabled = false)
     assign_enclyser_buffer(&app_attaking_buffer);
 
     app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
-    cr_expect(test_core_cross_core_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+    cr_expect(test_core_cross_core_taa_nosgx_is_1_percent_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
-    cr_expect(test_core_cross_core_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+    cr_expect(test_core_cross_core_taa_nosgx_is_1_percent_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
-    cr_expect(test_core_cross_core_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+    cr_expect(test_core_cross_core_taa_nosgx_is_1_percent_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
-    cr_expect(test_core_cross_core_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+    cr_expect(test_core_cross_core_taa_nosgx_is_1_percent_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
-    cr_expect(test_core_cross_core_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+    cr_expect(test_core_cross_core_taa_nosgx_is_1_percent_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
-    cr_expect(test_core_cross_core_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+    cr_expect(test_core_cross_core_taa_nosgx_is_1_percent_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
 #pragma endregion
 
-#pragma region cross_core_taa_ecall_is_effective
+#pragma region cross_core_taa_ecall_is_1_percent_effective
 
 /**
  * @brief The victim function run by pthread
@@ -733,7 +733,7 @@ Test(taa, cross_core_taa_nosgx_is_effective, .disabled = false)
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_cross_core_taa_ecall_is_effective_victim_thread(void *arg)
+static void *test_core_cross_core_taa_ecall_is_1_percent_effective_victim_thread(void *arg)
 {
     ecall_rep_fill_lfb(global_eid, app_filling_sequence, &app_filling_buffer);
 
@@ -746,7 +746,7 @@ static void *test_core_cross_core_taa_ecall_is_effective_victim_thread(void *arg
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_cross_core_taa_ecall_is_effective_adversary_thread(void *arg)
+static void *test_core_cross_core_taa_ecall_is_1_percent_effective_adversary_thread(void *arg)
 {
     int i;
 
@@ -765,7 +765,7 @@ static void *test_core_cross_core_taa_ecall_is_effective_adversary_thread(void *
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_cross_core_taa_ecall_is_effective()
+static int test_core_cross_core_taa_ecall_is_1_percent_effective()
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -785,8 +785,8 @@ static int test_core_cross_core_taa_ecall_is_effective()
     {
         app_attack_spec.offset = offset;
 
-        ASSERT(!pthread_create(&victim_thread, NULL, test_core_cross_core_taa_ecall_is_effective_victim_thread, NULL));
-        ASSERT(!pthread_create(&adversary_thread, NULL, test_core_cross_core_taa_ecall_is_effective_adversary_thread, NULL));
+        ASSERT(!pthread_create(&victim_thread, NULL, test_core_cross_core_taa_ecall_is_1_percent_effective_victim_thread, NULL));
+        ASSERT(!pthread_create(&adversary_thread, NULL, test_core_cross_core_taa_ecall_is_1_percent_effective_adversary_thread, NULL));
 
         ASSERT(!pthread_setaffinity_np(victim_thread, sizeof(cpu_set_t), &victim_cpuset));
         ASSERT(!pthread_setaffinity_np(adversary_thread, sizeof(cpu_set_t), &adversary_cpuset));
@@ -805,7 +805,7 @@ static int test_core_cross_core_taa_ecall_is_effective()
     return 0;
 }
 
-Test(taa, cross_core_taa_ecall_is_effective, .disabled = false)
+Test(taa, cross_core_taa_ecall_is_1_percent_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_TAA;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -819,22 +819,22 @@ Test(taa, cross_core_taa_ecall_is_effective, .disabled = false)
     assign_enclyser_buffer(&app_attaking_buffer);
 
     app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
-    cr_expect(test_core_cross_core_taa_ecall_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+    cr_expect(test_core_cross_core_taa_ecall_is_1_percent_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
-    cr_expect(test_core_cross_core_taa_ecall_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+    cr_expect(test_core_cross_core_taa_ecall_is_1_percent_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
-    cr_expect(test_core_cross_core_taa_ecall_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+    cr_expect(test_core_cross_core_taa_ecall_is_1_percent_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
-    cr_expect(test_core_cross_core_taa_ecall_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+    cr_expect(test_core_cross_core_taa_ecall_is_1_percent_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
-    cr_expect(test_core_cross_core_taa_ecall_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+    cr_expect(test_core_cross_core_taa_ecall_is_1_percent_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
-    cr_expect(test_core_cross_core_taa_ecall_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+    cr_expect(test_core_cross_core_taa_ecall_is_1_percent_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
 #pragma endregion
@@ -845,14 +845,14 @@ Test(taa, cross_core_taa_ecall_is_effective, .disabled = false)
 
 TestSuite(mds, .init = construct_app_environment, .fini = desctruct_app_environment);
 
-#pragma region same_thread_mds_nosgx_is_effective
+#pragma region same_thread_mds_nosgx_is_10_percent_effective
 
 /**
  * @brief Test if same_thread_mds_nosgx is effective with a successful rate above or equal to 10% for at least 75% offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_same_thread_mds_nosgx_is_effective()
+static int test_core_same_thread_mds_nosgx_is_10_percent_effective()
 {
     int i, offset, allowance;
     int core;
@@ -887,7 +887,7 @@ static int test_core_same_thread_mds_nosgx_is_effective()
     return 0;
 }
 
-Test(mds, same_thread_mds_nosgx_is_effective, .disabled = false)
+Test(mds, same_thread_mds_nosgx_is_10_percent_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_MDS;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -903,34 +903,34 @@ Test(mds, same_thread_mds_nosgx_is_effective, .disabled = false)
     cripple_enclyser_buffer(&app_attaking_buffer);
 
     app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
-    cr_expect(test_core_same_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+    cr_expect(test_core_same_thread_mds_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
-    cr_expect(test_core_same_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+    cr_expect(test_core_same_thread_mds_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
-    cr_expect(test_core_same_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+    cr_expect(test_core_same_thread_mds_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
-    cr_expect(test_core_same_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+    cr_expect(test_core_same_thread_mds_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
-    cr_expect(test_core_same_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+    cr_expect(test_core_same_thread_mds_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
-    cr_expect(test_core_same_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+    cr_expect(test_core_same_thread_mds_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
 #pragma endregion
 
-#pragma region same_thread_mds_eexit_is_effective
+#pragma region same_thread_mds_eexit_is_10_percent_effective
 
 /**
  * @brief Test if same_thread_mds_eexit is effective with a successful rate above or equal to 10% for at least 75% offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_same_thread_mds_eexit_is_effective()
+static int test_core_same_thread_mds_eexit_is_10_percent_effective()
 {
     int i, offset, allowance;
     int core;
@@ -963,7 +963,7 @@ static int test_core_same_thread_mds_eexit_is_effective()
     return 0;
 }
 
-Test(mds, same_thread_mds_eexit_is_effective, .disabled = false)
+Test(mds, same_thread_mds_eexit_is_10_percent_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_TAA;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -979,34 +979,34 @@ Test(mds, same_thread_mds_eexit_is_effective, .disabled = false)
     cripple_enclyser_buffer(&app_attaking_buffer);
 
     app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
-    cr_expect(test_core_same_thread_mds_eexit_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+    cr_expect(test_core_same_thread_mds_eexit_is_10_percent_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
-    cr_expect(test_core_same_thread_mds_eexit_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+    cr_expect(test_core_same_thread_mds_eexit_is_10_percent_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
-    cr_expect(test_core_same_thread_mds_eexit_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+    cr_expect(test_core_same_thread_mds_eexit_is_10_percent_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
-    cr_expect(test_core_same_thread_mds_eexit_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+    cr_expect(test_core_same_thread_mds_eexit_is_10_percent_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
-    cr_expect(test_core_same_thread_mds_eexit_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+    cr_expect(test_core_same_thread_mds_eexit_is_10_percent_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
-    cr_expect(test_core_same_thread_mds_eexit_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+    cr_expect(test_core_same_thread_mds_eexit_is_10_percent_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
 #pragma endregion
 
-#pragma region same_thread_mds_aex_is_effective
+#pragma region same_thread_mds_aex_is_10_percent_effective
 
 /**
  * @brief Test if same_thread_mds_aex is effective with a successful rate above or equal to 10% for at least 75% offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_same_thread_mds_aex_is_effective()
+static int test_core_same_thread_mds_aex_is_10_percent_effective()
 {
     int i, offset, allowance;
     int core;
@@ -1038,7 +1038,7 @@ static int test_core_same_thread_mds_aex_is_effective()
     return 0;
 }
 
-Test(mds, same_thread_mds_aex_is_effective, .disabled = false)
+Test(mds, same_thread_mds_aex_is_10_percent_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_TAA;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -1054,27 +1054,27 @@ Test(mds, same_thread_mds_aex_is_effective, .disabled = false)
     cripple_enclyser_buffer(&app_attaking_buffer);
 
     app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
-    cr_expect(test_core_same_thread_mds_aex_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+    cr_expect(test_core_same_thread_mds_aex_is_10_percent_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
-    cr_expect(test_core_same_thread_mds_aex_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+    cr_expect(test_core_same_thread_mds_aex_is_10_percent_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
-    cr_expect(test_core_same_thread_mds_aex_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+    cr_expect(test_core_same_thread_mds_aex_is_10_percent_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
-    cr_expect(test_core_same_thread_mds_aex_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+    cr_expect(test_core_same_thread_mds_aex_is_10_percent_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
-    cr_expect(test_core_same_thread_mds_aex_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+    cr_expect(test_core_same_thread_mds_aex_is_10_percent_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
-    cr_expect(test_core_same_thread_mds_aex_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+    cr_expect(test_core_same_thread_mds_aex_is_10_percent_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
 #pragma endregion
 
-#pragma region cross_thread_mds_nosgx_is_effective
+#pragma region cross_thread_mds_nosgx_is_1_percent_effective
 
 /**
  * @brief The victim function run by pthread
@@ -1082,7 +1082,7 @@ Test(mds, same_thread_mds_aex_is_effective, .disabled = false)
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_cross_thread_mds_nosgx_is_effective_victim_thread(void *arg)
+static void *test_core_cross_thread_mds_nosgx_is_1_percent_effective_victim_thread(void *arg)
 {
     int i;
 
@@ -1100,7 +1100,7 @@ static void *test_core_cross_thread_mds_nosgx_is_effective_victim_thread(void *a
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_cross_thread_mds_nosgx_is_effective_adversary_thread(void *arg)
+static void *test_core_cross_thread_mds_nosgx_is_1_percent_effective_adversary_thread(void *arg)
 {
     int i;
 
@@ -1119,7 +1119,7 @@ static void *test_core_cross_thread_mds_nosgx_is_effective_adversary_thread(void
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_cross_thread_mds_nosgx_is_effective()
+static int test_core_cross_thread_mds_nosgx_is_1_percent_effective()
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -1139,8 +1139,8 @@ static int test_core_cross_thread_mds_nosgx_is_effective()
     {
         app_attack_spec.offset = offset;
 
-        ASSERT(!pthread_create(&victim_thread, NULL, test_core_cross_thread_mds_nosgx_is_effective_victim_thread, NULL));
-        ASSERT(!pthread_create(&adversary_thread, NULL, test_core_cross_thread_mds_nosgx_is_effective_adversary_thread, NULL));
+        ASSERT(!pthread_create(&victim_thread, NULL, test_core_cross_thread_mds_nosgx_is_1_percent_effective_victim_thread, NULL));
+        ASSERT(!pthread_create(&adversary_thread, NULL, test_core_cross_thread_mds_nosgx_is_1_percent_effective_adversary_thread, NULL));
 
         ASSERT(!pthread_setaffinity_np(victim_thread, sizeof(cpu_set_t), &victim_cpuset));
         ASSERT(!pthread_setaffinity_np(adversary_thread, sizeof(cpu_set_t), &adversary_cpuset));
@@ -1159,7 +1159,7 @@ static int test_core_cross_thread_mds_nosgx_is_effective()
     return 0;
 }
 
-Test(mds, cross_thread_mds_nosgx_is_effective, .disabled = false)
+Test(mds, cross_thread_mds_nosgx_is_1_percent_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_MDS;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -1175,27 +1175,27 @@ Test(mds, cross_thread_mds_nosgx_is_effective, .disabled = false)
     cripple_enclyser_buffer(&app_attaking_buffer);
 
     app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
-    cr_expect(test_core_cross_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+    cr_expect(test_core_cross_thread_mds_nosgx_is_1_percent_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
-    cr_expect(test_core_cross_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+    cr_expect(test_core_cross_thread_mds_nosgx_is_1_percent_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
-    cr_expect(test_core_cross_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+    cr_expect(test_core_cross_thread_mds_nosgx_is_1_percent_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
-    cr_expect(test_core_cross_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+    cr_expect(test_core_cross_thread_mds_nosgx_is_1_percent_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
-    cr_expect(test_core_cross_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+    cr_expect(test_core_cross_thread_mds_nosgx_is_1_percent_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
-    cr_expect(test_core_cross_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+    cr_expect(test_core_cross_thread_mds_nosgx_is_1_percent_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
 #pragma endregion
 
-#pragma region corss_thread_mds_ecall_is_effective
+#pragma region corss_thread_mds_ecall_is_1_percent_effective
 
 /**
  * @brief The victim function run by pthread
@@ -1203,7 +1203,7 @@ Test(mds, cross_thread_mds_nosgx_is_effective, .disabled = false)
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_cross_thread_mds_ecall_is_effective_victim_thread(void *arg)
+static void *test_core_corss_thread_mds_ecall_is_1_percent_effective_victim_thread(void *arg)
 {
     ecall_rep_fill_lfb(global_eid, app_filling_sequence, &app_filling_buffer);
 
@@ -1216,7 +1216,7 @@ static void *test_core_cross_thread_mds_ecall_is_effective_victim_thread(void *a
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_cross_thread_mds_ecall_is_effective_adversary_thread(void *arg)
+static void *test_core_corss_thread_mds_ecall_is_1_percent_effective_adversary_thread(void *arg)
 {
     int i;
 
@@ -1235,7 +1235,7 @@ static void *test_core_cross_thread_mds_ecall_is_effective_adversary_thread(void
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_cross_thread_mds_ecall_is_effective()
+static int test_core_corss_thread_mds_ecall_is_1_percent_effective()
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -1255,8 +1255,8 @@ static int test_core_cross_thread_mds_ecall_is_effective()
     {
         app_attack_spec.offset = offset;
 
-        ASSERT(!pthread_create(&victim_thread, NULL, test_core_cross_thread_mds_ecall_is_effective_victim_thread, NULL));
-        ASSERT(!pthread_create(&adversary_thread, NULL, test_core_cross_thread_mds_ecall_is_effective_adversary_thread, NULL));
+        ASSERT(!pthread_create(&victim_thread, NULL, test_core_corss_thread_mds_ecall_is_1_percent_effective_victim_thread, NULL));
+        ASSERT(!pthread_create(&adversary_thread, NULL, test_core_corss_thread_mds_ecall_is_1_percent_effective_adversary_thread, NULL));
 
         ASSERT(!pthread_setaffinity_np(victim_thread, sizeof(cpu_set_t), &victim_cpuset));
         ASSERT(!pthread_setaffinity_np(adversary_thread, sizeof(cpu_set_t), &adversary_cpuset));
@@ -1275,7 +1275,7 @@ static int test_core_cross_thread_mds_ecall_is_effective()
     return 0;
 }
 
-Test(mds, cross_thread_mds_ecall_is_effective, .disabled = false)
+Test(mds, corss_thread_mds_ecall_is_1_percent_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_MDS;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -1291,27 +1291,27 @@ Test(mds, cross_thread_mds_ecall_is_effective, .disabled = false)
     cripple_enclyser_buffer(&app_attaking_buffer);
 
     app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
-    cr_expect(test_core_cross_thread_mds_ecall_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+    cr_expect(test_core_corss_thread_mds_ecall_is_1_percent_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
-    cr_expect(test_core_cross_thread_mds_ecall_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+    cr_expect(test_core_corss_thread_mds_ecall_is_1_percent_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
-    cr_expect(test_core_cross_thread_mds_ecall_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+    cr_expect(test_core_corss_thread_mds_ecall_is_1_percent_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
-    cr_expect(test_core_cross_thread_mds_ecall_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+    cr_expect(test_core_corss_thread_mds_ecall_is_1_percent_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
-    cr_expect(test_core_cross_thread_mds_ecall_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+    cr_expect(test_core_corss_thread_mds_ecall_is_1_percent_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
-    cr_expect(test_core_cross_thread_mds_ecall_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+    cr_expect(test_core_corss_thread_mds_ecall_is_1_percent_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
 #pragma endregion
 
-#pragma region corss_core_mds_nosgx_is_effective
+#pragma region corss_core_mds_nosgx_is_1_percent_effective
 
 /**
  * @brief The victim function run by pthread
@@ -1319,7 +1319,7 @@ Test(mds, cross_thread_mds_ecall_is_effective, .disabled = false)
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_cross_core_mds_nosgx_is_effective_victim_thread(void *arg)
+static void *test_core_corss_core_mds_nosgx_is_1_percent_effective_victim_thread(void *arg)
 {
     int i;
 
@@ -1337,7 +1337,7 @@ static void *test_core_cross_core_mds_nosgx_is_effective_victim_thread(void *arg
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_cross_core_mds_nosgx_is_effective_adversary_thread(void *arg)
+static void *test_core_corss_core_mds_nosgx_is_1_percent_effective_adversary_thread(void *arg)
 {
     int i;
 
@@ -1356,7 +1356,7 @@ static void *test_core_cross_core_mds_nosgx_is_effective_adversary_thread(void *
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_cross_core_mds_nosgx_is_effective()
+static int test_core_corss_core_mds_nosgx_is_1_percent_effective()
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -1376,8 +1376,8 @@ static int test_core_cross_core_mds_nosgx_is_effective()
     {
         app_attack_spec.offset = offset;
 
-        ASSERT(!pthread_create(&victim_thread, NULL, test_core_cross_core_mds_nosgx_is_effective_victim_thread, NULL));
-        ASSERT(!pthread_create(&adversary_thread, NULL, test_core_cross_core_mds_nosgx_is_effective_adversary_thread, NULL));
+        ASSERT(!pthread_create(&victim_thread, NULL, test_core_corss_core_mds_nosgx_is_1_percent_effective_victim_thread, NULL));
+        ASSERT(!pthread_create(&adversary_thread, NULL, test_core_corss_core_mds_nosgx_is_1_percent_effective_adversary_thread, NULL));
 
         ASSERT(!pthread_setaffinity_np(victim_thread, sizeof(cpu_set_t), &victim_cpuset));
         ASSERT(!pthread_setaffinity_np(adversary_thread, sizeof(cpu_set_t), &adversary_cpuset));
@@ -1396,7 +1396,7 @@ static int test_core_cross_core_mds_nosgx_is_effective()
     return 0;
 }
 
-Test(mds, cross_core_mds_nosgx_is_effective, .disabled = false)
+Test(mds, corss_core_mds_nosgx_is_1_percent_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_MDS;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -1412,27 +1412,27 @@ Test(mds, cross_core_mds_nosgx_is_effective, .disabled = false)
     cripple_enclyser_buffer(&app_attaking_buffer);
 
     app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
-    cr_expect(test_core_cross_core_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+    cr_expect(test_core_corss_core_mds_nosgx_is_1_percent_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
-    cr_expect(test_core_cross_core_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+    cr_expect(test_core_corss_core_mds_nosgx_is_1_percent_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
-    cr_expect(test_core_cross_core_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+    cr_expect(test_core_corss_core_mds_nosgx_is_1_percent_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
-    cr_expect(test_core_cross_core_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+    cr_expect(test_core_corss_core_mds_nosgx_is_1_percent_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
-    cr_expect(test_core_cross_core_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+    cr_expect(test_core_corss_core_mds_nosgx_is_1_percent_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
-    cr_expect(test_core_cross_core_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+    cr_expect(test_core_corss_core_mds_nosgx_is_1_percent_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
 #pragma endregion
 
-#pragma region corss_core_mds_ecall_is_effective
+#pragma region corss_core_mds_ecall_is_1_percent_effective
 
 /**
  * @brief The victim function run by pthread
@@ -1440,7 +1440,7 @@ Test(mds, cross_core_mds_nosgx_is_effective, .disabled = false)
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_cross_core_mds_ecall_is_effective_victim_thread(void *arg)
+static void *test_core_corss_core_mds_ecall_is_1_percent_effective_victim_thread(void *arg)
 {
     ecall_rep_fill_lfb(global_eid, app_filling_sequence, &app_filling_buffer);
 
@@ -1453,7 +1453,7 @@ static void *test_core_cross_core_mds_ecall_is_effective_victim_thread(void *arg
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_cross_core_mds_ecall_is_effective_adversary_thread(void *arg)
+static void *test_core_corss_core_mds_ecall_is_1_percent_effective_adversary_thread(void *arg)
 {
     int i;
 
@@ -1472,7 +1472,7 @@ static void *test_core_cross_core_mds_ecall_is_effective_adversary_thread(void *
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_cross_core_mds_ecall_is_effective()
+static int test_core_corss_core_mds_ecall_is_1_percent_effective()
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -1492,8 +1492,8 @@ static int test_core_cross_core_mds_ecall_is_effective()
     {
         app_attack_spec.offset = offset;
 
-        ASSERT(!pthread_create(&victim_thread, NULL, test_core_cross_core_mds_ecall_is_effective_victim_thread, NULL));
-        ASSERT(!pthread_create(&adversary_thread, NULL, test_core_cross_core_mds_ecall_is_effective_adversary_thread, NULL));
+        ASSERT(!pthread_create(&victim_thread, NULL, test_core_corss_core_mds_ecall_is_1_percent_effective_victim_thread, NULL));
+        ASSERT(!pthread_create(&adversary_thread, NULL, test_core_corss_core_mds_ecall_is_1_percent_effective_adversary_thread, NULL));
 
         ASSERT(!pthread_setaffinity_np(victim_thread, sizeof(cpu_set_t), &victim_cpuset));
         ASSERT(!pthread_setaffinity_np(adversary_thread, sizeof(cpu_set_t), &adversary_cpuset));
@@ -1512,7 +1512,7 @@ static int test_core_cross_core_mds_ecall_is_effective()
     return 0;
 }
 
-Test(mds, cross_core_mds_ecall_is_effective, .disabled = false)
+Test(mds, corss_core_mds_ecall_is_1_percent_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_MDS;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -1528,22 +1528,22 @@ Test(mds, cross_core_mds_ecall_is_effective, .disabled = false)
     cripple_enclyser_buffer(&app_attaking_buffer);
 
     app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
-    cr_expect(test_core_cross_core_mds_ecall_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+    cr_expect(test_core_corss_core_mds_ecall_is_1_percent_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
-    cr_expect(test_core_cross_core_mds_ecall_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+    cr_expect(test_core_corss_core_mds_ecall_is_1_percent_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
-    cr_expect(test_core_cross_core_mds_ecall_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+    cr_expect(test_core_corss_core_mds_ecall_is_1_percent_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
-    cr_expect(test_core_cross_core_mds_ecall_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+    cr_expect(test_core_corss_core_mds_ecall_is_1_percent_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
-    cr_expect(test_core_cross_core_mds_ecall_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+    cr_expect(test_core_corss_core_mds_ecall_is_1_percent_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
-    cr_expect(test_core_cross_core_mds_ecall_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+    cr_expect(test_core_corss_core_mds_ecall_is_1_percent_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
 #pragma endregion
@@ -1554,14 +1554,14 @@ Test(mds, cross_core_mds_ecall_is_effective, .disabled = false)
 
 TestSuite(verw, .init = construct_app_environment, .fini = desctruct_app_environment);
 
-#pragma region verw_against_same_thread_taa_nosgx_is_effective
+#pragma region verw_against_same_thread_taa_nosgx_is_10_percent_effective
 
 /**
  * @brief Test if verw is effective against same_thread_taa_nosgx with a successful rate above 90% for all offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_verw_against_same_thread_taa_nosgx_is_effective()
+static int test_core_verw_against_same_thread_taa_nosgx_is_10_percent_effective()
 {
     int i, offset, allowance;
 
@@ -1586,7 +1586,7 @@ static int test_core_verw_against_same_thread_taa_nosgx_is_effective()
     return 0;
 }
 
-Test(verw, verw_against_same_thread_taa_nosgx_is_effective, .disabled = false)
+Test(verw, verw_against_same_thread_taa_nosgx_is_10_percent_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_TAA;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -1602,34 +1602,34 @@ Test(verw, verw_against_same_thread_taa_nosgx_is_effective, .disabled = false)
     app_clearing_sequence = CLEARING_SEQUENCE_VERW;
 
     app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
-    cr_expect(test_core_verw_against_same_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+    cr_expect(test_core_verw_against_same_thread_taa_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
-    cr_expect(test_core_verw_against_same_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+    cr_expect(test_core_verw_against_same_thread_taa_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
-    cr_expect(test_core_verw_against_same_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+    cr_expect(test_core_verw_against_same_thread_taa_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
-    cr_expect(test_core_verw_against_same_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+    cr_expect(test_core_verw_against_same_thread_taa_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
-    cr_expect(test_core_verw_against_same_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+    cr_expect(test_core_verw_against_same_thread_taa_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
-    cr_expect(test_core_verw_against_same_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+    cr_expect(test_core_verw_against_same_thread_taa_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
 #pragma endregion
 
-#pragma region verw_against_same_thread_mds_nosgx_is_effective
+#pragma region verw_against_same_thread_mds_nosgx_is_10_percent_effective
 
 /**
  * @brief Test if verw is effective against same_thread_mds_nosgx with a successful rate above 90% for all offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_verw_against_same_thread_mds_nosgx_is_effective()
+static int test_core_verw_against_same_thread_mds_nosgx_is_10_percent_effective()
 {
     int i, offset, allowance;
 
@@ -1654,7 +1654,7 @@ static int test_core_verw_against_same_thread_mds_nosgx_is_effective()
     return 0;
 }
 
-Test(verw, verw_against_same_thread_mds_nosgx_is_effective, .disabled = false)
+Test(verw, verw_against_same_thread_mds_nosgx_is_10_percent_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_MDS;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -1672,22 +1672,22 @@ Test(verw, verw_against_same_thread_mds_nosgx_is_effective, .disabled = false)
     app_clearing_sequence = CLEARING_SEQUENCE_VERW;
 
     app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
-    cr_expect(test_core_verw_against_same_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+    cr_expect(test_core_verw_against_same_thread_mds_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
-    cr_expect(test_core_verw_against_same_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+    cr_expect(test_core_verw_against_same_thread_mds_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
-    cr_expect(test_core_verw_against_same_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+    cr_expect(test_core_verw_against_same_thread_mds_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
-    cr_expect(test_core_verw_against_same_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+    cr_expect(test_core_verw_against_same_thread_mds_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
-    cr_expect(test_core_verw_against_same_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+    cr_expect(test_core_verw_against_same_thread_mds_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
-    cr_expect(test_core_verw_against_same_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+    cr_expect(test_core_verw_against_same_thread_mds_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
 #pragma endregion
