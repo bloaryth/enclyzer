@@ -87,7 +87,7 @@ void sigsegv_handler(int signal)
  * The environment includes \p app_filling_buffer, \p app_clearing_buffer, 
  * \p app_attack, \p app_attaking_buffer, \p app_encoding_buffer.
  */
-static void construct_app_environment()
+void construct_app_environment()
 {
     ret = sgx_create_enclave(ENCLAVE_FILENAME, SGX_DEBUG_FLAG, &token, &updated, &global_eid, NULL);
     ASSERT(ret == SGX_SUCCESS);
@@ -115,7 +115,7 @@ static void construct_app_environment()
  * The environment includes \p app_filling_buffer, \p app_clearing_buffer, 
  * \p app_attack, \p app_attaking_buffer, \p app_encoding_buffer.
  */
-static void desctruct_app_environment()
+void desctruct_app_environment()
 {
     sgx_destroy_enclave(global_eid);
 
@@ -159,7 +159,7 @@ TestSuite(taa, .init = construct_app_environment, .fini = desctruct_app_environm
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_same_thread_taa_nosgx_is_10_percent_effective()
+int test_core_same_thread_taa_nosgx_is_10_percent_effective()
 {
     int i, offset, allowance;
     int core;
@@ -185,6 +185,8 @@ static int test_core_same_thread_taa_nosgx_is_10_percent_effective()
         }
         if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 10 || allowance--))
         {
+            // INFO("offset: 0x%x", offset);
+            // print(&app_printing_buffer, 0);
             return -1;
         }
         reset(&app_printing_buffer);
@@ -233,7 +235,7 @@ Test(taa, same_thread_taa_nosgx_is_10_percent_effective, .disabled = false)
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_same_thread_taa_eexit_is_10_percent_effective()
+int test_core_same_thread_taa_eexit_is_10_percent_effective()
 {
     int i, offset, allowance;
     int core;
@@ -259,6 +261,8 @@ static int test_core_same_thread_taa_eexit_is_10_percent_effective()
         }
         if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 10 || allowance--))
         {
+            // INFO("offset: 0x%x", offset);
+            // print(&app_printing_buffer, 0);
             return -1;
         }
         reset(&app_printing_buffer);
@@ -307,7 +311,7 @@ Test(taa, same_thread_taa_eexit_is_10_percent_effective, .disabled = false)
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_same_thread_taa_aex_is_10_percent_effective()
+int test_core_same_thread_taa_aex_is_10_percent_effective()
 {
     int i, offset, allowance;
     int core;
@@ -332,6 +336,8 @@ static int test_core_same_thread_taa_aex_is_10_percent_effective()
         }
         if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 10 || allowance--))
         {
+            // INFO("offset: 0x%x", offset);
+            // print(&app_printing_buffer, 0);
             return -1;
         }
         reset(&app_printing_buffer);
@@ -381,7 +387,7 @@ Test(taa, same_thread_taa_aex_is_10_percent_effective, .disabled = false)
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_cross_thread_taa_nosgx_is_1_percent_effective_victim_thread(void *arg)
+void *test_core_cross_thread_taa_nosgx_is_1_percent_effective_victim_thread(void *arg)
 {
     int i;
 
@@ -399,7 +405,7 @@ static void *test_core_cross_thread_taa_nosgx_is_1_percent_effective_victim_thre
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_cross_thread_taa_nosgx_is_1_percent_effective_adversary_thread(void *arg)
+void *test_core_cross_thread_taa_nosgx_is_1_percent_effective_adversary_thread(void *arg)
 {
     int i;
 
@@ -418,7 +424,7 @@ static void *test_core_cross_thread_taa_nosgx_is_1_percent_effective_adversary_t
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_cross_thread_taa_nosgx_is_1_percent_effective()
+int test_core_cross_thread_taa_nosgx_is_1_percent_effective()
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -500,7 +506,7 @@ Test(taa, cross_thread_taa_nosgx_is_1_percent_effective, .disabled = false)
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_cross_thread_taa_ecall_is_1_percent_effective_victim_thread(void *arg)
+void *test_core_cross_thread_taa_ecall_is_1_percent_effective_victim_thread(void *arg)
 {
     ecall_rep_fill_lfb(global_eid, app_filling_sequence, &app_filling_buffer);
 
@@ -513,7 +519,7 @@ static void *test_core_cross_thread_taa_ecall_is_1_percent_effective_victim_thre
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_cross_thread_taa_ecall_is_1_percent_effective_adversary_thread(void *arg)
+void *test_core_cross_thread_taa_ecall_is_1_percent_effective_adversary_thread(void *arg)
 {
     int i;
 
@@ -532,7 +538,7 @@ static void *test_core_cross_thread_taa_ecall_is_1_percent_effective_adversary_t
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_cross_thread_taa_ecall_is_1_percent_effective()
+int test_core_cross_thread_taa_ecall_is_1_percent_effective()
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -614,7 +620,7 @@ Test(taa, cross_thread_taa_ecall_is_1_percent_effective, .disabled = false)
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_cross_core_taa_nosgx_is_1_percent_effective_victim_thread(void *arg)
+void *test_core_cross_core_taa_nosgx_is_1_percent_effective_victim_thread(void *arg)
 {
     int i;
 
@@ -632,7 +638,7 @@ static void *test_core_cross_core_taa_nosgx_is_1_percent_effective_victim_thread
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_cross_core_taa_nosgx_is_1_percent_effective_adversary_thread(void *arg)
+void *test_core_cross_core_taa_nosgx_is_1_percent_effective_adversary_thread(void *arg)
 {
     int i;
 
@@ -651,7 +657,7 @@ static void *test_core_cross_core_taa_nosgx_is_1_percent_effective_adversary_thr
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_cross_core_taa_nosgx_is_1_percent_effective()
+int test_core_cross_core_taa_nosgx_is_1_percent_effective()
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -733,7 +739,7 @@ Test(taa, cross_core_taa_nosgx_is_1_percent_effective, .disabled = false)
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_cross_core_taa_ecall_is_1_percent_effective_victim_thread(void *arg)
+void *test_core_cross_core_taa_ecall_is_1_percent_effective_victim_thread(void *arg)
 {
     ecall_rep_fill_lfb(global_eid, app_filling_sequence, &app_filling_buffer);
 
@@ -746,7 +752,7 @@ static void *test_core_cross_core_taa_ecall_is_1_percent_effective_victim_thread
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_cross_core_taa_ecall_is_1_percent_effective_adversary_thread(void *arg)
+void *test_core_cross_core_taa_ecall_is_1_percent_effective_adversary_thread(void *arg)
 {
     int i;
 
@@ -765,7 +771,7 @@ static void *test_core_cross_core_taa_ecall_is_1_percent_effective_adversary_thr
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_cross_core_taa_ecall_is_1_percent_effective()
+int test_core_cross_core_taa_ecall_is_1_percent_effective()
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -852,7 +858,7 @@ TestSuite(mds, .init = construct_app_environment, .fini = desctruct_app_environm
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_same_thread_mds_nosgx_is_10_percent_effective()
+int test_core_same_thread_mds_nosgx_is_10_percent_effective()
 {
     int i, offset, allowance;
     int core;
@@ -930,7 +936,7 @@ Test(mds, same_thread_mds_nosgx_is_10_percent_effective, .disabled = false)
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_same_thread_mds_eexit_is_10_percent_effective()
+int test_core_same_thread_mds_eexit_is_10_percent_effective()
 {
     int i, offset, allowance;
     int core;
@@ -956,6 +962,8 @@ static int test_core_same_thread_mds_eexit_is_10_percent_effective()
         }
         if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 10 || allowance--))
         {
+            // INFO("offset: 0x%x", offset);
+            // print(&app_printing_buffer, 0);
             return -1;
         }
         reset(&app_printing_buffer);
@@ -1006,7 +1014,7 @@ Test(mds, same_thread_mds_eexit_is_10_percent_effective, .disabled = false)
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_same_thread_mds_aex_is_10_percent_effective()
+int test_core_same_thread_mds_aex_is_10_percent_effective()
 {
     int i, offset, allowance;
     int core;
@@ -1031,6 +1039,8 @@ static int test_core_same_thread_mds_aex_is_10_percent_effective()
         }
         if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 10 || allowance--))
         {
+            // INFO("offset: 0x%x", offset);
+            // print(&app_printing_buffer, 0);
             return -1;
         }
         reset(&app_printing_buffer);
@@ -1082,7 +1092,7 @@ Test(mds, same_thread_mds_aex_is_10_percent_effective, .disabled = false)
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_cross_thread_mds_nosgx_is_1_percent_effective_victim_thread(void *arg)
+void *test_core_cross_thread_mds_nosgx_is_1_percent_effective_victim_thread(void *arg)
 {
     int i;
 
@@ -1100,7 +1110,7 @@ static void *test_core_cross_thread_mds_nosgx_is_1_percent_effective_victim_thre
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_cross_thread_mds_nosgx_is_1_percent_effective_adversary_thread(void *arg)
+void *test_core_cross_thread_mds_nosgx_is_1_percent_effective_adversary_thread(void *arg)
 {
     int i;
 
@@ -1119,7 +1129,7 @@ static void *test_core_cross_thread_mds_nosgx_is_1_percent_effective_adversary_t
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_cross_thread_mds_nosgx_is_1_percent_effective()
+int test_core_cross_thread_mds_nosgx_is_1_percent_effective()
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -1203,7 +1213,7 @@ Test(mds, cross_thread_mds_nosgx_is_1_percent_effective, .disabled = false)
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_corss_thread_mds_ecall_is_1_percent_effective_victim_thread(void *arg)
+void *test_core_corss_thread_mds_ecall_is_1_percent_effective_victim_thread(void *arg)
 {
     ecall_rep_fill_lfb(global_eid, app_filling_sequence, &app_filling_buffer);
 
@@ -1216,7 +1226,7 @@ static void *test_core_corss_thread_mds_ecall_is_1_percent_effective_victim_thre
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_corss_thread_mds_ecall_is_1_percent_effective_adversary_thread(void *arg)
+void *test_core_corss_thread_mds_ecall_is_1_percent_effective_adversary_thread(void *arg)
 {
     int i;
 
@@ -1235,7 +1245,7 @@ static void *test_core_corss_thread_mds_ecall_is_1_percent_effective_adversary_t
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_corss_thread_mds_ecall_is_1_percent_effective()
+int test_core_corss_thread_mds_ecall_is_1_percent_effective()
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -1319,7 +1329,7 @@ Test(mds, corss_thread_mds_ecall_is_1_percent_effective, .disabled = false)
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_corss_core_mds_nosgx_is_1_percent_effective_victim_thread(void *arg)
+void *test_core_corss_core_mds_nosgx_is_1_percent_effective_victim_thread(void *arg)
 {
     int i;
 
@@ -1337,7 +1347,7 @@ static void *test_core_corss_core_mds_nosgx_is_1_percent_effective_victim_thread
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_corss_core_mds_nosgx_is_1_percent_effective_adversary_thread(void *arg)
+void *test_core_corss_core_mds_nosgx_is_1_percent_effective_adversary_thread(void *arg)
 {
     int i;
 
@@ -1356,7 +1366,7 @@ static void *test_core_corss_core_mds_nosgx_is_1_percent_effective_adversary_thr
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_corss_core_mds_nosgx_is_1_percent_effective()
+int test_core_corss_core_mds_nosgx_is_1_percent_effective()
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -1440,7 +1450,7 @@ Test(mds, corss_core_mds_nosgx_is_1_percent_effective, .disabled = false)
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_corss_core_mds_ecall_is_1_percent_effective_victim_thread(void *arg)
+void *test_core_corss_core_mds_ecall_is_1_percent_effective_victim_thread(void *arg)
 {
     ecall_rep_fill_lfb(global_eid, app_filling_sequence, &app_filling_buffer);
 
@@ -1453,7 +1463,7 @@ static void *test_core_corss_core_mds_ecall_is_1_percent_effective_victim_thread
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_corss_core_mds_ecall_is_1_percent_effective_adversary_thread(void *arg)
+void *test_core_corss_core_mds_ecall_is_1_percent_effective_adversary_thread(void *arg)
 {
     int i;
 
@@ -1472,7 +1482,7 @@ static void *test_core_corss_core_mds_ecall_is_1_percent_effective_adversary_thr
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_corss_core_mds_ecall_is_1_percent_effective()
+int test_core_corss_core_mds_ecall_is_1_percent_effective()
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -1561,7 +1571,7 @@ TestSuite(verw, .init = construct_app_environment, .fini = desctruct_app_environ
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_verw_against_same_thread_taa_nosgx_is_10_percent_effective()
+int test_core_verw_against_same_thread_taa_nosgx_is_10_percent_effective()
 {
     int i, offset, allowance;
 
@@ -1579,6 +1589,8 @@ static int test_core_verw_against_same_thread_taa_nosgx_is_10_percent_effective(
         }
         if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] < 10 || allowance--))
         {
+            // INFO("offset: 0x%x", offset);
+            // print(&app_printing_buffer, 0);
             return -1;
         }
         reset(&app_printing_buffer);
@@ -1629,7 +1641,7 @@ Test(verw, verw_against_same_thread_taa_nosgx_is_10_percent_effective, .disabled
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_verw_against_same_thread_mds_nosgx_is_10_percent_effective()
+int test_core_verw_against_same_thread_mds_nosgx_is_10_percent_effective()
 {
     int i, offset, allowance;
 
@@ -1647,6 +1659,8 @@ static int test_core_verw_against_same_thread_mds_nosgx_is_10_percent_effective(
         }
         if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] < 10 || allowance--))
         {
+            // INFO("offset: 0x%x", offset);
+            // print(&app_printing_buffer, 0);
             return -1;
         }
         reset(&app_printing_buffer);
