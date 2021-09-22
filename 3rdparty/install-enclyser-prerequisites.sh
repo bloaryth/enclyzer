@@ -1,7 +1,8 @@
 #!/bin/bash
 ## Usage: sudo bash install-enclyser-prerequisites.sh
 
-ENCLYSER_CMDLINE_PARAMETER='mitigations=off tsx=on nox2apic iomem=relaxed no_timer_check isolcpus=1 nmi_watchdog=0 nosmap nosmep clearcpuid=514'
+ENCLYSER_ISOLCPUS=1,$((`grep 'cpu cores' /proc/cpuinfo -m 1 | awk '{print $4}'` + 1))
+ENCLYSER_CMDLINE_PARAMETER="isolcpus=$ENCLYSER_ISOLCPUS mitigations=off tsx=on nox2apic iomem=relaxed no_timer_check nmi_watchdog=0 nosmap nosmep clearcpuid=514"
 ENCLYSER_SYSTEM_PACKAGES="make gcc curl cpuid msr-tools linux-tools-$(uname -r)"
 ENCLYSER_PYTHON_LIBRARIES="numpy==1.20.3 openpyxl==3.0.7 pandas==1.2.4"
 
