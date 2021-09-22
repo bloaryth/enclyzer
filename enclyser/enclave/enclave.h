@@ -20,6 +20,14 @@ extern "C" {
 void ecall_grooming(int filling_sequence, enclyser_buffer_t *filling_buffer, int clearing_sequence, enclyser_buffer_t *clearing_buffer, enclyser_buffer_t *faulting_buffer);
 
 /**
+ * @brief Repeated calls to fill_lfb.
+ * 
+ * @param filling_sequence the filling sequence selector
+ * @param filling_buffer the buffer that a filling sequence operates on
+ */
+void ecall_rep_fill_lfb(int filling_sequence, enclyser_buffer_t *filling_buffer);
+
+/**
  * @brief Invokes OCALL to display the enclave buffer to the terminal.
  * 
  * @param fmt the format string to written to stdout

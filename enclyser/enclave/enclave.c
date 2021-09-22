@@ -8,6 +8,16 @@ void ecall_grooming(int filling_sequence, enclyser_buffer_t *filling_buffer, int
     faulting_buffer->buffer[0] = DEFAULT_BUFFER_VALUE;
 }
 
+void ecall_rep_fill_lfb(int filling_sequence, enclyser_buffer_t *filling_buffer)
+{
+    int i;
+
+    for (i = 0; i < REPETITION_TIME * 100; i++)
+    {
+        fill_lfb(filling_sequence, filling_buffer);
+    }
+}
+
 #include <stdarg.h>
 #include <string.h>
 
