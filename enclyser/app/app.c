@@ -155,7 +155,7 @@ TestSuite(taa, .init = construct_app_environment, .fini = desctruct_app_environm
 #pragma region same_thread_taa_nosgx_is_effective
 
 /**
- * @brief Test if same_thread_taa_nosgx is effective with a successful rate above 75% for at least 75% offset.
+ * @brief Test if same_thread_taa_nosgx is effective with a successful rate above or equal to 10% for at least 75% offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
@@ -183,7 +183,7 @@ static int test_core_same_thread_taa_nosgx_is_effective()
             attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
             reload(&app_encoding_buffer, &app_printing_buffer);
         }
-        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] > 75 || allowance--))
+        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 10 || allowance--))
         {
             return -1;
         }
@@ -229,7 +229,7 @@ Test(taa, same_thread_taa_nosgx_is_effective, .disabled = false)
 #pragma region same_thread_taa_eexit_is_effective
 
 /**
- * @brief Test if same_thread_taa_eexit is effective with a successful rate above 75% for at least 75% offset.
+ * @brief Test if same_thread_taa_eexit is effective with a successful rate above or equal to 10% for at least 75% offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
@@ -257,7 +257,7 @@ static int test_core_same_thread_taa_eexit_is_effective()
             attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
             reload(&app_encoding_buffer, &app_printing_buffer);
         }
-        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] > 75 || allowance--))
+        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 10 || allowance--))
         {
             return -1;
         }
@@ -303,7 +303,7 @@ Test(taa, same_thread_taa_eexit_is_effective, .disabled = false)
 #pragma region same_thread_taa_aex_is_effective
 
 /**
- * @brief Test if same_thread_taa_aex is effective with a successful rate above 75% for at least 75% offset.
+ * @brief Test if same_thread_taa_aex is effective with a successful rate above 10% for at least 75% offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
@@ -330,7 +330,7 @@ static int test_core_same_thread_taa_aex_is_effective()
             flush_enclyser_buffer(&app_encoding_buffer);
             ecall_grooming(global_eid, app_filling_sequence, &app_filling_buffer, app_clearing_sequence, &app_clearing_buffer, &app_faulting_buffer);
         }
-        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] > 75 || allowance--))
+        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 10 || allowance--))
         {
             return -1;
         }
@@ -414,7 +414,7 @@ static void *test_core_cross_thread_taa_nosgx_is_effective_adversary_thread(void
 }
 
 /**
- * @brief Test if cross_thread_taa_nosgx is effective with a successful rate above or equal to 2% for at least 75% offset.
+ * @brief Test if cross_thread_taa_nosgx is effective with a successful rate above or equal to 1% for at least 75% offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
@@ -447,7 +447,7 @@ static int test_core_cross_thread_taa_nosgx_is_effective()
         pthread_join(adversary_thread, NULL);
         pthread_join(victim_thread, NULL);
 
-        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 2 || allowance--))
+        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 1 || allowance--))
         {
             // INFO("offset: 0x%x", offset);
             // print(&app_printing_buffer, 0);
@@ -528,7 +528,7 @@ static void *test_core_cross_thread_taa_ecall_is_effective_adversary_thread(void
 }
 
 /**
- * @brief Test if cross_thread_taa_ecall is effective with a successful rate above or equal to 2% for at least 75% offset.
+ * @brief Test if cross_thread_taa_ecall is effective with a successful rate above or equal to 1% for at least 75% offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
@@ -561,7 +561,7 @@ static int test_core_cross_thread_taa_ecall_is_effective()
         pthread_join(adversary_thread, NULL);
         pthread_join(victim_thread, NULL);
 
-        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 2 || allowance--))
+        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 1 || allowance--))
         {
             // INFO("offset: 0x%x", offset);
             // print(&app_printing_buffer, 0);
@@ -647,7 +647,7 @@ static void *test_core_cross_core_taa_nosgx_is_effective_adversary_thread(void *
 }
 
 /**
- * @brief Test if cross_core_taa_nosgx is effective with a successful rate above or equal to 2% for at least 75% offset.
+ * @brief Test if cross_core_taa_nosgx is effective with a successful rate above or equal to 1% for at least 75% offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
@@ -680,7 +680,7 @@ static int test_core_cross_core_taa_nosgx_is_effective()
         pthread_join(adversary_thread, NULL);
         pthread_join(victim_thread, NULL);
 
-        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 2 || allowance--))
+        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 1 || allowance--))
         {
             // INFO("offset: 0x%x", offset);
             // print(&app_printing_buffer, 0);
@@ -761,7 +761,7 @@ static void *test_core_cross_core_taa_ecall_is_effective_adversary_thread(void *
 }
 
 /**
- * @brief Test if cross_core_taa_ecall is effective with a successful rate above or equal to 2% for at least 75% offset.
+ * @brief Test if cross_core_taa_ecall is effective with a successful rate above or equal to 1% for at least 75% offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
@@ -794,7 +794,7 @@ static int test_core_cross_core_taa_ecall_is_effective()
         pthread_join(adversary_thread, NULL);
         pthread_join(victim_thread, NULL);
 
-        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 2 || allowance--))
+        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 1 || allowance--))
         {
             // INFO("offset: 0x%x", offset);
             // print(&app_printing_buffer, 0);
@@ -848,7 +848,7 @@ TestSuite(mds, .init = construct_app_environment, .fini = desctruct_app_environm
 #pragma region same_thread_mds_nosgx_is_effective
 
 /**
- * @brief Test if same_thread_mds_nosgx is effective with a successful rate above 75% for at least 75% offset.
+ * @brief Test if same_thread_mds_nosgx is effective with a successful rate above or equal to 10% for at least 75% offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
@@ -876,7 +876,7 @@ static int test_core_same_thread_mds_nosgx_is_effective()
             attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
             reload(&app_encoding_buffer, &app_printing_buffer);
         }
-        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] > 75 || allowance--))
+        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 10 || allowance--))
         {
             // INFO("offset: 0x%x", offset);
             // print(&app_printing_buffer, 0);
@@ -926,7 +926,7 @@ Test(mds, same_thread_mds_nosgx_is_effective, .disabled = false)
 #pragma region same_thread_mds_eexit_is_effective
 
 /**
- * @brief Test if same_thread_mds_eexit is effective with a successful rate above 75% for at least 75% offset.
+ * @brief Test if same_thread_mds_eexit is effective with a successful rate above or equal to 10% for at least 75% offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
@@ -954,7 +954,7 @@ static int test_core_same_thread_mds_eexit_is_effective()
             attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
             reload(&app_encoding_buffer, &app_printing_buffer);
         }
-        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] > 75 || allowance--))
+        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 10 || allowance--))
         {
             return -1;
         }
@@ -1002,7 +1002,7 @@ Test(mds, same_thread_mds_eexit_is_effective, .disabled = false)
 #pragma region same_thread_mds_aex_is_effective
 
 /**
- * @brief Test if same_thread_mds_aex is effective with a successful rate above 75% for at least 75% offset.
+ * @brief Test if same_thread_mds_aex is effective with a successful rate above or equal to 10% for at least 75% offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
@@ -1029,7 +1029,7 @@ static int test_core_same_thread_mds_aex_is_effective()
             flush_enclyser_buffer(&app_encoding_buffer);
             ecall_grooming(global_eid, app_filling_sequence, &app_filling_buffer, app_clearing_sequence, &app_clearing_buffer, &app_faulting_buffer);
         }
-        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] > 75 || allowance--))
+        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 10 || allowance--))
         {
             return -1;
         }
@@ -1115,7 +1115,7 @@ static void *test_core_cross_thread_mds_nosgx_is_effective_adversary_thread(void
 }
 
 /**
- * @brief Test if cross_thread_mds_nosgx is effective with a successful rate above 5% for at least 75% offset.
+ * @brief Test if cross_thread_mds_nosgx is effective with a successful rate above or equal to 1% for at least 75% offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
@@ -1148,7 +1148,7 @@ static int test_core_cross_thread_mds_nosgx_is_effective()
         pthread_join(adversary_thread, NULL);
         pthread_join(victim_thread, NULL);
 
-        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 5 || allowance--))
+        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 1 || allowance--))
         {
             // INFO("offset: 0x%x", offset);
             // print(&app_printing_buffer, 0);
@@ -1231,7 +1231,7 @@ static void *test_core_cross_thread_mds_ecall_is_effective_adversary_thread(void
 }
 
 /**
- * @brief Test if corss_thread_mds_ecall is effective with a successful rate above 5% for at least 75% offset.
+ * @brief Test if corss_thread_mds_ecall is effective with a successful rate above or equal to 1% for at least 75% offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
@@ -1264,7 +1264,7 @@ static int test_core_cross_thread_mds_ecall_is_effective()
         pthread_join(adversary_thread, NULL);
         pthread_join(victim_thread, NULL);
 
-        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 5 || allowance--))
+        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 1 || allowance--))
         {
             // INFO("offset: 0x%x", offset);
             // print(&app_printing_buffer, 0);
@@ -1352,7 +1352,7 @@ static void *test_core_cross_core_mds_nosgx_is_effective_adversary_thread(void *
 }
 
 /**
- * @brief Test if cross_thread_mds_nosgx is effective with a successful rate above 5% for at least 75% offset.
+ * @brief Test if cross_thread_mds_nosgx is effective with a successful rate above or equal to 1% for at least 75% offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
@@ -1385,7 +1385,7 @@ static int test_core_cross_core_mds_nosgx_is_effective()
         pthread_join(adversary_thread, NULL);
         pthread_join(victim_thread, NULL);
 
-        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 5 || allowance--))
+        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 1 || allowance--))
         {
             // INFO("offset: 0x%x", offset);
             // print(&app_printing_buffer, 0);
@@ -1468,7 +1468,7 @@ static void *test_core_cross_core_mds_ecall_is_effective_adversary_thread(void *
 }
 
 /**
- * @brief Test if corss_thread_mds_ecall is effective with a successful rate above 5% for at least 75% offset.
+ * @brief Test if corss_thread_mds_ecall is effective with a successful rate above or equal to 1% for at least 75% offset.
  * 
  * @return int 0 if passed, -1 if failed.
  */
@@ -1501,7 +1501,7 @@ static int test_core_cross_core_mds_ecall_is_effective()
         pthread_join(adversary_thread, NULL);
         pthread_join(victim_thread, NULL);
 
-        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 5 || allowance--))
+        if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 1 || allowance--))
         {
             // INFO("offset: 0x%x", offset);
             // print(&app_printing_buffer, 0);
