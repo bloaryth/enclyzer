@@ -9,4 +9,4 @@ sudo bash install-sgx-software-enable-master.sh
 # Enclyser-related
 sudo bash install-criterion-v2.3.2.sh
 sudo bash install-enclyser-prerequisites.sh
-
+sudo bash install-enclyser-settings.sh
