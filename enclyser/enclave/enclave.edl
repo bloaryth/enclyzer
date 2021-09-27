@@ -44,8 +44,8 @@ enclave {
         public void ecall_grooming(int filling_sequence, [user_check] enclyser_buffer_t *filling_buffer, 
                                    int clearing_sequence, [user_check] enclyser_buffer_t *clearing_buffer, 
                                    [user_check] enclyser_buffer_t *faulting_buffer);
-
         public void ecall_rep_fill_lfb(int filling_sequence, [user_check] enclyser_buffer_t *filling_buffer);
+        public void ecall_empty();
     };
 
     /* 

@@ -18,6 +18,11 @@ void ecall_rep_fill_lfb(int filling_sequence, enclyser_buffer_t *filling_buffer)
     }
 }
 
+void ecall_empty()
+{
+    return;
+}
+
 #include <stdarg.h>
 #include <string.h>
 

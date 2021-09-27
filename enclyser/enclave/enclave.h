@@ -28,6 +28,12 @@ void ecall_grooming(int filling_sequence, enclyser_buffer_t *filling_buffer, int
 void ecall_rep_fill_lfb(int filling_sequence, enclyser_buffer_t *filling_buffer);
 
 /**
+ * @brief Just an empty ECALL.
+ * 
+ */
+void ecall_empty();
+
+/**
  * @brief Invokes OCALL to display the enclave buffer to the terminal.
  * 
  * @param fmt the format string to written to stdout
