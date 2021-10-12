@@ -6,10 +6,10 @@
                 "${workspaceFolder}/**",
                 "${workspaceFolder}",
                 "/opt/intel/sgxsdk/**",
-                "/usr/lib/modules/5.11.0-34-generic/build/arch/x86/include/",
-                "/usr/lib/modules/5.11.0-34-generic/build/arch/x86/include/generated/",
-                "/usr/lib/modules/5.11.0-34-generic/build/include/",
-                "/usr/src/linux-hwe-5.11-headers-5.11.0-34/include/uapi"
+                "/usr/lib/modules/5.11.0-37-generic/build/arch/x86/include/",
+                "/usr/lib/modules/5.11.0-37-generic/build/arch/x86/include/generated/",
+                "/usr/lib/modules/5.11.0-37-generic/build/include/",
+                "/usr/src/linux-hwe-5.11-headers-5.11.0-37/include/uapi"
             ],
             "defines": [
                 "NAMESPACE_SGX_SHARED",
