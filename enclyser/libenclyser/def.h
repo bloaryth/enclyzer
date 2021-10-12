@@ -124,6 +124,7 @@ typedef struct {
  * 
  */
 #define ATTACK_MINOR_NONE       0x0
+#define ATTACK_MINOR_NO_TSX     0x10
 #define ATTACK_MINOR_STABLE     0xff
 
 /**

