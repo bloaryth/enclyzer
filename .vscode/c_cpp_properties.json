@@ -13,15 +13,18 @@
             ],
             "defines": [
                 "NAMESPACE_SGX_SHARED",
-                "NAMESPACE_SGX_NO"
+                "NAMESPACE_SGX_NO",
+                "__KERNEL__",
+                "MODULE"
+            ],
+            "forcedInclude": [
+                "${workspaceFolder}/.vscode/vscode-preinclude.h",
+                "/usr/src/linux-headers-5.11.0-37-generic/include/generated/autoconf.h"
             ],
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "gnu17",
             "cppStandard": "gnu++14",
-            "intelliSenseMode": "linux-gcc-x64",
-            "forcedInclude": [
-                "${workspaceFolder}/.vscode/vscode-preinclude.h"
-            ]
+            "intelliSenseMode": "linux-gcc-x64"
         }
     ],
     "version": 4

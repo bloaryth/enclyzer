@@ -1,8 +1,9 @@
-
 # Created by https://www.toptal.com/developers/gitignore/api/c,python,git
 # Edit at https://www.toptal.com/developers/gitignore?templates=c,python,git
 
 ### PROJECT ###
+
+.stfolder
 
 3rdparty/criterion-v2.3.2
 3rdparty/criterion-v2.3.2-linux-x86_64.tar.bz2
