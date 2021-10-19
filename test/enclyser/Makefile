@@ -23,7 +23,6 @@ disable-prefetcher:
 
 #################### TEST COMPILATION ####################
 
-# TEST_C_FILES := test-enclyser-libenclyser-attack.c 
 TEST_C_FILES := test-enclyser-libenclyser-attack.c test-enclyser-libenclyser-memory.c \
 	test-enclyser-libenclyser-lfb.c test-enclyser-libenclyser-flush_reload.c \
 	test-sgx-analyser-app.c

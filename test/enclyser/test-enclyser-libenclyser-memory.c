@@ -14,7 +14,7 @@ void fini(void)
 
 TestSuite(suite_memory, .init = init, .fini = fini);
 
-Test(suite_memory, test_malloc_enclyser_buffer)
+Test(suite_memory, test_malloc_enclyser_buffer, .disabled = false)
 {
     enclyser_buffer_t enclyser_buffer = {
         .buffer = NULL,
@@ -27,7 +27,7 @@ Test(suite_memory, test_malloc_enclyser_buffer)
 
     /**
      * @brief Test if \p buffer is malloced, and other variables are not changed.
-     * 
+     *
      */
     malloc_enclyser_buffer(&enclyser_buffer);
 
@@ -42,25 +42,35 @@ Test(suite_memory, test_malloc_enclyser_buffer)
 
     /**
      * @brief Test if \p shadow is a copy of \p buffer.
-     * 
+     *
      */
-    enclyser_buffer.buffer[DEFAULT_FILLING_BUFFER_SIZE * 1 / 4] = 1;
-    enclyser_buffer.buffer[DEFAULT_FILLING_BUFFER_SIZE * 2 / 4] = 2;
-    // enclyser_buffer.buffer[DEFAULT_FILLING_BUFFER_SIZE * 3 / 4] = 3;    // FIXME remapping multiple pages
+    enclyser_buffer.buffer[enclyser_buffer.size * 1 / 4] = 1;
+    enclyser_buffer.buffer[enclyser_buffer.size * 2 / 4] = 2;
+    enclyser_buffer.buffer[enclyser_buffer.size * 3 / 4] = 3;
 
-    cr_expect(enclyser_buffer.shadow[DEFAULT_FILLING_BUFFER_SIZE * 1 / 4] == 1);
-    cr_expect(enclyser_buffer.shadow[DEFAULT_FILLING_BUFFER_SIZE * 2 / 4] == 2);
-    // cr_expect(enclyser_buffer.shadow[DEFAULT_FILLING_BUFFER_SIZE * 3 / 4] == 3);    // FIXME remapping multiple pages
+    cr_expect(enclyser_buffer.shadow[enclyser_buffer.size * 1 / 4] == 1);
+    cr_expect(enclyser_buffer.shadow[enclyser_buffer.size * 2 / 4] == 2);
+    cr_expect(enclyser_buffer.shadow[enclyser_buffer.size * 3 / 4] == 3);
+
+    enclyser_buffer.shadow[enclyser_buffer.size * 1 / 4] = 4;
+    enclyser_buffer.shadow[enclyser_buffer.size * 2 / 4] = 5;
+    enclyser_buffer.shadow[enclyser_buffer.size * 3 / 4] = 6;
+
+    cr_expect(enclyser_buffer.buffer[enclyser_buffer.size * 1 / 4] == 4);
+    cr_expect(enclyser_buffer.buffer[enclyser_buffer.size * 2 / 4] == 5);
+    cr_expect(enclyser_buffer.buffer[enclyser_buffer.size * 3 / 4] == 6);
 
     /**
      * @brief Test if \p buffer and \p shadow is 4 KB aligned.
-     * 
+     *
      */
     cr_expect(((uint64_t)enclyser_buffer.buffer & 0xfff) == 0);
     cr_expect(((uint64_t)enclyser_buffer.shadow & 0xfff) == 0);
+
+    free_enclyser_buffer(&enclyser_buffer);
 }
 
-Test(suite_memory, test_free_enclyser_buffer, .signal = SIGSEGV)
+Test(suite_memory, test_free_enclyser_buffer, .signal = SIGSEGV, .disabled = false)
 {
     enclyser_buffer_t enclyser_buffer = {
         .buffer = NULL,
@@ -73,7 +83,7 @@ Test(suite_memory, test_free_enclyser_buffer, .signal = SIGSEGV)
 
     /**
      * @brief Test if \p buffer is malloced and then freed, and other variables are not changed.
-     * 
+     *
      */
     malloc_enclyser_buffer(&enclyser_buffer);
     free_enclyser_buffer(&enclyser_buffer);
@@ -85,17 +95,15 @@ Test(suite_memory, test_free_enclyser_buffer, .signal = SIGSEGV)
     cr_expect(enclyser_buffer.access_ctrl == DEFAULT_BUFFER_ACCESS_CTRL);
 
     /**
-     * @brief 
-     * 
+     * @brief Test if the freed \p buffer could be accessed.
+     *
      */
-    enclyser_buffer.buffer = NULL;
-
     enclyser_buffer.buffer[DEFAULT_FILLING_BUFFER_SIZE * 1 / 4] = 1;
     enclyser_buffer.buffer[DEFAULT_FILLING_BUFFER_SIZE * 2 / 4] = 2;
     enclyser_buffer.buffer[DEFAULT_FILLING_BUFFER_SIZE * 3 / 4] = 3;
 }
 
-Test(suite_memory, test_cripple_enclyser_buffer)
+Test(suite_memory, test_cripple_enclyser_buffer, .disabled = false)
 {
     enclyser_buffer_t enclyser_buffer = {
         .buffer = NULL,
@@ -113,13 +121,13 @@ Test(suite_memory, test_cripple_enclyser_buffer)
 
     /**
      * @brief BUFFER_ACCESS_CTRL
-     * 
+     *
      */
     enclyser_buffer.mem_type = BUFFER_MEM_TYPE_WB;
     cripple_enclyser_buffer(&enclyser_buffer);
     for (i = 0; i < enclyser_buffer.size; i += PAGE_SIZE)
     {
-        pte = (unsigned long *)remap_page_table_level(enclyser_buffer.buffer + i, PTE);
+        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.buffer + i), PTE);
         cr_expect(PAT(*pte) == 0);
         cr_expect(PCD(*pte) == 0);
         cr_expect(PWT(*pte) == 0);
@@ -129,7 +137,7 @@ Test(suite_memory, test_cripple_enclyser_buffer)
     cripple_enclyser_buffer(&enclyser_buffer);
     for (i = 0; i < enclyser_buffer.size; i += PAGE_SIZE)
     {
-        pte = (unsigned long *)remap_page_table_level(enclyser_buffer.buffer + i, PTE);
+        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.buffer + i), PTE);
         cr_expect(PAT(*pte) == 0);
         cr_expect(PCD(*pte) == 0);
         cr_expect(PWT(*pte) == 1);
@@ -137,13 +145,13 @@ Test(suite_memory, test_cripple_enclyser_buffer)
 
     /**
      * @brief Test setting BUFFER_ACCESS_CTRL.
-     * 
+     *
      */
     enclyser_buffer.access_ctrl = BUFFER_ACCESS_CTRL_ACCESSED;
     cripple_enclyser_buffer(&enclyser_buffer);
     for (i = 0; i < enclyser_buffer.size; i += PAGE_SIZE)
     {
-        pte = (unsigned long *)remap_page_table_level(enclyser_buffer.buffer + i, PTE);
+        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.buffer + i), PTE);
         cr_expect(ACCESSED(*pte) == 1);
     }
 
@@ -151,7 +159,7 @@ Test(suite_memory, test_cripple_enclyser_buffer)
     cripple_enclyser_buffer(&enclyser_buffer);
     for (i = 0; i < enclyser_buffer.size; i += PAGE_SIZE)
     {
-        pte = (unsigned long *)remap_page_table_level(enclyser_buffer.buffer + i, PTE);
+        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.buffer + i), PTE);
         cr_expect(ACCESSED(*pte) == 0);
     }
 
@@ -159,7 +167,7 @@ Test(suite_memory, test_cripple_enclyser_buffer)
     cripple_enclyser_buffer(&enclyser_buffer);
     for (i = 0; i < enclyser_buffer.size; i += PAGE_SIZE)
     {
-        pte = (unsigned long *)remap_page_table_level(enclyser_buffer.buffer + i, PTE);
+        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.buffer + i), PTE);
         cr_expect(USER(*pte) == 1);
     }
 
@@ -167,7 +175,7 @@ Test(suite_memory, test_cripple_enclyser_buffer)
     cripple_enclyser_buffer(&enclyser_buffer);
     for (i = 0; i < enclyser_buffer.size; i += PAGE_SIZE)
     {
-        pte = (unsigned long *)remap_page_table_level(enclyser_buffer.buffer + i, PTE);
+        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.buffer + i), PTE);
         cr_expect(USER(*pte) == 0);
     }
 
@@ -175,7 +183,7 @@ Test(suite_memory, test_cripple_enclyser_buffer)
     cripple_enclyser_buffer(&enclyser_buffer);
     for (i = 0; i < enclyser_buffer.size; i += PAGE_SIZE)
     {
-        pte = (unsigned long *)remap_page_table_level(enclyser_buffer.buffer + i, PTE);
+        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.buffer + i), PTE);
         cr_expect(PRESENT(*pte) == 1);
     }
 
@@ -183,7 +191,7 @@ Test(suite_memory, test_cripple_enclyser_buffer)
     cripple_enclyser_buffer(&enclyser_buffer);
     for (i = 0; i < enclyser_buffer.size; i += PAGE_SIZE)
     {
-        pte = (unsigned long *)remap_page_table_level(enclyser_buffer.buffer + i, PTE);
+        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.buffer + i), PTE);
         cr_expect(PRESENT(*pte) == 0);
     }
 
@@ -191,7 +199,7 @@ Test(suite_memory, test_cripple_enclyser_buffer)
     cripple_enclyser_buffer(&enclyser_buffer);
     for (i = 0; i < enclyser_buffer.size; i += PAGE_SIZE)
     {
-        pte = (unsigned long *)remap_page_table_level(enclyser_buffer.buffer + i, PTE);
+        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.buffer + i), PTE);
         cr_expect(RSVD(*pte) == 1);
     }
 
@@ -199,7 +207,7 @@ Test(suite_memory, test_cripple_enclyser_buffer)
     cripple_enclyser_buffer(&enclyser_buffer);
     for (i = 0; i < enclyser_buffer.size; i += PAGE_SIZE)
     {
-        pte = (unsigned long *)remap_page_table_level(enclyser_buffer.buffer + i, PTE);
+        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.buffer + i), PTE);
         cr_expect(RSVD(*pte) == 0);
     }
 
@@ -207,13 +215,13 @@ Test(suite_memory, test_cripple_enclyser_buffer)
 }
 
 /**
- * @brief Get the time used to access the memory address, which indicates its location 
+ * @brief Get the time used to access the memory address, which indicates its location
  * in the memory hierarchy.
- * 
+ *
  * @param address the memory address to be accessed.
  * @return the time used to access the memory address.
- * 
- * @see How to Benchmark Code Execution Times on Intel® IA-32 and IA-64 
+ *
+ * @see How to Benchmark Code Execution Times on Intel® IA-32 and IA-64
  *     Instruction Set Architectures
  */
 static uint32_t access_time(uint64_t address)
@@ -236,12 +244,12 @@ static uint32_t access_time(uint64_t address)
     return cycles;
 }
 
-Test(suite_memory, test_flush_enclyser_buffer) // TODO fix remapping
+Test(suite_memory, test_flush_enclyser_buffer, .disabled = false) // TODO fix remapping
 {
     enclyser_buffer_t enclyser_buffer = {
         .buffer = NULL,
         .shadow = NULL,
-        .size = 128,
+        .size = DEFAULT_FILLING_BUFFER_SIZE,
         .value = DEFAULT_BUFFER_VALUE,
         .order = DEFAULT_BUFFER_ORDER,
         .mem_type = DEFAULT_BUFFER_MEM_TYPE,
@@ -255,12 +263,14 @@ Test(suite_memory, test_flush_enclyser_buffer) // TODO fix remapping
 
     for (i = 0; i < enclyser_buffer.size; i += CACHELINE_SIZE)
     {
-        cr_expect(access_time((unsigned long)(enclyser_buffer.buffer + i)) > 120);
+        cr_expect(access_time((unsigned long)((uintptr_t)(enclyser_buffer.buffer + i))) > 120);
     }
     asm volatile("mfence\n");
+
+    free_enclyser_buffer(&enclyser_buffer);
 }
 
-Test(suite_memory, test_assign_enclyser_buffer)
+Test(suite_memory, test_assign_enclyser_buffer, .disabled = false)
 {
     enclyser_buffer_t enclyser_buffer = {
         .buffer = NULL,
@@ -300,5 +310,5 @@ Test(suite_memory, test_assign_enclyser_buffer)
     //     cr_expect(enclyser_buffer.buffer[i] == enclyser_buffer.value + i / 0x40);
     // }
 
-    // free_enclyser_buffer(&enclyser_buffer);
+    free_enclyser_buffer(&enclyser_buffer);
 }

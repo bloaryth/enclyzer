@@ -74,9 +74,9 @@ void test_flush_reload_fini()
     close_system_file();
 }
 
-TestSuite(test_flush_reload, .init = test_flush_reload_init, .fini = test_flush_reload_fini);
+TestSuite(suite_flush_reload, .init = test_flush_reload_init, .fini = test_flush_reload_fini);
 
-Test(test_flush_reload, test_flush)
+Test(suite_flush_reload, test_flush, .disabled = false)
 {
     int i;
 
@@ -87,7 +87,7 @@ Test(test_flush_reload, test_flush)
     }
 }
 
-Test(test_flush_reload, test_reload)
+Test(suite_flush_reload, test_reload, .disabled = false)
 {
     int i, allowance;
 

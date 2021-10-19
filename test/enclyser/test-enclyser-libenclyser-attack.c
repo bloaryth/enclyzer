@@ -77,7 +77,7 @@ void test_attack_arch_fini()
     close_system_file();
 }
 
-Test(suite_attack, test_attack_arch, .init = test_attack_arch_init, .fini = test_attack_arch_fini, .disabled=false)
+Test(suite_attack, test_attack_arch, .init = test_attack_arch_init, .fini = test_attack_arch_fini, .disabled = false)
 {
     int i, offset, allowance;
 
@@ -91,12 +91,15 @@ Test(suite_attack, test_attack_arch, .init = test_attack_arch_init, .fini = test
         attack_spec.offset = offset;
         for (i = 0; i < REPETITION_TIME; i++)
         {
-            flush_enclyser_buffer(&encoding_buffer);
             fill_lfb(FILLING_SEQUENCE_STR_STORE, &filling_buffer);
+            flush_enclyser_buffer(&encoding_buffer);
             attack(&attack_spec, &attaking_buffer, &encoding_buffer);
             reload(&encoding_buffer, &printing_buffer);
         }
         cr_expect(printing_buffer.buffer[offset + filling_buffer.value] > 50 || allowance--);
+        if (!(printing_buffer.buffer[offset + filling_buffer.value] > 50 || allowance)){
+            print(&printing_buffer, 0);
+        }
         reset(&printing_buffer);
     }
     attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_PRESENT;
@@ -104,18 +107,18 @@ Test(suite_attack, test_attack_arch, .init = test_attack_arch_init, .fini = test
 
     /** ATTACK_MAJOR_TAA */
     attack_spec.major = ATTACK_MAJOR_TAA;
-    allowance = 16;
+    allowance = 32;
     for (offset = 0; offset < 64; offset++)
     {
         attack_spec.offset = offset;
         for (i = 0; i < REPETITION_TIME; i++)
         {
-            flush_enclyser_buffer(&encoding_buffer);
             fill_lfb(FILLING_SEQUENCE_STR_STORE, &filling_buffer);
+            flush_enclyser_buffer(&encoding_buffer);
             attack(&attack_spec, &attaking_buffer, &encoding_buffer);
             reload(&encoding_buffer, &printing_buffer);
         }
-        cr_expect(printing_buffer.buffer[offset + filling_buffer.value] > 75 || allowance--);
+        cr_expect(printing_buffer.buffer[offset + filling_buffer.value] > 32 || allowance--);
         reset(&printing_buffer);
     }
 }

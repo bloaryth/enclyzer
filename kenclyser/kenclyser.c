@@ -75,46 +75,43 @@ long kenclyser_get_pt_mapping(struct file *filep, unsigned int cmd, unsigned lon
     p4d_t *p4d = NULL;
 #endif
 
-    uint64_t virt;
-    RET_ASSERT(map);
+    map->pt_addr = __pa(current->mm->pgd);
 
-    virt = map->virt;
-    memset(map, 0x00, sizeof(address_mapping_t));
-    map->virt = virt;
-
-    map->pgd_phys_address = __pa(current->mm->pgd);
-    pgd = pgd_offset(current->mm, virt);
-    map->pgd = *((uint64_t *)pgd);
+    pgd = pgd_offset(current->mm, map->virt_addr);
+    map->pgd_addr = __pa(pgd);
+    map->pgd_cont = *((uint64_t *)pgd);
 
     if (!pgd_present(*pgd))
         return 0;
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 11, 0))
     /* simply unfold the pgd inside the dummy p4d struct */
-    p4d = p4d_offset(pgd, virt);
-    pud = pud_offset(p4d, virt);
+    p4d = p4d_offset(pgd, map->virt_addr);
+    pud = pud_offset(p4d, map->virt_addr);
 #else
-    pud = pud_offset(pgd, virt);
+    pud = pud_offset(pgd, map->virt_addr);
 #endif
-
-    map->pud = *((uint64_t *)pud);
+    map->pud_addr = __pa(pud);
+    map->pud_cont = *((uint64_t *)pud);
 
     if (!pud_present(*pud))
         return 0;
 
-    pmd = pmd_offset(pud, virt);
-    map->pmd = *((uint64_t *)pmd);
+    pmd = pmd_offset(pud, map->virt_addr);
+    map->pmd_addr = __pa(pmd);
+    map->pmd_cont = *((uint64_t *)pmd);
 
     if (!pmd_present(*pmd))
         return 0;
 
-    pte = pte_offset_map(pmd, virt);
-    map->pte = *((uint64_t *)pte);
+    pte = pte_offset_map(pmd, map->virt_addr);
+    map->pte_addr = __pa(pte);
+    map->pte_cont = *((uint64_t *)pte);
 
     if (!pte_present(*pte))
         return 0;
 
-    map->phys = PFN_PHYS(pte_pfn(*pte)) | (virt & 0xfff);
+    map->phys_addr = PFN_PHYS(pte_pfn(*pte)) | (map->virt_addr & 0xfff);
 
     return 0;
 }
@@ -208,9 +205,10 @@ static struct miscdevice pmc_dev = {
     .mode = S_IRUGO | S_IWUGO};
 
 /* Code from: <https://www.libcrack.so/2012/09/02/bypassing-devmem_is_allowed-with-kprobes/> */
-static int devmem_is_allowed_handler (struct kretprobe_instance *rp, struct pt_regs *regs)
+static int devmem_is_allowed_handler(struct kretprobe_instance *rp, struct pt_regs *regs)
 {
-    if (regs->ax == 0) {
+    if (regs->ax == 0)
+    {
         regs->ax = 0x1;
     }
     return 0;

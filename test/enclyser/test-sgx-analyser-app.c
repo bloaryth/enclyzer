@@ -670,7 +670,7 @@ void mark_grooming_buffer_1(uint8_t *grooming_buffer_1)
     {
 #if FIRST_GROOMING_BUFFER_MEMTYPE == ENUM_WB
 #elif FIRST_GROOMING_BUFFER_MEMTYPE == ENUM_WC
-        grooming_buffer_pte_1 = (unsigned long *)remap_page_table_level(grooming_buffer_1 + i, PTE);
+        grooming_buffer_pte_1 = (unsigned long *)remap_page_table((uintptr_t)((uintptr_t)()grooming_buffer_1 + i), PTE, PAGE_SIZE);
         *grooming_buffer_pte_1 = MARK_PAT1(*grooming_buffer_pte_1);
 #endif
     }
@@ -739,7 +739,7 @@ void mark_grooming_buffer_2(uint8_t *grooming_buffer_2)
     {
 #if SECOND_GROOMING_BUFFER_MEMTYPE == ENUM_WB
 #elif SECOND_GROOMING_BUFFER_MEMTYPE == ENUM_WC
-        grooming_buffer_pte_2 = (unsigned long *)remap_page_table_level(grooming_buffer_2 + i, PTE);
+        grooming_buffer_pte_2 = (unsigned long *)remap_page_table((uintptr_t)(grooming_buffer_2 + i), PTE, PAGE_SIZE);
         *grooming_buffer_pte_2 = MARK_PAT1(*grooming_buffer_pte_2);
 #endif
     }
@@ -980,7 +980,7 @@ void free_mds_attack_buffer(uint8_t *leak_source)
  */
 void remap_mds_attack_buffer(uint8_t **leak_source_shadow, uint8_t *leak_source)
 {
-    *leak_source_shadow = (uint8_t *)remap_page_table_level(leak_source, PAGE);
+    *leak_source_shadow = (uint8_t *)remap_page_table((uintptr_t)leak_source, PAGE);
 }
 
 /**
@@ -1010,16 +1010,16 @@ void mark_mds_attack_buffer(uint8_t *leak_source)
     {
 #if LEAK_SOURCE_PTE == ENUM_NORMAL
 #elif LEAK_SOURCE_PTE == ENUM_NOT_ACCESSED
-        leak_source_pte = (unsigned long *)remap_page_table_level(leak_source + i, PTE);
+        leak_source_pte = (unsigned long *)remap_page_table((uintptr_t)((uintptr_t)(()uintptr_t)()enclyser_buffer.buffer + i), PTE, PAGE_SIZE);
         *leak_source_pte = MARK_NOT_ACCESSED(*leak_source_pte);
 #elif LEAK_SOURCE_PTE == ENUM_NOT_PRESENT
-        leak_source_pte = (unsigned long *)remap_page_table_level(leak_source + i, PTE);
+        leak_source_pte = (unsigned long *)remap_page_table((uintptr_t)((uintptr_t)(()uintptr_t)()enclyser_buffer.buffer + i), PTE, PAGE_SIZE);
         *leak_source_pte = MARK_NOT_PRESENT(*leak_source_pte);
 #elif LEAK_SOURCE_PTE == ENUM_RSVD
-        leak_source_pte = (unsigned long *)remap_page_table_level(leak_source + i, PTE);
+        leak_source_pte = (unsigned long *)remap_page_table((uintptr_t)((uintptr_t)(()uintptr_t)()enclyser_buffer.buffer + i), PTE, PAGE_SIZE);
         *leak_source_pte = MARK_RSVD(*leak_source_pte);
 #elif LEAK_SOURCE_PTE == ENUM_SUPERVISOR
-        leak_source_pte = (unsigned long *)remap_page_table_level(leak_source + i, PTE);
+        leak_source_pte = (unsigned long *)remap_page_table((uintptr_t)((uintptr_t)(()uintptr_t)()enclyser_buffer.buffer + i), PTE, PAGE_SIZE);
         *leak_source_pte = MARK_SUPERVISOR(*leak_source_pte);
 #endif
     }
@@ -1429,7 +1429,7 @@ void test_app_fini()
     unconfig_environment();
 }
 
-Test(suit_sgx_analyser, test_app, .init = test_app_init, .fini = test_app_fini, .disabled = true)
+Test(suit_sgx_analyser, test_app, .init = test_app_init, .fini = test_app_fini, .disabled = false)
 {
     reset_reload_results(reload_results);
     for (rep = 0; rep < REPETITION_LIMIT; rep++)
@@ -1523,7 +1523,7 @@ void test_dual_data_fini()
     close_system_file();
 }
 
-Test(suit_sgx_analyser, test_dual_data, .init = test_dual_data_init, .fini = test_dual_data_fini, .disabled = true)
+Test(suit_sgx_analyser, test_dual_data, .init = test_dual_data_init, .fini = test_dual_data_fini, .disabled = false)
 {
     /** ZERO SUBSTITUTE */
     INFO("ZERO SUBSTITUTE");
@@ -1690,7 +1690,7 @@ void test_dual_func_fini()
     close_system_file();
 }
 
-Test(suit_sgx_analyser, test_dual_func, .init = test_dual_func_init, .fini = test_dual_func_fini, .disabled = true)
+Test(suit_sgx_analyser, test_dual_func, .init = test_dual_func_init, .fini = test_dual_func_fini, .disabled = false)
 {
     /** ZERO SUBSTITUTE */
     INFO("ZERO SUBSTITUTE");
