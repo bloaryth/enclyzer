@@ -91,11 +91,11 @@ void cripple_enclyser_buffer(enclyser_buffer_t *enclyser_buffer)
         case BUFFER_MEM_TYPE_NONE:
             break;
         case BUFFER_MEM_TYPE_WB:
-            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer->buffer + i), PTE);
+            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer->shadow + i), PTE);
             *remapped_pte = MARK_PAT0(*remapped_pte);
             break;
         case BUFFER_MEM_TYPE_WC:
-            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer->buffer + i), PTE);
+            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer->shadow + i), PTE);
             *remapped_pte = MARK_PAT1(*remapped_pte);
             break;
         default:
@@ -107,35 +107,35 @@ void cripple_enclyser_buffer(enclyser_buffer_t *enclyser_buffer)
         case BUFFER_ACCESS_CTRL_NONE:
             break;
         case BUFFER_ACCESS_CTRL_ACCESSED:
-            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer->buffer + i), PTE);
+            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer->shadow + i), PTE);
             *remapped_pte = MARK_ACCESSED(*remapped_pte);
             break;
         case BUFFER_ACCESS_CTRL_NOT_ACCESSED:
-            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer->buffer + i), PTE);
+            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer->shadow + i), PTE);
             *remapped_pte = MARK_NOT_ACCESSED(*remapped_pte);
             break;
         case BUFFER_ACCESS_CTRL_USER:
-            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer->buffer + i), PTE);
+            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer->shadow + i), PTE);
             *remapped_pte = MARK_USER(*remapped_pte);
             break;
         case BUFFER_ACCESS_CTRL_SUPERVISOR:
-            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer->buffer + i), PTE);
+            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer->shadow + i), PTE);
             *remapped_pte = MARK_SUPERVISOR(*remapped_pte);
             break;
         case BUFFER_ACCESS_CTRL_PRESENT:
-            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer->buffer + i), PTE);
+            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer->shadow + i), PTE);
             *remapped_pte = MARK_PRESENT(*remapped_pte);
             break;
         case BUFFER_ACCESS_CTRL_NOT_PRESENT:
-            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer->buffer + i), PTE);
+            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer->shadow + i), PTE);
             *remapped_pte = MARK_NOT_PRESENT(*remapped_pte);
             break;
         case BUFFER_ACCESS_CTRL_RSVD:
-            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer->buffer + i), PTE);
+            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer->shadow + i), PTE);
             *remapped_pte = MARK_RSVD(*remapped_pte);
             break;
         case BUFFER_ACCESS_CTRL_NOT_RSVD:
-            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer->buffer + i), PTE);
+            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer->shadow + i), PTE);
             *remapped_pte = MARK_NOT_RSVD(*remapped_pte);
             break;
         default:

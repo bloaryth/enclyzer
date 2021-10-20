@@ -127,7 +127,7 @@ Test(suite_memory, test_cripple_enclyser_buffer, .disabled = false)
     cripple_enclyser_buffer(&enclyser_buffer);
     for (i = 0; i < enclyser_buffer.size; i += PAGE_SIZE)
     {
-        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.buffer + i), PTE);
+        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.shadow + i), PTE);
         cr_expect(PAT(*pte) == 0);
         cr_expect(PCD(*pte) == 0);
         cr_expect(PWT(*pte) == 0);
@@ -137,7 +137,7 @@ Test(suite_memory, test_cripple_enclyser_buffer, .disabled = false)
     cripple_enclyser_buffer(&enclyser_buffer);
     for (i = 0; i < enclyser_buffer.size; i += PAGE_SIZE)
     {
-        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.buffer + i), PTE);
+        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.shadow + i), PTE);
         cr_expect(PAT(*pte) == 0);
         cr_expect(PCD(*pte) == 0);
         cr_expect(PWT(*pte) == 1);
@@ -151,7 +151,7 @@ Test(suite_memory, test_cripple_enclyser_buffer, .disabled = false)
     cripple_enclyser_buffer(&enclyser_buffer);
     for (i = 0; i < enclyser_buffer.size; i += PAGE_SIZE)
     {
-        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.buffer + i), PTE);
+        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.shadow + i), PTE);
         cr_expect(ACCESSED(*pte) == 1);
     }
 
@@ -159,7 +159,7 @@ Test(suite_memory, test_cripple_enclyser_buffer, .disabled = false)
     cripple_enclyser_buffer(&enclyser_buffer);
     for (i = 0; i < enclyser_buffer.size; i += PAGE_SIZE)
     {
-        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.buffer + i), PTE);
+        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.shadow + i), PTE);
         cr_expect(ACCESSED(*pte) == 0);
     }
 
@@ -167,7 +167,7 @@ Test(suite_memory, test_cripple_enclyser_buffer, .disabled = false)
     cripple_enclyser_buffer(&enclyser_buffer);
     for (i = 0; i < enclyser_buffer.size; i += PAGE_SIZE)
     {
-        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.buffer + i), PTE);
+        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.shadow + i), PTE);
         cr_expect(USER(*pte) == 1);
     }
 
@@ -175,7 +175,7 @@ Test(suite_memory, test_cripple_enclyser_buffer, .disabled = false)
     cripple_enclyser_buffer(&enclyser_buffer);
     for (i = 0; i < enclyser_buffer.size; i += PAGE_SIZE)
     {
-        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.buffer + i), PTE);
+        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.shadow + i), PTE);
         cr_expect(USER(*pte) == 0);
     }
 
@@ -183,7 +183,7 @@ Test(suite_memory, test_cripple_enclyser_buffer, .disabled = false)
     cripple_enclyser_buffer(&enclyser_buffer);
     for (i = 0; i < enclyser_buffer.size; i += PAGE_SIZE)
     {
-        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.buffer + i), PTE);
+        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.shadow + i), PTE);
         cr_expect(PRESENT(*pte) == 1);
     }
 
@@ -191,7 +191,7 @@ Test(suite_memory, test_cripple_enclyser_buffer, .disabled = false)
     cripple_enclyser_buffer(&enclyser_buffer);
     for (i = 0; i < enclyser_buffer.size; i += PAGE_SIZE)
     {
-        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.buffer + i), PTE);
+        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.shadow + i), PTE);
         cr_expect(PRESENT(*pte) == 0);
     }
 
@@ -199,7 +199,7 @@ Test(suite_memory, test_cripple_enclyser_buffer, .disabled = false)
     cripple_enclyser_buffer(&enclyser_buffer);
     for (i = 0; i < enclyser_buffer.size; i += PAGE_SIZE)
     {
-        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.buffer + i), PTE);
+        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.shadow + i), PTE);
         cr_expect(RSVD(*pte) == 1);
     }
 
@@ -207,7 +207,7 @@ Test(suite_memory, test_cripple_enclyser_buffer, .disabled = false)
     cripple_enclyser_buffer(&enclyser_buffer);
     for (i = 0; i < enclyser_buffer.size; i += PAGE_SIZE)
     {
-        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.buffer + i), PTE);
+        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.shadow + i), PTE);
         cr_expect(RSVD(*pte) == 0);
     }
 

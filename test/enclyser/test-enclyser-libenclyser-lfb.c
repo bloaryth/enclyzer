@@ -25,7 +25,7 @@ void test_fill_lfb_log_init()
 
     malloc_enclyser_buffer(&filling_buffer);
 
-    sleep(5);
+    sleep(2);
 }
 
 void test_fill_lfb_log_fini()

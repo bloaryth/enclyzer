@@ -104,7 +104,7 @@ void print(enclyser_buffer_t *printing_buffer, uint8_t printing_bar)
                    isprint(i) ? (uint32_t)i : '?');
         }
     }
-    printf("--------------------}\n\n");
+    printf("--------------------}\n");
 
     reset(printing_buffer);
 }

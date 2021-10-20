@@ -117,7 +117,8 @@ typedef struct {
 #define ATTACK_MAJOR_L1TF       0x2
 #define ATTACK_MAJOR_LVI        0x3
 #define ATTACK_MAJOR_MDS        0x4
-#define ATTACK_MAJOR_TAA        0x5
+#define ATTACK_MAJOR_RDCL       0x5
+#define ATTACK_MAJOR_TAA        0x6
 
 /**
  * @brief the enum defines for \p enclyser_attack_t->minor
@@ -125,6 +126,7 @@ typedef struct {
  */
 #define ATTACK_MINOR_NONE       0x0
 #define ATTACK_MINOR_NO_TSX     0x10
+#define ATTACK_MINOR_TSX        0x20
 #define ATTACK_MINOR_STABLE     0xff
 
 /**
