@@ -10,7 +10,7 @@
 
 /**
  * @brief defines and variables for enclave creation and destruction
- * 
+ *
  */
 #define TOKEN_FILENAME "enclave.token"
 #define ENCLAVE_FILENAME "enclave.signed.so"
@@ -22,7 +22,7 @@ int updated;
 
 /**
  * @brief defines and variables for grooming and attack.
- * 
+ *
  */
 int app_filling_sequence;
 int app_clearing_sequence;
@@ -39,13 +39,13 @@ enclyser_buffer_t app_printing_buffer;
 
 /**
  * @brief defines and variables for signal handling
- * 
+ *
  */
 int sigsegv_signal;
 
 /**
  * @brief A signal handler for SIGSEGV.
- * 
+ *
  * @param signal the signal number passed in
  */
 void sigsegv_handler(int signal);

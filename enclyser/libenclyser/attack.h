@@ -8,13 +8,13 @@
 
 /**
  * @brief the defines and functions that are shared by trusted libraries and untrusted libraries
- * 
+ *
  */
 #ifdef NAMESPACE_SGX_SHARED
 
 /**
  * @brief Try different types of attacks.
- * 
+ *
  * @param attack_spec the specified attack
  * @param attaking_buffer the buffer used by the attack
  * @param encoding_buffer the buffer used to encode data leaked
@@ -27,7 +27,7 @@ void attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, 
 
 /**
  * @brief the defines and functions that are exclusive to trusted libraries
- * 
+ *
  */
 #ifdef NAMESPACE_SGX_YES
 
@@ -35,7 +35,7 @@ void attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, 
 
 /**
  * @brief the defines and functions that are exclusive to untrusted libraries
- * 
+ *
  */
 #ifdef NAMESPACE_SGX_NO
 

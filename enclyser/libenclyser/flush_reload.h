@@ -8,7 +8,7 @@
 
 /**
  * @brief the defines and functions that are shared by trusted libraries and untrusted libraries
- * 
+ *
  */
 #ifdef NAMESPACE_SGX_SHARED
 
@@ -16,7 +16,7 @@
 
 /**
  * @brief the defines and functions that are exclusive to trusted libraries
- * 
+ *
  */
 #ifdef NAMESPACE_SGX_YES
 
@@ -24,21 +24,21 @@
 
 /**
  * @brief the defines and functions that are exclusive to untrusted libraries
- * 
+ *
  */
 #ifdef NAMESPACE_SGX_NO
 
-#include <ctype.h>  // isprint function
+#include <ctype.h> // isprint function
 
 /**
  * @brief The boundry which defines which is a succussful cache hit.
- * 
+ *
  */
-#define TIME_LIMIT  120
+#define TIME_LIMIT 120
 
 /**
  * @brief The FLUSH phase of the FLUSH+RELOAD technique.
- * 
+ *
  * @param encoding_buffer the buffer that contains temporary data
  * @param printing_buffer the buffer that accumulates persistent data
  */
@@ -46,7 +46,7 @@ void flush(enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffe
 
 /**
  * @brief The RELOAD phase of the FLUSH+RELOAD technique.
- * 
+ *
  * @param encoding_buffer the buffer that contains temporary data
  * @param printing_buffer the buffer that accumulates persistent data
  */
@@ -54,14 +54,14 @@ void reload(enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buff
 
 /**
  * @brief Reset all of the accumulated data to zero.
- * 
+ *
  * @param printing_buffer the buffer that accumulates persistent data
  */
 void reset(enclyser_buffer_t *printing_buffer);
 
 /**
  * @brief Print the printing_buffer in a clear and concise way.
- * 
+ *
  * @param printing_buffer the buffer that accumulates persistent data
  * @param printing_bar it decides whether an answer should be printed
  */
