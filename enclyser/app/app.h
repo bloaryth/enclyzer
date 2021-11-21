@@ -2,11 +2,6 @@
 
 #define ENCLYSER_APP_APP
 
-#ifdef __cplusplus
-extern "C"
-{
-#endif
-
 #include "sgx_error.h" /* sgx_status_t */
 #include "sgx_eid.h"   /* sgx_enclave_id_t */
 #include "sgx_urts.h"  /* sgx_launch_token_t */
@@ -54,9 +49,5 @@ int sigsegv_signal;
  * @param signal the signal number passed in
  */
 void sigsegv_handler(int signal);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

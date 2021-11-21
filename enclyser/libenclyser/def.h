@@ -2,10 +2,6 @@
 
 #define ENCLYSER_LIBENCLYSER_DEF
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * @brief the defines and functions that are shared by trusted libraries and untrusted libraries
  * 
@@ -241,10 +237,6 @@ typedef struct {
     int nr_cores;               /** grep 'cpu cores' /proc/cpuinfo -m 1 | awk '{print $4}' */
 } enclyser_sysinfo_t;
 
-#endif
-
-#ifdef __cplusplus
-}
 #endif
 
 #endif

@@ -2,10 +2,6 @@
 
 #define ENCLYSER_LIBENCLYSER_FLUSH_RELOAD
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "enclyser/libenclyser/def.h"
 #include "enclyser/libenclyser/info.h"
 #include "enclyser/libenclyser/memory.h"
@@ -71,10 +67,6 @@ void reset(enclyser_buffer_t *printing_buffer);
  */
 void print(enclyser_buffer_t *printing_buffer, uint8_t printing_bar);
 
-#endif
-
-#ifdef __cplusplus
-}
 #endif
 
 #endif

@@ -2,10 +2,6 @@
 
 #define ENCLYSER_LIBENCLYSER_ATTACK
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "enclyser/libenclyser/def.h"
 #include "enclyser/libenclyser/info.h"
 #include "enclyser/libenclyser/memory.h"
@@ -43,10 +39,6 @@ void attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, 
  */
 #ifdef NAMESPACE_SGX_NO
 
-#endif
-
-#ifdef __cplusplus
-}
 #endif
 
 #endif

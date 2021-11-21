@@ -2,10 +2,6 @@
 
 #define ENCLYSER_LIBENCLYSER_SYSTEM
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "enclyser/libenclyser/def.h"
 #include "enclyser/libenclyser/info.h"
 
@@ -106,10 +102,6 @@ void get_system_info(enclyser_sysinfo_t *sysinfo);
  */
 void print_system_info(enclyser_sysinfo_t *sysinfo);
 
-#endif
-
-#ifdef __cplusplus
-}
 #endif
 
 #endif

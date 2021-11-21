@@ -2,10 +2,6 @@
 
 #define ENCLYSER_LIBENCLYSER_INFO
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * @brief the defines and functions that are shared by trusted libraries and untrusted libraries
  * 
@@ -60,10 +56,6 @@ extern "C" {
  */
 void ocall_print_string(const char *str);
 
-#endif
-
-#ifdef __cplusplus
-}
 #endif
 
 #endif

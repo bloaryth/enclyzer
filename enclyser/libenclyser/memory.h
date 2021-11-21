@@ -2,10 +2,6 @@
 
 #define ENCLYSER_LIBENCLYSER_MEMORY
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "enclyser/libenclyser/def.h"
 #include "enclyser/libenclyser/info.h"
 #include "enclyser/libenclyser/pt.h"
@@ -74,10 +70,6 @@ void free_enclyser_buffer(enclyser_buffer_t *enclyser_buffer);
  */
 void cripple_enclyser_buffer(enclyser_buffer_t *enclyser_buffer);
 
-#endif
-
-#ifdef __cplusplus
-}
 #endif
 
 #endif

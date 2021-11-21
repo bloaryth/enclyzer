@@ -2,10 +2,6 @@
 
 #define ENCLYSER_LIBENCLYSER_LFB
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "enclyser/libenclyser/def.h"
 #include "enclyser/libenclyser/info.h"
 #include "enclyser/libenclyser/memory.h"
@@ -48,10 +44,6 @@ void clear_lfb(int clearing_sequence, enclyser_buffer_t *clearing_buffer);
  */
 #ifdef NAMESPACE_SGX_NO
 
-#endif
-
-#ifdef __cplusplus
-}
 #endif
 
 #endif

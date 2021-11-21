@@ -2,10 +2,6 @@
 
 #define ENCLYSER_LIBENCLYSER_INCLUDE
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "enclyser/libenclyser/attack.h"
 #include "enclyser/libenclyser/def.h"
 #include "enclyser/libenclyser/flush_reload.h"
@@ -37,10 +33,6 @@ extern "C" {
  */
 #ifdef NAMESPACE_SGX_NO
 
-#endif
-
-#ifdef __cplusplus
-}
 #endif
 
 #endif

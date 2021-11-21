@@ -2,10 +2,6 @@
 
 #define ENCLYSER_ENCLAVE_ENCLAVE
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "enclyser/libenclyser/include.h"
 
 /**
@@ -41,9 +37,5 @@ void ecall_empty();
  * @return int On success, the total number of characters written is returned.
  */
 int printf(const char* fmt, ...);
-
-#ifdef __cplusplus
-}
-#endif
 
 #endif

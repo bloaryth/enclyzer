@@ -2,10 +2,6 @@
 
 #define ENCLYSER_LIBENCLYSER_TEMPLATE
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /**
  * @brief the defines and functions that are shared by trusted libraries and untrusted libraries
  * 
@@ -28,10 +24,6 @@ extern "C" {
  */
 #ifdef NAMESPACE_SGX_NO
 
-#endif
-
-#ifdef __cplusplus
-}
 #endif
 
 #endif
