@@ -51,6 +51,11 @@ void assign_enclyser_buffer(enclyser_buffer_t *enclyser_buffer);
 /**
  * @brief Malloc a space for a enclyser buffer.
  * 
+ * If \p buffer is NULL, allocating a new buffer for it, or skip this step. 
+ * If \p shadow is NULL, shadowing the *buffer* for it, or skip this step.
+ * So the this function can be called multiple times safely, and parameter can be preset to allow 
+ * more flexibility if the buffer is already allocated or shadowed in other ways.
+ * 
  * @param enclyser_buffer the buffer which the function operates on
  */
 void malloc_enclyser_buffer(enclyser_buffer_t *enclyser_buffer);

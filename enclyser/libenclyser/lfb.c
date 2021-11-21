@@ -269,7 +269,7 @@ static void fill_lfb_str_store(int filling_sequence, enclyser_buffer_t *filling_
 
 void fill_lfb(int filling_sequence, enclyser_buffer_t *filling_buffer)
 {
-    flush_enclyser_buffer(filling_buffer);
+    flush_enclyser_buffer(filling_buffer);   // FIXME why should this line be commented out for same_thread_l1tf_sgx_is_10_percent_effective
 
     switch (filling_sequence)
     {

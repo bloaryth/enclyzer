@@ -19,6 +19,8 @@ int app_filling_sequence;
 int app_clearing_sequence;
 
 enclyser_buffer_t app_filling_buffer = {
+    .buffer = NULL,
+    .shadow = NULL,
     .size = DEFAULT_FILLING_BUFFER_SIZE,
     .value = DEFAULT_BUFFER_VALUE,
     .order = DEFAULT_BUFFER_ORDER,
@@ -26,6 +28,8 @@ enclyser_buffer_t app_filling_buffer = {
     .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
 enclyser_buffer_t app_clearing_buffer = {
+    .buffer = NULL,
+    .shadow = NULL,
     .size = DEFAULT_CLEARING_BUFFER_SIZE,
     .value = DEFAULT_BUFFER_VALUE,
     .order = DEFAULT_BUFFER_ORDER,
@@ -33,6 +37,8 @@ enclyser_buffer_t app_clearing_buffer = {
     .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
 enclyser_buffer_t app_faulting_buffer = {
+    .buffer = NULL,
+    .shadow = NULL,
     .size = DEFAULT_FAULTING_BUFFER_SIZE,
     .value = DEFAULT_BUFFER_VALUE,
     .order = DEFAULT_BUFFER_ORDER,
@@ -45,6 +51,8 @@ enclyser_attack_t app_attack_spec = {
     .offset = DEFAULT_ATTACK_OFFSET};
 
 enclyser_buffer_t app_attaking_buffer = {
+    .buffer = NULL,
+    .shadow = NULL,
     .size = DEFAULT_ATTACKING_BUFFER_SIZE,
     .value = DEFAULT_BUFFER_VALUE,
     .order = DEFAULT_BUFFER_ORDER,
@@ -52,6 +60,8 @@ enclyser_buffer_t app_attaking_buffer = {
     .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
 enclyser_buffer_t app_encoding_buffer = {
+    .buffer = NULL,
+    .shadow = NULL,
     .size = DEFAULT_ENCODING_BUFFER_SIZE,
     .value = DEFAULT_BUFFER_VALUE,
     .order = DEFAULT_BUFFER_ORDER,
@@ -59,11 +69,23 @@ enclyser_buffer_t app_encoding_buffer = {
     .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
 enclyser_buffer_t app_printing_buffer = {
+    .buffer = NULL,
+    .shadow = NULL,
     .size = DEFAULT_PRINTING_BUFFER_SIZE,
     .value = DEFAULT_BUFFER_VALUE,
     .order = DEFAULT_BUFFER_ORDER,
     .mem_type = DEFAULT_BUFFER_MEM_TYPE,
     .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
+
+enclyser_buffer_t encalve_secret_buffer = {
+    .buffer = NULL,
+    .shadow = NULL,
+    .size = DEFAULT_SECRET_BUFFER_SIZE,
+    .value = DEFAULT_BUFFER_VALUE,
+    .order = DEFAULT_BUFFER_ORDER,
+    .mem_type = DEFAULT_BUFFER_MEM_TYPE,
+    .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
+
 
 enclyser_sysinfo_t app_sysinfo = {};
 
@@ -84,8 +106,8 @@ enclyser_sysinfo_t app_sysinfo = {};
 
 /**
  * @brief A helpher function that sets up the runnning environment.
- * 
- * The environment includes \p app_filling_buffer, \p app_clearing_buffer, 
+ *
+ * The environment includes \p app_filling_buffer, \p app_clearing_buffer,
  * \p app_attack, \p app_attaking_buffer, \p app_encoding_buffer.
  */
 void construct_app_environment()
@@ -97,13 +119,15 @@ void construct_app_environment()
 
     get_system_info(&app_sysinfo);
 
+    ecall_get_secret(global_eid, &encalve_secret_buffer.buffer);
+
     malloc_enclyser_buffer(&app_filling_buffer);
     malloc_enclyser_buffer(&app_clearing_buffer);
     malloc_enclyser_buffer(&app_faulting_buffer);
-
     malloc_enclyser_buffer(&app_attaking_buffer);
     malloc_enclyser_buffer(&app_encoding_buffer);
     malloc_enclyser_buffer(&app_printing_buffer);
+    malloc_enclyser_buffer(&encalve_secret_buffer);
 
     // ASSERT(signal(SIGSEGV, sigsegv_handler) != SIG_ERR);
 
@@ -112,8 +136,8 @@ void construct_app_environment()
 
 /**
  * @brief A helper function that clearns up the running environment.
- * 
- * The environment includes \p app_filling_buffer, \p app_clearing_buffer, 
+ *
+ * The environment includes \p app_filling_buffer, \p app_clearing_buffer,
  * \p app_attack, \p app_attaking_buffer, \p app_encoding_buffer.
  */
 void destruct_app_environment()
@@ -123,7 +147,6 @@ void destruct_app_environment()
     free_enclyser_buffer(&app_filling_buffer);
     free_enclyser_buffer(&app_clearing_buffer);
     free_enclyser_buffer(&app_faulting_buffer);
-
     free_enclyser_buffer(&app_attaking_buffer);
     free_enclyser_buffer(&app_encoding_buffer);
     free_enclyser_buffer(&app_printing_buffer);
@@ -157,7 +180,7 @@ TestSuite(taa, .init = construct_app_environment, .fini = destruct_app_environme
 
 /**
  * @brief Test if same_thread_taa_nosgx is effective with a successful rate above or equal to 10% for at least 75% offset.
- * 
+ *
  * @return int 0 if passed, -1 if failed.
  */
 int test_core_same_thread_taa_nosgx_is_10_percent_effective()
@@ -233,7 +256,7 @@ Test(taa, same_thread_taa_nosgx_is_10_percent_effective, .disabled = true)
 
 /**
  * @brief Test if same_thread_taa_sgx is effective with a successful rate above or equal to 10% for at least 75% offset.
- * 
+ *
  * @return int 0 if passed, -1 if failed.
  */
 int test_core_same_thread_taa_sgx_is_10_percent_effective()
@@ -309,7 +332,7 @@ Test(taa, same_thread_taa_sgx_is_10_percent_effective, .disabled = true)
 
 /**
  * @brief The victim function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -327,7 +350,7 @@ void *test_core_cross_thread_taa_nosgx_is_1_percent_effective_victim_thread(void
 
 /**
  * @brief The adversary function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -347,7 +370,7 @@ void *test_core_cross_thread_taa_nosgx_is_1_percent_effective_adversary_thread(v
 
 /**
  * @brief Test if cross_thread_taa_nosgx is effective with a successful rate above or equal to 1% for at least 75% offset.
- * 
+ *
  * @return int 0 if passed, -1 if failed.
  */
 int test_core_cross_thread_taa_nosgx_is_1_percent_effective()
@@ -428,7 +451,7 @@ Test(taa, cross_thread_taa_nosgx_is_1_percent_effective, .disabled = true)
 
 /**
  * @brief The victim function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -441,7 +464,7 @@ void *test_core_cross_thread_taa_sgx_is_1_percent_effective_victim_thread(void *
 
 /**
  * @brief The adversary function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -461,7 +484,7 @@ void *test_core_cross_thread_taa_sgx_is_1_percent_effective_adversary_thread(voi
 
 /**
  * @brief Test if cross_thread_taa_ecall is effective with a successful rate above or equal to 1% for at least 75% offset.
- * 
+ *
  * @return int 0 if passed, -1 if failed.
  */
 int test_core_cross_thread_taa_sgx_is_1_percent_effective()
@@ -542,7 +565,7 @@ Test(taa, cross_thread_taa_sgx_is_1_percent_effective, .disabled = true)
 
 /**
  * @brief The victim function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -560,7 +583,7 @@ void *test_core_cross_core_taa_nosgx_is_1_percent_effective_victim_thread(void *
 
 /**
  * @brief The adversary function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -580,7 +603,7 @@ void *test_core_cross_core_taa_nosgx_is_1_percent_effective_adversary_thread(voi
 
 /**
  * @brief Test if cross_core_taa_nosgx is effective with a successful rate above or equal to 1% for at least 75% offset.
- * 
+ *
  * @return int 0 if passed, -1 if failed.
  */
 int test_core_cross_core_taa_nosgx_is_1_percent_effective()
@@ -661,7 +684,7 @@ Test(taa, cross_core_taa_nosgx_is_1_percent_effective, .disabled = true)
 
 /**
  * @brief The victim function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -674,7 +697,7 @@ void *test_core_cross_core_taa_sgx_is_1_percent_effective_victim_thread(void *ar
 
 /**
  * @brief The adversary function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -694,7 +717,7 @@ void *test_core_cross_core_taa_sgx_is_1_percent_effective_adversary_thread(void 
 
 /**
  * @brief Test if cross_core_taa_ecall is effective with a successful rate above or equal to 1% for at least 75% offset.
- * 
+ *
  * @return int 0 if passed, -1 if failed.
  */
 int test_core_cross_core_taa_sgx_is_1_percent_effective()
@@ -781,7 +804,7 @@ TestSuite(mds, .init = construct_app_environment, .fini = destruct_app_environme
 
 /**
  * @brief Test if same_thread_mds_nosgx is effective with a successful rate above or equal to 10% for at least 75% offset.
- * 
+ *
  * @return int 0 if passed, -1 if failed.
  */
 int test_core_same_thread_mds_nosgx_is_10_percent_effective()
@@ -859,7 +882,7 @@ Test(mds, same_thread_mds_nosgx_is_10_percent_effective, .disabled = true)
 
 /**
  * @brief Test if same_thread_mds_sgx is effective with a successful rate above or equal to 10% for at least 75% offset.
- * 
+ *
  * @return int 0 if passed, -1 if failed.
  */
 int test_core_same_thread_mds_sgx_is_10_percent_effective()
@@ -937,7 +960,7 @@ Test(mds, same_thread_mds_sgx_is_10_percent_effective, .disabled = true)
 
 /**
  * @brief The victim function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -955,7 +978,7 @@ void *test_core_cross_thread_mds_nosgx_is_1_percent_effective_victim_thread(void
 
 /**
  * @brief The adversary function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -975,7 +998,7 @@ void *test_core_cross_thread_mds_nosgx_is_1_percent_effective_adversary_thread(v
 
 /**
  * @brief Test if cross_thread_mds_nosgx is effective with a successful rate above or equal to 1% for at least 75% offset.
- * 
+ *
  * @return int 0 if passed, -1 if failed.
  */
 int test_core_cross_thread_mds_nosgx_is_1_percent_effective()
@@ -1058,7 +1081,7 @@ Test(mds, cross_thread_mds_nosgx_is_1_percent_effective, .disabled = true)
 
 /**
  * @brief The victim function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -1071,7 +1094,7 @@ void *test_core_cross_thread_mds_sgx_is_1_percent_effective_victim_thread(void *
 
 /**
  * @brief The adversary function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -1091,7 +1114,7 @@ void *test_core_cross_thread_mds_sgx_is_1_percent_effective_adversary_thread(voi
 
 /**
  * @brief Test if corss_thread_mds_ecall is effective with a successful rate above or equal to 1% for at least 75% offset.
- * 
+ *
  * @return int 0 if passed, -1 if failed.
  */
 int test_core_cross_thread_mds_sgx_is_1_percent_effective()
@@ -1174,7 +1197,7 @@ Test(mds, cross_thread_mds_sgx_is_1_percent_effective, .disabled = true)
 
 /**
  * @brief The victim function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -1192,7 +1215,7 @@ void *test_core_cross_core_mds_nosgx_is_1_percent_effective_victim_thread(void *
 
 /**
  * @brief The adversary function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -1212,7 +1235,7 @@ void *test_core_cross_core_mds_nosgx_is_1_percent_effective_adversary_thread(voi
 
 /**
  * @brief Test if cross_thread_mds_nosgx is effective with a successful rate above or equal to 1% for at least 75% offset.
- * 
+ *
  * @return int 0 if passed, -1 if failed.
  */
 int test_core_cross_core_mds_nosgx_is_1_percent_effective()
@@ -1295,7 +1318,7 @@ Test(mds, cross_core_mds_nosgx_is_1_percent_effective, .disabled = true)
 
 /**
  * @brief The victim function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -1308,7 +1331,7 @@ void *test_core_cross_core_mds_sgx_is_1_percent_effective_victim_thread(void *ar
 
 /**
  * @brief The adversary function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -1328,7 +1351,7 @@ void *test_core_cross_core_mds_sgx_is_1_percent_effective_adversary_thread(void 
 
 /**
  * @brief Test if corss_thread_mds_ecall is effective with a successful rate above or equal to 1% for at least 75% offset.
- * 
+ *
  * @return int 0 if passed, -1 if failed.
  */
 int test_core_cross_core_mds_sgx_is_1_percent_effective()
@@ -1417,7 +1440,7 @@ Test(mds, cross_core_mds_sgx_is_1_percent_effective, .disabled = true)
 
 // /**
 //  * @brief Test if verw is effective against same_thread_taa_nosgx with a successful rate above 90% for all offset.
-//  * 
+//  *
 //  * @return int 0 if passed, -1 if failed.
 //  */
 // int test_core_verw_against_same_thread_taa_nosgx_is_10_percent_effective()
@@ -1487,7 +1510,7 @@ Test(mds, cross_core_mds_sgx_is_1_percent_effective, .disabled = true)
 
 // /**
 //  * @brief Test if verw is effective against same_thread_mds_nosgx with a successful rate above 90% for all offset.
-//  * 
+//  *
 //  * @return int 0 if passed, -1 if failed.
 //  */
 // int test_core_verw_against_same_thread_mds_nosgx_is_10_percent_effective()
@@ -1565,7 +1588,7 @@ TestSuite(rdcl, .init = construct_app_environment, .fini = destruct_app_environm
 
 /**
  * @brief Test if same_thread_rdcl_nosgx is effective with a successful rate above or equal to 10% for at least 75% offset.
- * 
+ *
  * @return int 0 if passed, -1 if failed.
  */
 int test_core_same_thread_rdcl_nosgx_is_10_percent_effective()
@@ -1603,7 +1626,7 @@ int test_core_same_thread_rdcl_nosgx_is_10_percent_effective()
     return 0;
 }
 
-Test(rdcl, same_thread_rdcl_nosgx_is_10_percent_effective, .disabled = false)
+Test(rdcl, same_thread_rdcl_nosgx_is_10_percent_effective, .disabled = true)
 {
     app_attack_spec.major = ATTACK_MAJOR_RDCL;
     app_attack_spec.minor = ATTACK_MINOR_NO_TSX;
@@ -1639,7 +1662,7 @@ Test(rdcl, same_thread_rdcl_nosgx_is_10_percent_effective, .disabled = false)
 
 /**
  * @brief Test if same_thread_rdcl_sgx is effective with a successful rate above or equal to 10% for at least 75% offset.
- * 
+ *
  * @return int 0 if passed, -1 if failed.
  */
 int test_core_same_thread_rdcl_sgx_is_10_percent_effective()
@@ -1677,7 +1700,7 @@ int test_core_same_thread_rdcl_sgx_is_10_percent_effective()
     return 0;
 }
 
-Test(rdcl, same_thread_rdcl_sgx_is_10_percent_effective, .disabled = false)
+Test(rdcl, same_thread_rdcl_sgx_is_10_percent_effective, .disabled = true)
 {
     app_attack_spec.major = ATTACK_MAJOR_RDCL;
     app_attack_spec.minor = ATTACK_MINOR_NO_TSX;
@@ -1713,7 +1736,7 @@ Test(rdcl, same_thread_rdcl_sgx_is_10_percent_effective, .disabled = false)
 
 /**
  * @brief The victim function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -1731,7 +1754,7 @@ void *test_core_cross_thread_rdcl_nosgx_is_1_percent_effective_victim_thread(voi
 
 /**
  * @brief The adversary function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -1751,7 +1774,7 @@ void *test_core_cross_thread_rdcl_nosgx_is_1_percent_effective_adversary_thread(
 
 /**
  * @brief Test if cross_thread_rdcl_nosgx is effective with a successful rate above or equal to 1% for at least 75% offset.
- * 
+ *
  * @return int 0 if passed, -1 if failed.
  */
 int test_core_cross_thread_rdcl_nosgx_is_1_percent_effective()
@@ -1794,7 +1817,7 @@ int test_core_cross_thread_rdcl_nosgx_is_1_percent_effective()
     return 0;
 }
 
-Test(rdcl, cross_thread_rdcl_nosgx_is_1_percent_effective, .disabled = false)
+Test(rdcl, cross_thread_rdcl_nosgx_is_1_percent_effective, .disabled = true)
 {
     app_attack_spec.major = ATTACK_MAJOR_RDCL;
     app_attack_spec.minor = ATTACK_MINOR_NO_TSX;
@@ -1830,7 +1853,7 @@ Test(rdcl, cross_thread_rdcl_nosgx_is_1_percent_effective, .disabled = false)
 
 /**
  * @brief The victim function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -1848,7 +1871,7 @@ void *test_core_cross_thread_rdcl_sgx_is_1_percent_effective_victim_thread(void 
 
 /**
  * @brief The adversary function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -1868,7 +1891,7 @@ void *test_core_cross_thread_rdcl_sgx_is_1_percent_effective_adversary_thread(vo
 
 /**
  * @brief Test if cross_thread_rdcl_sgx is effective with a successful rate above or equal to 1% for at least 75% offset.
- * 
+ *
  * @return int 0 if passed, -1 if failed.
  */
 int test_core_cross_thread_rdcl_sgx_is_1_percent_effective()
@@ -1911,7 +1934,7 @@ int test_core_cross_thread_rdcl_sgx_is_1_percent_effective()
     return 0;
 }
 
-Test(rdcl, cross_thread_rdcl_sgx_is_1_percent_effective, .disabled = false)
+Test(rdcl, cross_thread_rdcl_sgx_is_1_percent_effective, .disabled = true)
 {
     app_attack_spec.major = ATTACK_MAJOR_RDCL;
     app_attack_spec.minor = ATTACK_MINOR_NO_TSX;
@@ -1947,7 +1970,7 @@ Test(rdcl, cross_thread_rdcl_sgx_is_1_percent_effective, .disabled = false)
 
 /**
  * @brief The victim function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -1965,7 +1988,7 @@ void *test_core_cross_core_rdcl_nosgx_is_1_percent_effective_victim_thread(void 
 
 /**
  * @brief The adversary function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -1985,7 +2008,7 @@ void *test_core_cross_core_rdcl_nosgx_is_1_percent_effective_adversary_thread(vo
 
 /**
  * @brief Test if cross_core_rdcl_nosgx is effective with a successful rate above or equal to 1% for at least 75% offset.
- * 
+ *
  * @return int 0 if passed, -1 if failed.
  */
 int test_core_cross_core_rdcl_nosgx_is_1_percent_effective()
@@ -2028,7 +2051,7 @@ int test_core_cross_core_rdcl_nosgx_is_1_percent_effective()
     return 0;
 }
 
-Test(rdcl, cross_core_rdcl_nosgx_is_1_percent_effective, .disabled = false)
+Test(rdcl, cross_core_rdcl_nosgx_is_1_percent_effective, .disabled = true)
 {
     app_attack_spec.major = ATTACK_MAJOR_RDCL;
     app_attack_spec.minor = ATTACK_MINOR_NO_TSX;
@@ -2064,7 +2087,7 @@ Test(rdcl, cross_core_rdcl_nosgx_is_1_percent_effective, .disabled = false)
 
 /**
  * @brief The victim function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -2082,7 +2105,7 @@ void *test_core_cross_core_rdcl_sgx_is_1_percent_effective_victim_thread(void *a
 
 /**
  * @brief The adversary function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -2102,7 +2125,7 @@ void *test_core_cross_core_rdcl_sgx_is_1_percent_effective_adversary_thread(void
 
 /**
  * @brief Test if cross_core_rdcl_sgx is effective with a successful rate above or equal to 1% for at least 75% offset.
- * 
+ *
  * @return int 0 if passed, -1 if failed.
  */
 int test_core_cross_core_rdcl_sgx_is_1_percent_effective()
@@ -2145,7 +2168,7 @@ int test_core_cross_core_rdcl_sgx_is_1_percent_effective()
     return 0;
 }
 
-Test(rdcl, cross_core_rdcl_sgx_is_1_percent_effective, .disabled = false)
+Test(rdcl, cross_core_rdcl_sgx_is_1_percent_effective, .disabled = true)
 {
     app_attack_spec.major = ATTACK_MAJOR_RDCL;
     app_attack_spec.minor = ATTACK_MINOR_NO_TSX;
@@ -2187,7 +2210,7 @@ TestSuite(l1tf, .init = construct_app_environment, .fini = destruct_app_environm
 
 /**
  * @brief Test if same_thread_l1tf_nosgx is effective with a successful rate above or equal to 10% for at least 75% offset.
- * 
+ *
  * @return int 0 if passed, -1 if failed.
  */
 int test_core_same_thread_l1tf_nosgx_is_10_percent_effective()
@@ -2209,12 +2232,12 @@ int test_core_same_thread_l1tf_nosgx_is_10_percent_effective()
         app_attack_spec.offset = offset;
         for (i = 0; i < REPETITION_TIME; i++)
         {
-            fill_lfb(app_filling_sequence, &app_attaking_buffer);
+            fill_lfb(app_filling_sequence, &encalve_secret_buffer);
             flush_enclyser_buffer(&app_encoding_buffer);
-            attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
+            attack(&app_attack_spec, &encalve_secret_buffer, &app_encoding_buffer);
             reload(&app_encoding_buffer, &app_printing_buffer);
         }
-        if (!(app_printing_buffer.buffer[offset + app_attaking_buffer.value] >= 10 || allowance--))
+        if (!(app_printing_buffer.buffer[offset + encalve_secret_buffer.value] >= 10 || allowance--))
         {
             // INFO("offset: 0x%x", offset);
             // print(&app_printing_buffer, 0);
@@ -2225,43 +2248,50 @@ int test_core_same_thread_l1tf_nosgx_is_10_percent_effective()
     return 0;
 }
 
-Test(l1tf, same_thread_l1tf_nosgx_is_10_percent_effective, .disabled = true)
+Test(l1tf, same_thread_l1tf_nosgx_is_10_percent_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_L1TF;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
 
-    app_attaking_buffer.value = 0x1;
-    app_attaking_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
-    app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
-    assign_enclyser_buffer(&app_attaking_buffer);
-    cripple_enclyser_buffer(&app_attaking_buffer);
+    encalve_secret_buffer.value = 0x1;
+    encalve_secret_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
+    encalve_secret_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
+    // assign_enclyser_buffer(&encalve_secret_buffer);
+    ecall_assign_secret(global_eid, &encalve_secret_buffer);
+    cripple_enclyser_buffer(&encalve_secret_buffer);
 
+    sleep(2);   // IMPORTANT, BUT DON'T KNOW WHY
     app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
     cr_expect(test_core_same_thread_l1tf_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
 
+    sleep(2);   // IMPORTANT, BUT DON'T KNOW WHY
     app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
     cr_expect(test_core_same_thread_l1tf_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
 
+    sleep(2);   // IMPORTANT, BUT DON'T KNOW WHY
     app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
     cr_expect(test_core_same_thread_l1tf_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
 
+    sleep(2);   // IMPORTANT, BUT DON'T KNOW WHY
     app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
     cr_expect(test_core_same_thread_l1tf_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
 
+    sleep(2);   // IMPORTANT, BUT DON'T KNOW WHY
     app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
     cr_expect(test_core_same_thread_l1tf_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
 
+    sleep(2);   // IMPORTANT, BUT DON'T KNOW WHY
     app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
     cr_expect(test_core_same_thread_l1tf_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
 
 #pragma endregion
 
-#pragma region same_thread_l1tf_sgx_is_10_percent_effective
+#pragma region same_thread_l1tf_sgx_is_10_percent_effective // FIXME
 
 /**
  * @brief Test if same_thread_l1tf_sgx is effective with a successful rate above or equal to 10% for at least 75% offset.
- * 
+ *
  * @return int 0 if passed, -1 if failed.
  */
 int test_core_same_thread_l1tf_sgx_is_10_percent_effective()
@@ -2283,12 +2313,12 @@ int test_core_same_thread_l1tf_sgx_is_10_percent_effective()
         app_attack_spec.offset = offset;
         for (i = 0; i < REPETITION_TIME; i++)
         {
-            ecall_grooming(global_eid, app_filling_sequence, &app_attaking_buffer, app_clearing_sequence, &app_clearing_buffer, &app_faulting_buffer);
+            ecall_grooming(global_eid, app_filling_sequence, &encalve_secret_buffer, app_clearing_sequence, &app_clearing_buffer, &app_faulting_buffer);
             flush_enclyser_buffer(&app_encoding_buffer);
-            attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
+            attack(&app_attack_spec, &encalve_secret_buffer, &app_encoding_buffer);
             reload(&app_encoding_buffer, &app_printing_buffer);
         }
-        if (!(app_printing_buffer.buffer[offset + app_attaking_buffer.value] >= 10 || allowance--))
+        if (!(app_printing_buffer.buffer[offset + encalve_secret_buffer.value] >= 10 || allowance--))
         {
             // INFO("offset: 0x%x", offset);
             // print(&app_printing_buffer, 0);
@@ -2299,32 +2329,38 @@ int test_core_same_thread_l1tf_sgx_is_10_percent_effective()
     return 0;
 }
 
-Test(l1tf, same_thread_l1tf_sgx_is_10_percent_effective, .disabled = true)
+Test(l1tf, same_thread_l1tf_sgx_is_10_percent_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_L1TF;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
 
-    app_attaking_buffer.value = 0x1;
-    app_attaking_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
-    app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
-    assign_enclyser_buffer(&app_attaking_buffer);
-    cripple_enclyser_buffer(&app_attaking_buffer);
+    encalve_secret_buffer.value = 0x1;
+    encalve_secret_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
+    encalve_secret_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
+    ecall_assign_secret(global_eid, &encalve_secret_buffer);
+    cripple_enclyser_buffer(&encalve_secret_buffer);
 
+    sleep(2);   // IMPORTANT, BUT DON'T KNOW WHY
     app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
     cr_expect(test_core_same_thread_l1tf_sgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
 
+    sleep(2);   // IMPORTANT, BUT DON'T KNOW WHY
     app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
     cr_expect(test_core_same_thread_l1tf_sgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
 
+    sleep(2);   // IMPORTANT, BUT DON'T KNOW WHY
     app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
     cr_expect(test_core_same_thread_l1tf_sgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
 
+    sleep(2);   // IMPORTANT, BUT DON'T KNOW WHY
     app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
     cr_expect(test_core_same_thread_l1tf_sgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
 
+    sleep(2);   // IMPORTANT, BUT DON'T KNOW WHY
     app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
     cr_expect(test_core_same_thread_l1tf_sgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
 
+    sleep(2);   // IMPORTANT, BUT DON'T KNOW WHY
     app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
     cr_expect(test_core_same_thread_l1tf_sgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
@@ -2335,7 +2371,7 @@ Test(l1tf, same_thread_l1tf_sgx_is_10_percent_effective, .disabled = true)
 
 /**
  * @brief The victim function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -2353,7 +2389,7 @@ void *test_core_cross_thread_l1tf_nosgx_is_1_percent_effective_victim_thread(voi
 
 /**
  * @brief The adversary function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -2373,7 +2409,7 @@ void *test_core_cross_thread_l1tf_nosgx_is_1_percent_effective_adversary_thread(
 
 /**
  * @brief Test if cross_thread_l1tf_nosgx is effective with a successful rate above or equal to 1% for at least 75% offset.
- * 
+ *
  * @return int 0 if passed, -1 if failed.
  */
 int test_core_cross_thread_l1tf_nosgx_is_1_percent_effective()
@@ -2416,7 +2452,7 @@ int test_core_cross_thread_l1tf_nosgx_is_1_percent_effective()
     return 0;
 }
 
-Test(l1tf, cross_thread_l1tf_nosgx_is_1_percent_effective, .disabled = true)
+Test(l1tf, cross_thread_l1tf_nosgx_is_1_percent_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_L1TF;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -2448,11 +2484,11 @@ Test(l1tf, cross_thread_l1tf_nosgx_is_1_percent_effective, .disabled = true)
 
 #pragma endregion
 
-#pragma region cross_thread_l1tf_sgx_is_1_percent_effective
+#pragma region cross_thread_l1tf_sgx_is_1_percent_effective // FIXME
 
 /**
  * @brief The victim function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -2462,7 +2498,7 @@ void *test_core_cross_thread_l1tf_sgx_is_1_percent_effective_victim_thread(void 
 
     for (i = 0; i < REPETITION_TIME * 100; i++)
     {
-        ecall_grooming(global_eid, app_filling_sequence, &app_attaking_buffer, app_clearing_sequence, &app_clearing_buffer, &app_faulting_buffer);
+        ecall_grooming(global_eid, app_filling_sequence, &encalve_secret_buffer, app_clearing_sequence, &app_clearing_buffer, &app_faulting_buffer);
     }
 
     return NULL;
@@ -2470,7 +2506,7 @@ void *test_core_cross_thread_l1tf_sgx_is_1_percent_effective_victim_thread(void 
 
 /**
  * @brief The adversary function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -2480,8 +2516,9 @@ void *test_core_cross_thread_l1tf_sgx_is_1_percent_effective_adversary_thread(vo
 
     for (i = 0; i < REPETITION_TIME; i++)
     {
+        // ecall_grooming(global_eid, app_filling_sequence, &encalve_secret_buffer, app_clearing_sequence, &app_clearing_buffer, &app_faulting_buffer);
         flush_enclyser_buffer(&app_encoding_buffer);
-        attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
+        attack(&app_attack_spec, &encalve_secret_buffer, &app_encoding_buffer);
         reload(&app_encoding_buffer, &app_printing_buffer);
     }
 
@@ -2490,7 +2527,7 @@ void *test_core_cross_thread_l1tf_sgx_is_1_percent_effective_adversary_thread(vo
 
 /**
  * @brief Test if cross_thread_l1tf_sgx is effective with a successful rate above or equal to 1% for at least 75% offset.
- * 
+ *
  * @return int 0 if passed, -1 if failed.
  */
 int test_core_cross_thread_l1tf_sgx_is_1_percent_effective()
@@ -2522,7 +2559,7 @@ int test_core_cross_thread_l1tf_sgx_is_1_percent_effective()
         pthread_join(adversary_thread, NULL);
         pthread_join(victim_thread, NULL);
 
-        if (!(app_printing_buffer.buffer[offset + app_attaking_buffer.value] >= 1 || allowance--))
+        if (!(app_printing_buffer.buffer[offset + encalve_secret_buffer.value] >= 1 || allowance--))
         {
             // INFO("offset: 0x%x", offset);
             // print(&app_printing_buffer, 0);
@@ -2533,16 +2570,16 @@ int test_core_cross_thread_l1tf_sgx_is_1_percent_effective()
     return 0;
 }
 
-Test(l1tf, cross_thread_l1tf_sgx_is_1_percent_effective, .disabled = true)
+Test(l1tf, cross_thread_l1tf_sgx_is_1_percent_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_L1TF;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
 
-    app_attaking_buffer.value = 0x1;
-    app_attaking_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
-    app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
-    assign_enclyser_buffer(&app_attaking_buffer);
-    cripple_enclyser_buffer(&app_attaking_buffer);
+    encalve_secret_buffer.value = 0x1;
+    encalve_secret_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
+    encalve_secret_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
+    ecall_assign_secret(global_eid, &encalve_secret_buffer);
+    cripple_enclyser_buffer(&encalve_secret_buffer);
 
     app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
     cr_expect(test_core_cross_thread_l1tf_sgx_is_1_percent_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
@@ -2569,7 +2606,7 @@ Test(l1tf, cross_thread_l1tf_sgx_is_1_percent_effective, .disabled = true)
 
 /**
  * @brief The victim function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -2587,7 +2624,7 @@ void *test_core_cross_core_l1tf_nosgx_is_1_percent_effective_victim_thread(void 
 
 /**
  * @brief The adversary function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -2607,7 +2644,7 @@ void *test_core_cross_core_l1tf_nosgx_is_1_percent_effective_adversary_thread(vo
 
 /**
  * @brief Test if cross_core_l1tf_nosgx is effective with a successful rate above or equal to 1% for at least 75% offset.
- * 
+ *
  * @return int 0 if passed, -1 if failed.
  */
 int test_core_cross_core_l1tf_nosgx_is_1_percent_effective()
@@ -2650,7 +2687,7 @@ int test_core_cross_core_l1tf_nosgx_is_1_percent_effective()
     return 0;
 }
 
-Test(l1tf, cross_core_l1tf_nosgx_is_1_percent_effective, .disabled = true)
+Test(l1tf, cross_core_l1tf_nosgx_is_1_percent_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_L1TF;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -2686,7 +2723,7 @@ Test(l1tf, cross_core_l1tf_nosgx_is_1_percent_effective, .disabled = true)
 
 /**
  * @brief The victim function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -2704,7 +2741,7 @@ void *test_core_cross_core_l1tf_sgx_is_1_percent_effective_victim_thread(void *a
 
 /**
  * @brief The adversary function run by pthread
- * 
+ *
  * @param arg data passed to the thread function
  * @return void* always return NULL
  */
@@ -2724,7 +2761,7 @@ void *test_core_cross_core_l1tf_sgx_is_1_percent_effective_adversary_thread(void
 
 /**
  * @brief Test if cross_core_l1tf_sgx is effective with a successful rate above or equal to 1% for at least 75% offset.
- * 
+ *
  * @return int 0 if passed, -1 if failed.
  */
 int test_core_cross_core_l1tf_sgx_is_1_percent_effective()
@@ -2767,7 +2804,7 @@ int test_core_cross_core_l1tf_sgx_is_1_percent_effective()
     return 0;
 }
 
-Test(l1tf, cross_core_l1tf_sgx_is_1_percent_effective, .disabled = true)
+Test(l1tf, cross_core_l1tf_sgx_is_1_percent_effective, .disabled = false)
 {
     app_attack_spec.major = ATTACK_MAJOR_L1TF;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
