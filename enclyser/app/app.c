@@ -2248,7 +2248,7 @@ int test_core_same_thread_l1tf_nosgx_is_10_percent_effective()
     return 0;
 }
 
-Test(l1tf, same_thread_l1tf_nosgx_is_10_percent_effective, .disabled = false)
+Test(l1tf, same_thread_l1tf_nosgx_is_10_percent_effective, .disabled = true)
 {
     app_attack_spec.major = ATTACK_MAJOR_L1TF;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -2329,7 +2329,7 @@ int test_core_same_thread_l1tf_sgx_is_10_percent_effective()
     return 0;
 }
 
-Test(l1tf, same_thread_l1tf_sgx_is_10_percent_effective, .disabled = false)
+Test(l1tf, same_thread_l1tf_sgx_is_10_percent_effective, .disabled = true)
 {
     app_attack_spec.major = ATTACK_MAJOR_L1TF;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -2452,7 +2452,7 @@ int test_core_cross_thread_l1tf_nosgx_is_1_percent_effective()
     return 0;
 }
 
-Test(l1tf, cross_thread_l1tf_nosgx_is_1_percent_effective, .disabled = false)
+Test(l1tf, cross_thread_l1tf_nosgx_is_1_percent_effective, .disabled = true)
 {
     app_attack_spec.major = ATTACK_MAJOR_L1TF;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -2570,7 +2570,7 @@ int test_core_cross_thread_l1tf_sgx_is_1_percent_effective()
     return 0;
 }
 
-Test(l1tf, cross_thread_l1tf_sgx_is_1_percent_effective, .disabled = false)
+Test(l1tf, cross_thread_l1tf_sgx_is_1_percent_effective, .disabled = true)
 {
     app_attack_spec.major = ATTACK_MAJOR_L1TF;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -2687,7 +2687,7 @@ int test_core_cross_core_l1tf_nosgx_is_1_percent_effective()
     return 0;
 }
 
-Test(l1tf, cross_core_l1tf_nosgx_is_1_percent_effective, .disabled = false)
+Test(l1tf, cross_core_l1tf_nosgx_is_1_percent_effective, .disabled = true)
 {
     app_attack_spec.major = ATTACK_MAJOR_L1TF;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;
@@ -2804,7 +2804,7 @@ int test_core_cross_core_l1tf_sgx_is_1_percent_effective()
     return 0;
 }
 
-Test(l1tf, cross_core_l1tf_sgx_is_1_percent_effective, .disabled = false)
+Test(l1tf, cross_core_l1tf_sgx_is_1_percent_effective, .disabled = true)
 {
     app_attack_spec.major = ATTACK_MAJOR_L1TF;
     app_attack_spec.minor = ATTACK_MINOR_STABLE;

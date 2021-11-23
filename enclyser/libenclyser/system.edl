@@ -30,23 +30,16 @@
  */
 
 enclave {
-    from "enclyser/libenclyser/include.edl" import *;
+    from "enclyser/libenclyser/def.edl" import *;
+    from "enclyser/libenclyser/info.edl" import *;
 
-    include "enclyser/libenclyser/include.h"
+    include "enclyser/libenclyser/def.h"
+    include "enclyser/libenclyser/info.h"
 
     trusted {
-        public void ecall_grooming(int filling_sequence, [user_check] enclyser_buffer_t *filling_buffer, 
-                                   int clearing_sequence, [user_check] enclyser_buffer_t *clearing_buffer, 
-                                   [user_check] enclyser_buffer_t *faulting_buffer);
-        public void ecall_rep_fill_lfb(int filling_sequence, [user_check] enclyser_buffer_t *filling_buffer);
-        public uint8_t *ecall_get_secret();
-        public void ecall_assign_secret([user_check] enclyser_buffer_t *enclyser_buffer);
-        public void ecall_reload_secret([user_check] enclyser_buffer_t *enclyser_buffer);
-        public void ecall_empty();
     };
 
     untrusted {
-        void ocall_print_string([in, string] const char *str);
     };
 
 };

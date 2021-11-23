@@ -36,6 +36,22 @@ void clear_lfb(int clearing_sequence, enclyser_buffer_t *clearing_buffer);
  */
 #ifdef NAMESPACE_SGX_YES
 
+/**
+ * @brief [ECALL] Fill the internal buffer LFB via different sequences.
+ *
+ * @param filling_sequence a number to choose which sequence will be used
+ * @param filling_buffer the buffer which the function operates on
+ */
+void ecall_fill_lfb(int filling_sequence, enclyser_buffer_t *filling_buffer);
+
+/**
+ * @brief [ECALL] Clear the internal buffer LFB via different sequences.
+ *
+ * @param clearing_sequence a number to choose which sequence will be used
+ * @param clearing_buffer the buffer which the function operates on
+ */
+void ecall_clear_lfb(int clearing_sequence, enclyser_buffer_t *clearing_buffer);
+
 #endif
 
 /**

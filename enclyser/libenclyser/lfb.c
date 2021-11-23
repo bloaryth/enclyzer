@@ -339,6 +339,16 @@ void clear_lfb(int clearing_sequence, enclyser_buffer_t *clearing_buffer)
  */
 #ifdef NAMESPACE_SGX_YES
 
+void ecall_fill_lfb(int filling_sequence, enclyser_buffer_t *filling_buffer)
+{
+    fill_lfb(filling_sequence, filling_buffer);
+}
+
+void ecall_clear_lfb(int clearing_sequence, enclyser_buffer_t *clearing_buffer)
+{
+    clear_lfb(clearing_sequence, clearing_buffer);
+}
+
 #endif
 
 /**

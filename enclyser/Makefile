@@ -6,6 +6,7 @@ ADDITIONAL_APP_RUN_FLAGS := --verbose -j1
 
 ADDITIONAL_COMMON_C_FLAGS := 
 ADDITIONAL_COMMON_INCLUDE_PATHS := -I.. -I../include
+ADDITIONAL_COMMON_SEARCH_PATHS= --search-path ../..
 
 ADDITIONAL_APP_C_FLAGS := -DNAMESPACE_SGX_SHARED -DNAMESPACE_SGX_NO
 ADDITIONAL_ENCLAVE_C_FLAGS := -DNAMESPACE_SGX_SHARED -DNAMESPACE_SGX_YES
@@ -101,7 +102,7 @@ APP_NAME := sgx_app
 
 app/enclave_u.c: $(SGX_EDGER8R) enclave/enclave.edl
 	@echo "GEN  =>  $@"
-	@cd app && $(SGX_EDGER8R) --untrusted ../enclave/enclave.edl --search-path ../enclave --search-path $(SGX_SDK)/include
+	@cd app && $(SGX_EDGER8R) --untrusted ../enclave/enclave.edl --search-path ../enclave --search-path $(SGX_SDK)/include $(ADDITIONAL_COMMON_SEARCH_PATHS)
 
 app/enclave_u.o: app/enclave_u.c
 	@$(CC) $(APP_C_FLAGS) -c $< -o $@
@@ -147,7 +148,7 @@ SIGNED_ENCLAVE_NAME := enclave.signed.so
 ENCLAVE_CONFIG_FILE := enclave/enclave.config.xml
 
 enclave/enclave_t.c: $(SGX_EDGER8R) enclave/enclave.edl
-	@cd enclave && $(SGX_EDGER8R) --trusted ../enclave/enclave.edl --search-path ../enclave --search-path $(SGX_SDK)/include
+	@cd enclave && $(SGX_EDGER8R) --trusted ../enclave/enclave.edl --search-path ../enclave --search-path $(SGX_SDK)/include $(ADDITIONAL_COMMON_SEARCH_PATHS)
 	@echo "GEN  =>  $@"
 
 enclave/enclave_t.o: enclave/enclave_t.c

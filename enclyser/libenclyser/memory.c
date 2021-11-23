@@ -58,6 +58,16 @@ void assign_enclyser_buffer(enclyser_buffer_t *enclyser_buffer)
  */
 #ifdef NAMESPACE_SGX_YES
 
+void ecall_flush_enclyser_buffer(enclyser_buffer_t *enclyser_buffer)
+{
+    flush_enclyser_buffer(enclyser_buffer);
+}
+
+void ecall_assign_enclyser_buffer(enclyser_buffer_t *enclyser_buffer)
+{
+    assign_enclyser_buffer(enclyser_buffer);
+}
+
 #endif
 
 /**

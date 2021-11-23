@@ -34,6 +34,20 @@ void assign_enclyser_buffer(enclyser_buffer_t *enclyser_buffer);
  */
 #ifdef NAMESPACE_SGX_YES
 
+/**
+ * @brief [ECALL] Flush the enclyser buffer to ensure a later enclyser.
+ *
+ * @param enclyser_buffer the buffer which the function operates on
+ */
+void ecall_flush_enclyser_buffer(enclyser_buffer_t *enclyser_buffer);
+
+/**
+ * @brief [ECALL] Assign values to a enclyser buffer according to a policy.
+ *
+ * @param enclyser_buffer the buffer which the function operates on
+ */
+void ecall_assign_enclyser_buffer(enclyser_buffer_t *enclyser_buffer);
+
 #endif
 
 /**

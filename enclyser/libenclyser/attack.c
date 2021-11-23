@@ -33,7 +33,10 @@ static void l1tf_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attak
 {
     uint64_t rax, rdi, rsi, rdx, rcx, r8, r9;
 
-    ASSERT((0 <= attack_spec->offset) && (attack_spec->offset < attaking_buffer->size));
+    if (attack_spec->offset < 0 || attack_spec->offset >= attaking_buffer->size)
+    {
+        return; /** prevent overflow error */
+    }
 
     rdi = (uint64_t)attack_spec->offset;     /** consistent during the process */
     rsi = (uint64_t)attaking_buffer->shadow; /** consistent during the process */
@@ -59,7 +62,8 @@ static void l1tf_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attak
             "3: pause\n"
             "jmp 3b\n"
             "2:\n"
-            "movabs $1f, %%rax\n"
+            // "movabs $1f, %%rax\n" /** depreciated and replaced by the next line due to TEXTRELs warning */
+            "lea 0x34(%%rip), %%rax\n" /** rax = $1f for x86-64 machine */
             "imulq $1, %%rax, %%rax\n"
             "imulq $1, %%rax, %%rax\n"
             "imulq $1, %%rax, %%rax\n"
@@ -128,7 +132,10 @@ static void mds_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaki
 {
     uint64_t rax, rdi, rsi, rdx, rcx, r8, r9;
 
-    ASSERT((0 <= attack_spec->offset) && (attack_spec->offset < attaking_buffer->size));
+    if (attack_spec->offset < 0 || attack_spec->offset >= attaking_buffer->size)
+    {
+        return; /** prevent overflow error */
+    }
 
     rdi = (uint64_t)attack_spec->offset;     /** consistent during the process */
     rsi = (uint64_t)attaking_buffer->shadow; /** consistent during the process */
@@ -179,7 +186,10 @@ static void rdcl_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attak
 {
     uint64_t rax, rdi, rsi, rdx, rcx, r8, r9;
 
-    ASSERT((0 <= attack_spec->offset) && (attack_spec->offset < attaking_buffer->size));
+    if (attack_spec->offset < 0 || attack_spec->offset >= attaking_buffer->size)
+    {
+        return; /** prevent overflow error */
+    }
 
     rdi = (uint64_t)attack_spec->offset;     /** consistent during the process */
     rsi = (uint64_t)attaking_buffer->shadow; /** consistent during the process */
@@ -206,7 +216,8 @@ static void rdcl_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attak
             "3: pause\n"
             "jmp 3b\n"
             "2:\n"
-            "movabs $1f, %%rax\n"
+            // "movabs $1f, %%rax\n" /** depreciated and replaced by the next line due to TEXTRELs warning */
+            "lea 0x34(%%rip), %%rax\n" /** rax = $1f for x86-64 machine */
             "imulq $1, %%rax, %%rax\n"
             "imulq $1, %%rax, %%rax\n"
             "imulq $1, %%rax, %%rax\n"
@@ -260,7 +271,10 @@ static void taa_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaki
 {
     uint64_t rax, rdi, rsi, rdx, rcx, r8, r9;
 
-    ASSERT((0 <= attack_spec->offset) && (attack_spec->offset < attaking_buffer->size));
+    if (attack_spec->offset < 0 || attack_spec->offset >= attaking_buffer->size)
+    {
+        return; /** prevent overflow error */
+    }
 
     rdi = (uint64_t)attack_spec->offset;     /** consistent during the process */
     rsi = (uint64_t)attaking_buffer->shadow; /** consistent during the process */
@@ -336,6 +350,11 @@ void attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, 
  *
  */
 #ifdef NAMESPACE_SGX_YES
+
+void ecall_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
+{
+    attack(attack_spec, attaking_buffer, encoding_buffer);
+}
 
 #endif
 
