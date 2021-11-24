@@ -1,14 +1,6 @@
 #include "enclyser/libenclyser/system.h"
 
 /**
- * @brief the defines and functions that are shared by trusted libraries and untrusted libraries
- * 
- */
-#ifdef NAMESPACE_SGX_SHARED
-
-#endif
-
-/**
  * @brief the defines and functions that are exclusive to trusted libraries
  * 
  */
@@ -252,5 +244,13 @@ void print_system_info(enclyser_sysinfo_t *sysinfo)
     INFO("%-32s: %d", "NR_LOGICAL_CORES", sysinfo->nr_logical_cores);
     INFO("%-32s: %d", "NR_CORES", sysinfo->nr_cores);
 }
+
+#endif
+
+/**
+ * @brief the defines and functions that are shared by trusted libraries and untrusted libraries
+ * 
+ */
+#ifdef NAMESPACE_SGX_SHARED
 
 #endif

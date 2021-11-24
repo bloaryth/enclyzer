@@ -1,14 +1,6 @@
 #include "enclyser/libenclyser/pt.h"
 
 /**
- * @brief the defines and functions that are shared by trusted libraries and untrusted libraries
- *
- */
-#ifdef NAMESPACE_SGX_SHARED
-
-#endif
-
-/**
  * @brief the defines and functions that are exclusive to trusted libraries
  *
  */
@@ -212,5 +204,13 @@ uint64_t phys_addr_width(void)
 
 	return width;
 }
+
+#endif
+
+/**
+ * @brief the defines and functions that are shared by trusted libraries and untrusted libraries
+ *
+ */
+#ifdef NAMESPACE_SGX_SHARED
 
 #endif

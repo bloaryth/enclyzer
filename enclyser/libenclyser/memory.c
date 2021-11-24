@@ -1,58 +1,6 @@
 #include "enclyser/libenclyser/memory.h"
 
 /**
- * @brief the defines and functions that are shared by trusted libraries and untrusted libraries
- * 
- */
-#ifdef NAMESPACE_SGX_SHARED
-
-void flush_enclyser_buffer(enclyser_buffer_t *enclyser_buffer)
-{
-    int i;
-
-    for (i = 0; i < enclyser_buffer->size; i += CACHELINE_SIZE)
-    {
-        asm volatile("clflush (%0)\n" ::"r"(enclyser_buffer->buffer + i));
-    }
-    asm volatile("mfence\n");
-}
-
-void assign_enclyser_buffer(enclyser_buffer_t *enclyser_buffer)
-{
-    int i;
-
-    switch (enclyser_buffer->order)
-    {
-    case BUFFER_ORDER_NONE:
-        break;
-    case BUFFER_ORDER_CONSTANT:
-        for (i = 0; i < enclyser_buffer->size; i++)
-        {
-            enclyser_buffer->buffer[i] = enclyser_buffer->value;
-        }
-        break;
-    case BUFFER_ORDER_OFFSET_INLINE:
-        for (i = 0; i < enclyser_buffer->size; i++)
-        {
-            enclyser_buffer->buffer[i] = enclyser_buffer->value + i % 0x40;
-        }
-        break;
-    // case BUFFER_ORDER_LINE_NUM:
-    //     for (i = 0; i < enclyser_buffer->size; i++)
-    //     {
-    //         enclyser_buffer->buffer[i] = enclyser_buffer->value + i / 0x40;
-    //     }
-    //     break;
-    default:
-        break;
-    }
-
-    asm volatile("mfence\n");
-}
-
-#endif
-
-/**
  * @brief the defines and functions that are exclusive to trusted libraries
  * 
  */
@@ -158,6 +106,58 @@ void cripple_enclyser_buffer(enclyser_buffer_t *enclyser_buffer)
             break;
         }
     }
+}
+
+#endif
+
+/**
+ * @brief the defines and functions that are shared by trusted libraries and untrusted libraries
+ * 
+ */
+#ifdef NAMESPACE_SGX_SHARED
+
+void flush_enclyser_buffer(enclyser_buffer_t *enclyser_buffer)
+{
+    int i;
+
+    for (i = 0; i < enclyser_buffer->size; i += CACHELINE_SIZE)
+    {
+        asm volatile("clflush (%0)\n" ::"r"(enclyser_buffer->buffer + i));
+    }
+    asm volatile("mfence\n");
+}
+
+void assign_enclyser_buffer(enclyser_buffer_t *enclyser_buffer)
+{
+    int i;
+
+    switch (enclyser_buffer->order)
+    {
+    case BUFFER_ORDER_NONE:
+        break;
+    case BUFFER_ORDER_CONSTANT:
+        for (i = 0; i < enclyser_buffer->size; i++)
+        {
+            enclyser_buffer->buffer[i] = enclyser_buffer->value;
+        }
+        break;
+    case BUFFER_ORDER_OFFSET_INLINE:
+        for (i = 0; i < enclyser_buffer->size; i++)
+        {
+            enclyser_buffer->buffer[i] = enclyser_buffer->value + i % 0x40;
+        }
+        break;
+    // case BUFFER_ORDER_LINE_NUM:
+    //     for (i = 0; i < enclyser_buffer->size; i++)
+    //     {
+    //         enclyser_buffer->buffer[i] = enclyser_buffer->value + i / 0x40;
+    //     }
+    //     break;
+    default:
+        break;
+    }
+
+    asm volatile("mfence\n");
 }
 
 #endif

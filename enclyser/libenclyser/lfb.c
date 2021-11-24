@@ -1,6 +1,32 @@
 #include "enclyser/libenclyser/lfb.h"
 
 /**
+ * @brief the defines and functions that are exclusive to trusted libraries
+ * 
+ */
+#ifdef NAMESPACE_SGX_YES
+
+void ecall_fill_lfb(int filling_sequence, enclyser_buffer_t *filling_buffer)
+{
+    fill_lfb(filling_sequence, filling_buffer);
+}
+
+void ecall_clear_lfb(int clearing_sequence, enclyser_buffer_t *clearing_buffer)
+{
+    clear_lfb(clearing_sequence, clearing_buffer);
+}
+
+#endif
+
+/**
+ * @brief the defines and functions that are exclusive to untrusted libraries
+ * 
+ */
+#ifdef NAMESPACE_SGX_NO
+
+#endif
+
+/**
  * @brief the defines and functions that are shared by trusted libraries and untrusted libraries
  * 
  */
@@ -330,31 +356,5 @@ void clear_lfb(int clearing_sequence, enclyser_buffer_t *clearing_buffer)
 
     asm volatile("mfence\n");
 }
-
-#endif
-
-/**
- * @brief the defines and functions that are exclusive to trusted libraries
- * 
- */
-#ifdef NAMESPACE_SGX_YES
-
-void ecall_fill_lfb(int filling_sequence, enclyser_buffer_t *filling_buffer)
-{
-    fill_lfb(filling_sequence, filling_buffer);
-}
-
-void ecall_clear_lfb(int clearing_sequence, enclyser_buffer_t *clearing_buffer)
-{
-    clear_lfb(clearing_sequence, clearing_buffer);
-}
-
-#endif
-
-/**
- * @brief the defines and functions that are exclusive to untrusted libraries
- * 
- */
-#ifdef NAMESPACE_SGX_NO
 
 #endif

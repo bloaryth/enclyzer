@@ -7,18 +7,12 @@
 #include "enclyser/libenclyser/system.h"
 
 /**
- * @brief the defines and functions that are shared by trusted libraries and untrusted libraries
- *
- */
-#ifdef NAMESPACE_SGX_SHARED
-
-#endif
-
-/**
  * @brief the defines and functions that are exclusive to trusted libraries
  *
  */
 #ifdef NAMESPACE_SGX_YES
+
+#include "enclyser/libenclyser/pt_t.h"
 
 #endif
 
@@ -28,12 +22,14 @@
  */
 #ifdef NAMESPACE_SGX_NO
 
-#include <sys/mman.h>
-#include <sys/ioctl.h>
-#include <string.h>
+#include "enclyser/libenclyser/pt_u.h"
 
 #include "enclyser/libenclyser/system.h"
 #include "kenclyser/kenclyser_ioctl.h"
+
+#include <sys/mman.h>
+#include <sys/ioctl.h>
+#include <string.h>
 
 /**
  * @brief the shifts, marks and sizes of PGD, PUD, PMD, PTE, and PAGE
@@ -215,6 +211,14 @@ address_mapping_t get_mapping(uintptr_t virt_addr);
 uint64_t phys_addr_base(address_mapping_t map, pt_level_t level);
 uint64_t page_table_index(address_mapping_t map, pt_level_t level);
 uint64_t phys_addr_width(void);
+
+#endif
+
+/**
+ * @brief the defines and functions that are shared by trusted libraries and untrusted libraries
+ *
+ */
+#ifdef NAMESPACE_SGX_SHARED
 
 #endif
 

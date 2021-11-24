@@ -1,14 +1,6 @@
 #include "enclyser/libenclyser/flush_reload.h"
 
 /**
- * @brief the defines and functions that are shared by trusted libraries and untrusted libraries
- * 
- */
-#ifdef NAMESPACE_SGX_SHARED
-
-#endif
-
-/**
  * @brief the defines and functions that are exclusive to trusted libraries
  * 
  */
@@ -108,5 +100,13 @@ void print(enclyser_buffer_t *printing_buffer, uint8_t printing_bar)
 
     reset(printing_buffer);
 }
+
+#endif
+
+/**
+ * @brief the defines and functions that are shared by trusted libraries and untrusted libraries
+ * 
+ */
+#ifdef NAMESPACE_SGX_SHARED
 
 #endif

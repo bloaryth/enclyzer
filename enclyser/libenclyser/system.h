@@ -6,18 +6,12 @@
 #include "enclyser/libenclyser/info.h"
 
 /**
- * @brief the defines and functions that are shared by trusted libraries and untrusted libraries
- *
- */
-#ifdef NAMESPACE_SGX_SHARED
-
-#endif
-
-/**
  * @brief the defines and functions that are exclusive to trusted libraries
  *
  */
 #ifdef NAMESPACE_SGX_YES
+
+#include "enclyser/libenclyser/system_t.h"
 
 #endif
 
@@ -27,12 +21,14 @@
  */
 #ifdef NAMESPACE_SGX_NO
 
+#include "enclyser/libenclyser/system_u.h"
+
+#include "kenclyser/kenclyser_ioctl.h"
+
 #include <string.h> /** strcpy() */
 #include <fcntl.h>  /** open() */
 #include <unistd.h> /** close() */
 #include <sys/ioctl.h>
-
-#include "kenclyser/kenclyser_ioctl.h"
 
 /**
  * @brief the file descriptors used by the project
@@ -100,6 +96,14 @@ void get_system_info(enclyser_sysinfo_t *sysinfo);
  * @param sysinfo a struct that describes the system
  */
 void print_system_info(enclyser_sysinfo_t *sysinfo);
+
+#endif
+
+/**
+ * @brief the defines and functions that are shared by trusted libraries and untrusted libraries
+ *
+ */
+#ifdef NAMESPACE_SGX_SHARED
 
 #endif
 

@@ -7,18 +7,12 @@
 #include "enclyser/libenclyser/memory.h"
 
 /**
- * @brief the defines and functions that are shared by trusted libraries and untrusted libraries
- *
- */
-#ifdef NAMESPACE_SGX_SHARED
-
-#endif
-
-/**
  * @brief the defines and functions that are exclusive to trusted libraries
  *
  */
 #ifdef NAMESPACE_SGX_YES
+
+#include "enclyser/libenclyser/flush_reload_t.h"
 
 #endif
 
@@ -27,6 +21,8 @@
  *
  */
 #ifdef NAMESPACE_SGX_NO
+
+#include "enclyser/libenclyser/flush_reload_u.h"
 
 #include <ctype.h> // isprint function
 
@@ -66,6 +62,14 @@ void reset(enclyser_buffer_t *printing_buffer);
  * @param printing_bar it decides whether an answer should be printed
  */
 void print(enclyser_buffer_t *printing_buffer, uint8_t printing_bar);
+
+#endif
+
+/**
+ * @brief the defines and functions that are shared by trusted libraries and untrusted libraries
+ *
+ */
+#ifdef NAMESPACE_SGX_SHARED
 
 #endif
 

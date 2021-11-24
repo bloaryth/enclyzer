@@ -1,6 +1,27 @@
 #include "enclyser/libenclyser/attack.h"
 
 /**
+ * @brief the defines and functions that are exclusive to trusted libraries
+ *
+ */
+#ifdef NAMESPACE_SGX_YES
+
+void ecall_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
+{
+    attack(attack_spec, attaking_buffer, encoding_buffer);
+}
+
+#endif
+
+/**
+ * @brief the defines and functions that are exclusive to untrusted libraries
+ *
+ */
+#ifdef NAMESPACE_SGX_NO
+
+#endif
+
+/**
  * @brief the defines and functions that are shared by trusted libraries and untrusted libraries
  *
  */
@@ -342,26 +363,5 @@ void attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, 
         break;
     }
 }
-
-#endif
-
-/**
- * @brief the defines and functions that are exclusive to trusted libraries
- *
- */
-#ifdef NAMESPACE_SGX_YES
-
-void ecall_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
-{
-    attack(attack_spec, attaking_buffer, encoding_buffer);
-}
-
-#endif
-
-/**
- * @brief the defines and functions that are exclusive to untrusted libraries
- *
- */
-#ifdef NAMESPACE_SGX_NO
 
 #endif
