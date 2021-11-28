@@ -11,8 +11,6 @@
  */
 #ifdef NAMESPACE_SGX_YES
 
-#include "enclyser/libenclyser/system_t.h"
-
 #endif
 
 /**
@@ -21,14 +19,7 @@
  */
 #ifdef NAMESPACE_SGX_NO
 
-#include "enclyser/libenclyser/system_u.h"
-
 #include "kenclyser/kenclyser_ioctl.h"
-
-#include <string.h> /** strcpy() */
-#include <fcntl.h>  /** open() */
-#include <unistd.h> /** close() */
-#include <sys/ioctl.h>
 
 /**
  * @brief the file descriptors used by the project
@@ -49,13 +40,13 @@ char command_output[1024];
  * @brief Open the file required by the project.
  *
  */
-void open_system_file();
+void open_system_file(void);
 
 /**
  * @brief Close the file required by the project.
  *
  */
-void close_system_file();
+void close_system_file(void);
 
 /**
  * @brief a function of the cpuid instruction

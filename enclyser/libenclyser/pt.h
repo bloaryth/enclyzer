@@ -12,8 +12,6 @@
  */
 #ifdef NAMESPACE_SGX_YES
 
-#include "enclyser/libenclyser/pt_t.h"
-
 #endif
 
 /**
@@ -22,14 +20,7 @@
  */
 #ifdef NAMESPACE_SGX_NO
 
-#include "enclyser/libenclyser/pt_u.h"
-
-#include "enclyser/libenclyser/system.h"
 #include "kenclyser/kenclyser_ioctl.h"
-
-#include <sys/mman.h>
-#include <sys/ioctl.h>
-#include <string.h>
 
 /**
  * @brief the shifts, marks and sizes of PGD, PUD, PMD, PTE, and PAGE

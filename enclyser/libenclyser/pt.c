@@ -6,6 +6,8 @@
  */
 #ifdef NAMESPACE_SGX_YES
 
+#include "enclyser/libenclyser/pt_t.h"
+
 #endif
 
 /**
@@ -13,6 +15,12 @@
  *
  */
 #ifdef NAMESPACE_SGX_NO
+
+#include "enclyser/libenclyser/pt_u.h"
+
+#include <sys/mman.h>
+#include <sys/ioctl.h>
+#include <string.h>
 
 // void flush_tlb(void *adrs)
 // {

@@ -8,8 +8,6 @@
  */
 #ifdef NAMESPACE_SGX_YES
 
-#include "enclyser/libenclyser/info_t.h"
-
 /**
  * @brief Invokes OCALL to display the enclave buffer to the terminal.
  *
@@ -27,15 +25,6 @@ int printf(const char *fmt, ...);
  */
 #ifdef NAMESPACE_SGX_NO
 
-#include "enclyser/libenclyser/info_u.h"
-
-/**
- * @brief Print a string in a ocall function.
- *
- * @param str a string to be printed
- */
-void ocall_print_string(const char *str);
-
 #endif
 
 /**
@@ -45,33 +34,30 @@ void ocall_print_string(const char *str);
 #ifdef NAMESPACE_SGX_SHARED
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <stdint.h>
 
-#define ASSERT(cond)                                               \
-    do                                                             \
-    {                                                              \
-        if (!(cond))                                               \
-        {                                                          \
-            perror("[" __FILE__ "] assertion '" #cond "' failed"); \
-            abort();                                               \
-        }                                                          \
+#define ASSERT(cond)                                                     \
+    do                                                                   \
+    {                                                                    \
+        if (!(cond))                                                     \
+        {                                                                \
+            printf("%s", "[" __FILE__ "] assertion '" #cond "' failed"); \
+            abort();                                                     \
+        }                                                                \
     } while (0)
 
-#define EXPECT(cond)                                               \
-    do                                                             \
-    {                                                              \
-        if (!(cond))                                               \
-        {                                                          \
-            perror("[" __FILE__ "] assertion '" #cond "' failed"); \
-        }                                                          \
+#define EXPECT(cond)                                                     \
+    do                                                                   \
+    {                                                                    \
+        if (!(cond))                                                     \
+        {                                                                \
+            printf("%s", "[" __FILE__ "] assertion '" #cond "' failed"); \
+        }                                                                \
     } while (0)
 
 #define INFO(msg, ...)                                     \
     do                                                     \
     {                                                      \
         printf("[" __FILE__ "] " msg "\n", ##__VA_ARGS__); \
-        fflush(stdout);                                    \
     } while (0)
 
 #endif

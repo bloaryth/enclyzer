@@ -6,6 +6,17 @@
  */
 #ifdef NAMESPACE_SGX_YES
 
+#include "enclyser/libenclyser/attack_t.h"
+
+/**
+ * @brief [ECALL] Try different types of attacks.
+ *
+ * @param attack_spec the specified attack
+ * @param attaking_buffer the buffer used by the attack
+ * @param encoding_buffer the buffer used to encode data leaked
+ *
+ * @see FLUSH+RELOAD in enclyser/libenclyser/flush_reload.h
+ */
 void ecall_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer)
 {
     attack(attack_spec, attaking_buffer, encoding_buffer);
@@ -18,6 +29,8 @@ void ecall_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_bu
  *
  */
 #ifdef NAMESPACE_SGX_NO
+
+#include "enclyser/libenclyser/attack_u.h"
 
 #endif
 
@@ -54,10 +67,7 @@ static void l1tf_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attak
 {
     uint64_t rax, rdi, rsi, rdx, rcx, r8, r9;
 
-    if (attack_spec->offset < 0 || attack_spec->offset >= attaking_buffer->size)
-    {
-        return; /** prevent overflow error */
-    }
+    ASSERT(0 <= attack_spec->offset && attack_spec->offset < attaking_buffer->size);
 
     rdi = (uint64_t)attack_spec->offset;     /** consistent during the process */
     rsi = (uint64_t)attaking_buffer->shadow; /** consistent during the process */
@@ -153,10 +163,7 @@ static void mds_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaki
 {
     uint64_t rax, rdi, rsi, rdx, rcx, r8, r9;
 
-    if (attack_spec->offset < 0 || attack_spec->offset >= attaking_buffer->size)
-    {
-        return; /** prevent overflow error */
-    }
+    ASSERT(0 <= attack_spec->offset && attack_spec->offset < attaking_buffer->size);
 
     rdi = (uint64_t)attack_spec->offset;     /** consistent during the process */
     rsi = (uint64_t)attaking_buffer->shadow; /** consistent during the process */
@@ -207,10 +214,7 @@ static void rdcl_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attak
 {
     uint64_t rax, rdi, rsi, rdx, rcx, r8, r9;
 
-    if (attack_spec->offset < 0 || attack_spec->offset >= attaking_buffer->size)
-    {
-        return; /** prevent overflow error */
-    }
+    ASSERT(0 <= attack_spec->offset && attack_spec->offset < attaking_buffer->size);
 
     rdi = (uint64_t)attack_spec->offset;     /** consistent during the process */
     rsi = (uint64_t)attaking_buffer->shadow; /** consistent during the process */
@@ -292,10 +296,7 @@ static void taa_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaki
 {
     uint64_t rax, rdi, rsi, rdx, rcx, r8, r9;
 
-    if (attack_spec->offset < 0 || attack_spec->offset >= attaking_buffer->size)
-    {
-        return; /** prevent overflow error */
-    }
+    ASSERT(0 <= attack_spec->offset && attack_spec->offset < attaking_buffer->size);
 
     rdi = (uint64_t)attack_spec->offset;     /** consistent during the process */
     rsi = (uint64_t)attaking_buffer->shadow; /** consistent during the process */

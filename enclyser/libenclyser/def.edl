@@ -30,6 +30,8 @@
  */
 
 enclave {
+    include "enclyser/libenclyser/def.h"
+
     trusted {
     };
 

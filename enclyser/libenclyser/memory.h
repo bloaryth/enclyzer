@@ -12,22 +12,6 @@
  */
 #ifdef NAMESPACE_SGX_YES
 
-#include "enclyser/libenclyser/memory_t.h"
-
-/**
- * @brief [ECALL] Flush the enclyser buffer to ensure a later enclyser.
- *
- * @param enclyser_buffer the buffer which the function operates on
- */
-void ecall_flush_enclyser_buffer(enclyser_buffer_t *enclyser_buffer);
-
-/**
- * @brief [ECALL] Assign values to a enclyser buffer according to a policy.
- *
- * @param enclyser_buffer the buffer which the function operates on
- */
-void ecall_assign_enclyser_buffer(enclyser_buffer_t *enclyser_buffer);
-
 #endif
 
 /**
@@ -35,10 +19,6 @@ void ecall_assign_enclyser_buffer(enclyser_buffer_t *enclyser_buffer);
  *
  */
 #ifdef NAMESPACE_SGX_NO
-
-#include "enclyser/libenclyser/memory_u.h"
-
-#include <sys/mman.h>
 
 /**
  * @brief Malloc a space for a enclyser buffer.

@@ -34,10 +34,6 @@ enclave {
     from "enclyser/libenclyser/info.edl" import *;
     from "enclyser/libenclyser/memory.edl" import *;
 
-    include "enclyser/libenclyser/def.h"
-    include "enclyser/libenclyser/info.h"
-    include "enclyser/libenclyser/memory.h"
-
     trusted {
     };
 

@@ -8,8 +8,6 @@
  */
 #ifdef NAMESPACE_SGX_YES
 
-#include "enclyser/libenclyser/template_t.h"
-
 #endif
 
 /**
@@ -17,8 +15,6 @@
  *
  */
 #ifdef NAMESPACE_SGX_NO
-
-#include "enclyser/libenclyser/template_u.h"
 
 #endif
 

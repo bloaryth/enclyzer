@@ -39,21 +39,6 @@ else
 SGX_COMMON_CFLAGS += -O2 -Wall $(ADDL_COMMON_CFLAGS)
 endif
 
-ifneq ($(SGX_MODE), HW)
-URTS_LIBRARY_NAME := sgx_urts_sim
-else
-URTS_LIBRARY_NAME := sgx_urts
-endif
-
-ifneq ($(SGX_MODE), HW)
-TRTS_LIBRARY_NAME := sgx_trts_sim
-SERVICE_LIBRARY_NAME := sgx_tservice_sim
-else
-TRTS_LIBRARY_NAME := sgx_trts
-SERVICE_LIBRARY_NAME := sgx_tservice
-endif
-CRYPTO_LIBRARY_NAME := sgx_tcrypto
-
 #################### LIBRARY COMPILATION ####################
 
 C_FILES := attack.c flush_reload.c info.c lfb.c memory.c pt.c system.c template.c
@@ -64,9 +49,11 @@ C_TH_FILES := $(patsubst %.c, %_t.h, $(C_FILES))
 C_URTS_OBJECTS := $(patsubst %.c, %_urts.o, $(C_FILES))
 C_TRTS_OBJECTS := $(patsubst %.c, %_trts.o, $(C_FILES))
 
-COMMON_CLAGS := -O2 -Wall -I. -I../.. -I$(SGX_SDK)/include
-URTS_C_FLAGS := $(COMMON_CLAGS) -DNAMESPACE_SGX_SHARED -DNAMESPACE_SGX_NO
-TRTS_C_FLAGS := $(COMMON_CLAGS) -DNAMESPACE_SGX_SHARED -DNAMESPACE_SGX_YES
+URTS_INCLUDE_PATHS := -I. -I../..  -I$(SGX_SDK)/include
+URTS_CFLAGS := $(SGX_COMMON_CFLAGS) $(URTS_INCLUDE_PATHS) -DNAMESPACE_SGX_SHARED -DNAMESPACE_SGX_NO
+
+TRTS_INCLUDE_PATHS := -I. -I../.. -I$(SGX_SDK)/include -I$(SGX_SDK)/include/tlibc
+TRTS_CFLAGS := $(SGX_COMMON_CFLAGS) $(TRTS_INCLUDE_PATHS) -DNAMESPACE_SGX_SHARED -DNAMESPACE_SGX_YES -nostdinc -fvisibility=hidden -fpie -fstack-protector
 
 URTS_LIBRARY := libenclyser_urts.a
 TRTS_LIBRARY := libenclyser_trts.a
@@ -82,10 +69,10 @@ all: header $(URTS_LIBRARY) $(TRTS_LIBRARY)
 	@$(SGX_EDGER8R) --trusted $< --trusted-dir . --search-path ../.. --search-path $(SGX_SDK)/include --header-only
 
 %_urts.o: %.c
-	@$(CC) $(URTS_C_FLAGS) -c $< -o $@
+	@$(CC) $(URTS_CFLAGS) -c $< -o $@
 
 %_trts.o: %.c
-	@$(CC) $(TRTS_C_FLAGS) -c $< -o $@
+	@$(CC) $(TRTS_CFLAGS) -c $< -o $@
 
 $(URTS_LIBRARY): $(C_URTS_OBJECTS)
 	@$(AR) -rc $@ $^

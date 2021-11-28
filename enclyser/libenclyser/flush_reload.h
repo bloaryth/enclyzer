@@ -12,8 +12,6 @@
  */
 #ifdef NAMESPACE_SGX_YES
 
-#include "enclyser/libenclyser/flush_reload_t.h"
-
 #endif
 
 /**
@@ -21,10 +19,6 @@
  *
  */
 #ifdef NAMESPACE_SGX_NO
-
-#include "enclyser/libenclyser/flush_reload_u.h"
-
-#include <ctype.h> // isprint function
 
 /**
  * @brief The boundry which defines which is a succussful cache hit.

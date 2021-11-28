@@ -12,19 +12,6 @@
  */
 #ifdef NAMESPACE_SGX_YES
 
-#include "enclyser/libenclyser/attack_t.h"
-
-/**
- * @brief [ECALL] Try different types of attacks.
- *
- * @param attack_spec the specified attack
- * @param attaking_buffer the buffer used by the attack
- * @param encoding_buffer the buffer used to encode data leaked
- *
- * @see FLUSH+RELOAD in enclyser/libenclyser/flush_reload.h
- */
-void ecall_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_buffer, enclyser_buffer_t *encoding_buffer);
-
 #endif
 
 /**
@@ -32,8 +19,6 @@ void ecall_attack(enclyser_attack_t *attack_spec, enclyser_buffer_t *attaking_bu
  *
  */
 #ifdef NAMESPACE_SGX_NO
-
-#include "enclyser/libenclyser/attack_u.h"
 
 #endif
 

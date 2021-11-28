@@ -2,22 +2,31 @@
 
 /**
  * @brief the defines and functions that are exclusive to trusted libraries
- * 
+ *
  */
 #ifdef NAMESPACE_SGX_YES
+
+#include "enclyser/libenclyser/system_t.h"
 
 #endif
 
 /**
  * @brief the defines and functions that are exclusive to untrusted libraries
- * 
+ *
  */
 #ifdef NAMESPACE_SGX_NO
+
+#include "enclyser/libenclyser/system_u.h"
+
+#include <string.h> /** strcpy() */
+#include <fcntl.h>  /** open() */
+#include <unistd.h> /** close() */
+#include <sys/ioctl.h>
 
 int fd_enclyser = FD_UNINITIALIZED;
 int fd_mem = FD_UNINITIALIZED;
 
-void open_system_file()
+void open_system_file(void)
 {
     if (fd_mem == FD_UNINITIALIZED)
         ASSERT((fd_mem = open("/dev/mem", O_RDWR)) >= 0); /** /dev/mem is opened. */
@@ -25,7 +34,7 @@ void open_system_file()
         ASSERT((fd_enclyser = open("/dev/kenclyser", O_RDWR)) >= 0); /** /dev/enclyser is opened. */
 }
 
-void close_system_file()
+void close_system_file(void)
 {
     if (fd_mem >= 0)
         close(fd_mem);
@@ -59,7 +68,7 @@ void execute_command(char *command)
 {
     FILE *fp;
 
-    command_output[0] = '\0';   /** clear the command_output */
+    command_output[0] = '\0'; /** clear the command_output */
 
     fp = popen(command, "r");
     ASSERT(fp != NULL); /* open the command for reading. */
@@ -171,10 +180,10 @@ void get_system_info(enclyser_sysinfo_t *sysinfo)
     strcpy(sysinfo->microcode_version, command_output);
 
     execute_command("grep -c ^processor /proc/cpuinfo");
-    sysinfo->nr_logical_cores = (int) strtoul(command_output, NULL, 10);
+    sysinfo->nr_logical_cores = (int)strtoul(command_output, NULL, 10);
 
     execute_command("grep 'cpu cores' /proc/cpuinfo -m 1 | awk '{print $4}'");
-    sysinfo->nr_cores = (int) strtoul(command_output, NULL, 10);
+    sysinfo->nr_cores = (int)strtoul(command_output, NULL, 10);
 }
 
 void print_system_info(enclyser_sysinfo_t *sysinfo)
@@ -249,7 +258,7 @@ void print_system_info(enclyser_sysinfo_t *sysinfo)
 
 /**
  * @brief the defines and functions that are shared by trusted libraries and untrusted libraries
- * 
+ *
  */
 #ifdef NAMESPACE_SGX_SHARED
 

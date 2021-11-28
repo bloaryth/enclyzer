@@ -3,20 +3,21 @@
 #define _GNU_SOURCE
 
 #include "enclyser/app/app.h"
-#include "enclyser/app/enclave_u.h"
+#include "enclyser/enclave/enclave_u.h"
 
 #include <criterion/criterion.h>
 #include <signal.h>
 #include <sched.h>
+#include <unistd.h>
 #include <pthread.h>
 
-sgx_enclave_id_t global_eid;
-sgx_launch_token_t token;
-sgx_status_t ret;
-int updated;
+sgx_enclave_id_t global_eid = 0;
+sgx_launch_token_t token = {};
+sgx_status_t ret = 0;
+int updated = 0;
 
-int app_filling_sequence;
-int app_clearing_sequence;
+int app_filling_sequence = 0;
+int app_clearing_sequence = 0;
 
 enclyser_buffer_t app_filling_buffer = {
     .buffer = NULL,
@@ -86,7 +87,6 @@ enclyser_buffer_t encalve_secret_buffer = {
     .mem_type = DEFAULT_BUFFER_MEM_TYPE,
     .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
-
 enclyser_sysinfo_t app_sysinfo = {};
 
 // int sigsegv_signal;
@@ -110,7 +110,7 @@ enclyser_sysinfo_t app_sysinfo = {};
  * The environment includes \p app_filling_buffer, \p app_clearing_buffer,
  * \p app_attack, \p app_attaking_buffer, \p app_encoding_buffer.
  */
-void construct_app_environment()
+void construct_app_environment(void)
 {
     ret = sgx_create_enclave(ENCLAVE_FILENAME, SGX_DEBUG_FLAG, &token, &updated, &global_eid, NULL);
     ASSERT(ret == SGX_SUCCESS);
@@ -140,7 +140,7 @@ void construct_app_environment()
  * The environment includes \p app_filling_buffer, \p app_clearing_buffer,
  * \p app_attack, \p app_attaking_buffer, \p app_encoding_buffer.
  */
-void destruct_app_environment()
+void destruct_app_environment(void)
 {
     sgx_destroy_enclave(global_eid);
 
@@ -183,7 +183,7 @@ TestSuite(taa, .init = construct_app_environment, .fini = destruct_app_environme
  *
  * @return int 0 if passed, -1 if failed.
  */
-int test_core_same_thread_taa_nosgx_is_10_percent_effective()
+int test_core_same_thread_taa_nosgx_is_10_percent_effective(void)
 {
     int i, offset, allowance;
     int core;
@@ -192,7 +192,7 @@ int test_core_same_thread_taa_nosgx_is_10_percent_effective()
     core = 1;
 
     CPU_ZERO(&cpuset);
-    CPU_SET(core, &cpuset);
+    CPU_SET((size_t)core, &cpuset);
 
     ASSERT(!sched_setaffinity(getpid(), sizeof(cpu_set_t), &cpuset));
 
@@ -259,7 +259,7 @@ Test(taa, same_thread_taa_nosgx_is_10_percent_effective, .disabled = true)
  *
  * @return int 0 if passed, -1 if failed.
  */
-int test_core_same_thread_taa_sgx_is_10_percent_effective()
+int test_core_same_thread_taa_sgx_is_10_percent_effective(void)
 {
     int i, offset, allowance;
     int core;
@@ -268,7 +268,7 @@ int test_core_same_thread_taa_sgx_is_10_percent_effective()
     core = 1;
 
     CPU_ZERO(&cpuset);
-    CPU_SET(core, &cpuset);
+    CPU_SET((size_t)core, &cpuset);
 
     ASSERT(!sched_setaffinity(getpid(), sizeof(cpu_set_t), &cpuset));
 
@@ -340,6 +340,8 @@ void *test_core_cross_thread_taa_nosgx_is_1_percent_effective_victim_thread(void
 {
     int i;
 
+    (void) arg; /** bypass the warning about unsed parameter */
+
     for (i = 0; i < REPETITION_TIME * 100; i++)
     {
         fill_lfb(app_filling_sequence, &app_filling_buffer);
@@ -358,6 +360,8 @@ void *test_core_cross_thread_taa_nosgx_is_1_percent_effective_adversary_thread(v
 {
     int i;
 
+    (void) arg; /** bypass the warning about unsed parameter */
+
     for (i = 0; i < REPETITION_TIME; i++)
     {
         flush_enclyser_buffer(&app_encoding_buffer);
@@ -373,7 +377,7 @@ void *test_core_cross_thread_taa_nosgx_is_1_percent_effective_adversary_thread(v
  *
  * @return int 0 if passed, -1 if failed.
  */
-int test_core_cross_thread_taa_nosgx_is_1_percent_effective()
+int test_core_cross_thread_taa_nosgx_is_1_percent_effective(void)
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -385,8 +389,8 @@ int test_core_cross_thread_taa_nosgx_is_1_percent_effective()
 
     CPU_ZERO(&victim_cpuset);
     CPU_ZERO(&adversary_cpuset);
-    CPU_SET(victim_core, &victim_cpuset);
-    CPU_SET(adversary_core, &adversary_cpuset);
+    CPU_SET((size_t)victim_core, &victim_cpuset);
+    CPU_SET((size_t)adversary_core, &adversary_cpuset);
 
     allowance = 16;
     for (offset = 0; offset < 64; offset++)
@@ -457,6 +461,8 @@ Test(taa, cross_thread_taa_nosgx_is_1_percent_effective, .disabled = true)
  */
 void *test_core_cross_thread_taa_sgx_is_1_percent_effective_victim_thread(void *arg)
 {
+    (void) arg; /** bypass the warning about unsed parameter */
+
     ecall_rep_fill_lfb(global_eid, app_filling_sequence, &app_filling_buffer);
 
     return NULL;
@@ -471,6 +477,8 @@ void *test_core_cross_thread_taa_sgx_is_1_percent_effective_victim_thread(void *
 void *test_core_cross_thread_taa_sgx_is_1_percent_effective_adversary_thread(void *arg)
 {
     int i;
+
+    (void) arg; /** bypass the warning about unsed parameter */
 
     for (i = 0; i < REPETITION_TIME; i++)
     {
@@ -487,7 +495,7 @@ void *test_core_cross_thread_taa_sgx_is_1_percent_effective_adversary_thread(voi
  *
  * @return int 0 if passed, -1 if failed.
  */
-int test_core_cross_thread_taa_sgx_is_1_percent_effective()
+int test_core_cross_thread_taa_sgx_is_1_percent_effective(void)
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -499,8 +507,8 @@ int test_core_cross_thread_taa_sgx_is_1_percent_effective()
 
     CPU_ZERO(&victim_cpuset);
     CPU_ZERO(&adversary_cpuset);
-    CPU_SET(victim_core, &victim_cpuset);
-    CPU_SET(adversary_core, &adversary_cpuset);
+    CPU_SET((size_t)victim_core, &victim_cpuset);
+    CPU_SET((size_t)adversary_core, &adversary_cpuset);
 
     allowance = 16;
     for (offset = 0; offset < 64; offset++)
@@ -573,6 +581,8 @@ void *test_core_cross_core_taa_nosgx_is_1_percent_effective_victim_thread(void *
 {
     int i;
 
+    (void) arg; /** bypass the warning about unsed parameter */
+
     for (i = 0; i < REPETITION_TIME * 100; i++)
     {
         fill_lfb(app_filling_sequence, &app_filling_buffer);
@@ -591,6 +601,8 @@ void *test_core_cross_core_taa_nosgx_is_1_percent_effective_adversary_thread(voi
 {
     int i;
 
+    (void) arg; /** bypass the warning about unsed parameter */
+
     for (i = 0; i < REPETITION_TIME; i++)
     {
         flush_enclyser_buffer(&app_encoding_buffer);
@@ -606,7 +618,7 @@ void *test_core_cross_core_taa_nosgx_is_1_percent_effective_adversary_thread(voi
  *
  * @return int 0 if passed, -1 if failed.
  */
-int test_core_cross_core_taa_nosgx_is_1_percent_effective()
+int test_core_cross_core_taa_nosgx_is_1_percent_effective(void)
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -618,8 +630,8 @@ int test_core_cross_core_taa_nosgx_is_1_percent_effective()
 
     CPU_ZERO(&victim_cpuset);
     CPU_ZERO(&adversary_cpuset);
-    CPU_SET(victim_core, &victim_cpuset);
-    CPU_SET(adversary_core, &adversary_cpuset);
+    CPU_SET((size_t)victim_core, &victim_cpuset);
+    CPU_SET((size_t)adversary_core, &adversary_cpuset);
 
     allowance = 16;
     for (offset = 0; offset < 64; offset++)
@@ -690,6 +702,8 @@ Test(taa, cross_core_taa_nosgx_is_1_percent_effective, .disabled = true)
  */
 void *test_core_cross_core_taa_sgx_is_1_percent_effective_victim_thread(void *arg)
 {
+    (void) arg; /** bypass the warning about unsed parameter */
+
     ecall_rep_fill_lfb(global_eid, app_filling_sequence, &app_filling_buffer);
 
     return NULL;
@@ -704,6 +718,8 @@ void *test_core_cross_core_taa_sgx_is_1_percent_effective_victim_thread(void *ar
 void *test_core_cross_core_taa_sgx_is_1_percent_effective_adversary_thread(void *arg)
 {
     int i;
+
+    (void) arg; /** bypass the warning about unsed parameter */
 
     for (i = 0; i < REPETITION_TIME; i++)
     {
@@ -720,7 +736,7 @@ void *test_core_cross_core_taa_sgx_is_1_percent_effective_adversary_thread(void 
  *
  * @return int 0 if passed, -1 if failed.
  */
-int test_core_cross_core_taa_sgx_is_1_percent_effective()
+int test_core_cross_core_taa_sgx_is_1_percent_effective(void)
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -732,8 +748,8 @@ int test_core_cross_core_taa_sgx_is_1_percent_effective()
 
     CPU_ZERO(&victim_cpuset);
     CPU_ZERO(&adversary_cpuset);
-    CPU_SET(victim_core, &victim_cpuset);
-    CPU_SET(adversary_core, &adversary_cpuset);
+    CPU_SET((size_t)victim_core, &victim_cpuset);
+    CPU_SET((size_t)adversary_core, &adversary_cpuset);
 
     allowance = 16;
     for (offset = 0; offset < 64; offset++)
@@ -807,7 +823,7 @@ TestSuite(mds, .init = construct_app_environment, .fini = destruct_app_environme
  *
  * @return int 0 if passed, -1 if failed.
  */
-int test_core_same_thread_mds_nosgx_is_10_percent_effective()
+int test_core_same_thread_mds_nosgx_is_10_percent_effective(void)
 {
     int i, offset, allowance;
     int core;
@@ -816,7 +832,7 @@ int test_core_same_thread_mds_nosgx_is_10_percent_effective()
     core = 1;
 
     CPU_ZERO(&cpuset);
-    CPU_SET(core, &cpuset);
+    CPU_SET((size_t)core, &cpuset);
 
     ASSERT(!sched_setaffinity(getpid(), sizeof(cpu_set_t), &cpuset));
 
@@ -885,7 +901,7 @@ Test(mds, same_thread_mds_nosgx_is_10_percent_effective, .disabled = true)
  *
  * @return int 0 if passed, -1 if failed.
  */
-int test_core_same_thread_mds_sgx_is_10_percent_effective()
+int test_core_same_thread_mds_sgx_is_10_percent_effective(void)
 {
     int i, offset, allowance;
     int core;
@@ -894,7 +910,7 @@ int test_core_same_thread_mds_sgx_is_10_percent_effective()
     core = 1;
 
     CPU_ZERO(&cpuset);
-    CPU_SET(core, &cpuset);
+    CPU_SET((size_t)core, &cpuset);
 
     ASSERT(!sched_setaffinity(getpid(), sizeof(cpu_set_t), &cpuset));
 
@@ -968,6 +984,8 @@ void *test_core_cross_thread_mds_nosgx_is_1_percent_effective_victim_thread(void
 {
     int i;
 
+    (void) arg; /** bypass the warning about unsed parameter */
+
     for (i = 0; i < REPETITION_TIME * 100; i++)
     {
         fill_lfb(app_filling_sequence, &app_filling_buffer);
@@ -986,6 +1004,8 @@ void *test_core_cross_thread_mds_nosgx_is_1_percent_effective_adversary_thread(v
 {
     int i;
 
+    (void) arg; /** bypass the warning about unsed parameter */
+
     for (i = 0; i < REPETITION_TIME; i++)
     {
         flush_enclyser_buffer(&app_encoding_buffer);
@@ -1001,7 +1021,7 @@ void *test_core_cross_thread_mds_nosgx_is_1_percent_effective_adversary_thread(v
  *
  * @return int 0 if passed, -1 if failed.
  */
-int test_core_cross_thread_mds_nosgx_is_1_percent_effective()
+int test_core_cross_thread_mds_nosgx_is_1_percent_effective(void)
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -1013,8 +1033,8 @@ int test_core_cross_thread_mds_nosgx_is_1_percent_effective()
 
     CPU_ZERO(&victim_cpuset);
     CPU_ZERO(&adversary_cpuset);
-    CPU_SET(victim_core, &victim_cpuset);
-    CPU_SET(adversary_core, &adversary_cpuset);
+    CPU_SET((size_t)victim_core, &victim_cpuset);
+    CPU_SET((size_t)adversary_core, &adversary_cpuset);
 
     allowance = 16;
     for (offset = 0; offset < 64; offset++)
@@ -1087,6 +1107,8 @@ Test(mds, cross_thread_mds_nosgx_is_1_percent_effective, .disabled = true)
  */
 void *test_core_cross_thread_mds_sgx_is_1_percent_effective_victim_thread(void *arg)
 {
+    (void) arg; /** bypass the warning about unsed parameter */
+
     ecall_rep_fill_lfb(global_eid, app_filling_sequence, &app_filling_buffer);
 
     return NULL;
@@ -1101,6 +1123,8 @@ void *test_core_cross_thread_mds_sgx_is_1_percent_effective_victim_thread(void *
 void *test_core_cross_thread_mds_sgx_is_1_percent_effective_adversary_thread(void *arg)
 {
     int i;
+
+    (void) arg; /** bypass the warning about unsed parameter */
 
     for (i = 0; i < REPETITION_TIME; i++)
     {
@@ -1117,7 +1141,7 @@ void *test_core_cross_thread_mds_sgx_is_1_percent_effective_adversary_thread(voi
  *
  * @return int 0 if passed, -1 if failed.
  */
-int test_core_cross_thread_mds_sgx_is_1_percent_effective()
+int test_core_cross_thread_mds_sgx_is_1_percent_effective(void)
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -1129,8 +1153,8 @@ int test_core_cross_thread_mds_sgx_is_1_percent_effective()
 
     CPU_ZERO(&victim_cpuset);
     CPU_ZERO(&adversary_cpuset);
-    CPU_SET(victim_core, &victim_cpuset);
-    CPU_SET(adversary_core, &adversary_cpuset);
+    CPU_SET((size_t)victim_core, &victim_cpuset);
+    CPU_SET((size_t)adversary_core, &adversary_cpuset);
 
     allowance = 16;
     for (offset = 0; offset < 64; offset++)
@@ -1205,6 +1229,8 @@ void *test_core_cross_core_mds_nosgx_is_1_percent_effective_victim_thread(void *
 {
     int i;
 
+    (void) arg; /** bypass the warning about unsed parameter */
+
     for (i = 0; i < REPETITION_TIME * 100; i++)
     {
         fill_lfb(app_filling_sequence, &app_filling_buffer);
@@ -1223,6 +1249,8 @@ void *test_core_cross_core_mds_nosgx_is_1_percent_effective_adversary_thread(voi
 {
     int i;
 
+    (void) arg; /** bypass the warning about unsed parameter */
+
     for (i = 0; i < REPETITION_TIME; i++)
     {
         flush_enclyser_buffer(&app_encoding_buffer);
@@ -1238,7 +1266,7 @@ void *test_core_cross_core_mds_nosgx_is_1_percent_effective_adversary_thread(voi
  *
  * @return int 0 if passed, -1 if failed.
  */
-int test_core_cross_core_mds_nosgx_is_1_percent_effective()
+int test_core_cross_core_mds_nosgx_is_1_percent_effective(void)
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -1250,8 +1278,8 @@ int test_core_cross_core_mds_nosgx_is_1_percent_effective()
 
     CPU_ZERO(&victim_cpuset);
     CPU_ZERO(&adversary_cpuset);
-    CPU_SET(victim_core, &victim_cpuset);
-    CPU_SET(adversary_core, &adversary_cpuset);
+    CPU_SET((size_t)victim_core, &victim_cpuset);
+    CPU_SET((size_t)adversary_core, &adversary_cpuset);
 
     allowance = 16;
     for (offset = 0; offset < 64; offset++)
@@ -1324,6 +1352,8 @@ Test(mds, cross_core_mds_nosgx_is_1_percent_effective, .disabled = true)
  */
 void *test_core_cross_core_mds_sgx_is_1_percent_effective_victim_thread(void *arg)
 {
+    (void) arg; /** bypass the warning about unsed parameter */
+
     ecall_rep_fill_lfb(global_eid, app_filling_sequence, &app_filling_buffer);
 
     return NULL;
@@ -1338,6 +1368,8 @@ void *test_core_cross_core_mds_sgx_is_1_percent_effective_victim_thread(void *ar
 void *test_core_cross_core_mds_sgx_is_1_percent_effective_adversary_thread(void *arg)
 {
     int i;
+
+    (void) arg; /** bypass the warning about unsed parameter */
 
     for (i = 0; i < REPETITION_TIME; i++)
     {
@@ -1354,7 +1386,7 @@ void *test_core_cross_core_mds_sgx_is_1_percent_effective_adversary_thread(void 
  *
  * @return int 0 if passed, -1 if failed.
  */
-int test_core_cross_core_mds_sgx_is_1_percent_effective()
+int test_core_cross_core_mds_sgx_is_1_percent_effective(void)
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -1366,8 +1398,8 @@ int test_core_cross_core_mds_sgx_is_1_percent_effective()
 
     CPU_ZERO(&victim_cpuset);
     CPU_ZERO(&adversary_cpuset);
-    CPU_SET(victim_core, &victim_cpuset);
-    CPU_SET(adversary_core, &adversary_cpuset);
+    CPU_SET((size_t)victim_core, &victim_cpuset);
+    CPU_SET((size_t)adversary_core, &adversary_cpuset);
 
     allowance = 16;
     for (offset = 0; offset < 64; offset++)
@@ -1443,7 +1475,7 @@ Test(mds, cross_core_mds_sgx_is_1_percent_effective, .disabled = true)
 //  *
 //  * @return int 0 if passed, -1 if failed.
 //  */
-// int test_core_verw_against_same_thread_taa_nosgx_is_10_percent_effective()
+// int test_core_verw_against_same_thread_taa_nosgx_is_10_percent_effective(void)
 // {
 //     int i, offset, allowance;
 
@@ -1513,7 +1545,7 @@ Test(mds, cross_core_mds_sgx_is_1_percent_effective, .disabled = true)
 //  *
 //  * @return int 0 if passed, -1 if failed.
 //  */
-// int test_core_verw_against_same_thread_mds_nosgx_is_10_percent_effective()
+// int test_core_verw_against_same_thread_mds_nosgx_is_10_percent_effective(void)
 // {
 //     int i, offset, allowance;
 
@@ -1591,7 +1623,7 @@ TestSuite(rdcl, .init = construct_app_environment, .fini = destruct_app_environm
  *
  * @return int 0 if passed, -1 if failed.
  */
-int test_core_same_thread_rdcl_nosgx_is_10_percent_effective()
+int test_core_same_thread_rdcl_nosgx_is_10_percent_effective(void)
 {
     int i, offset, allowance;
     int core;
@@ -1600,7 +1632,7 @@ int test_core_same_thread_rdcl_nosgx_is_10_percent_effective()
     core = 1;
 
     CPU_ZERO(&cpuset);
-    CPU_SET(core, &cpuset);
+    CPU_SET((size_t)core, &cpuset);
 
     ASSERT(!sched_setaffinity(getpid(), sizeof(cpu_set_t), &cpuset));
 
@@ -1617,8 +1649,8 @@ int test_core_same_thread_rdcl_nosgx_is_10_percent_effective()
         }
         if (!(app_printing_buffer.buffer[offset + app_attaking_buffer.value] >= 10 || allowance--))
         {
-            // INFO("offset: 0x%x", offset);
-            // print(&app_printing_buffer, 0);
+            INFO("offset: 0x%x", offset);
+            print(&app_printing_buffer, 0);
             return -1;
         }
         reset(&app_printing_buffer);
@@ -1636,6 +1668,8 @@ Test(rdcl, same_thread_rdcl_nosgx_is_10_percent_effective, .disabled = true)
     app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_SUPERVISOR;
     assign_enclyser_buffer(&app_attaking_buffer);
     cripple_enclyser_buffer(&app_attaking_buffer);
+
+    ecall_empty(global_eid);
 
     app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
     cr_expect(test_core_same_thread_rdcl_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
@@ -1665,7 +1699,7 @@ Test(rdcl, same_thread_rdcl_nosgx_is_10_percent_effective, .disabled = true)
  *
  * @return int 0 if passed, -1 if failed.
  */
-int test_core_same_thread_rdcl_sgx_is_10_percent_effective()
+int test_core_same_thread_rdcl_sgx_is_10_percent_effective(void)
 {
     int i, offset, allowance;
     int core;
@@ -1674,7 +1708,7 @@ int test_core_same_thread_rdcl_sgx_is_10_percent_effective()
     core = 1;
 
     CPU_ZERO(&cpuset);
-    CPU_SET(core, &cpuset);
+    CPU_SET((size_t)core, &cpuset);
 
     ASSERT(!sched_setaffinity(getpid(), sizeof(cpu_set_t), &cpuset));
 
@@ -1744,6 +1778,8 @@ void *test_core_cross_thread_rdcl_nosgx_is_1_percent_effective_victim_thread(voi
 {
     int i;
 
+    (void) arg; /** bypass the warning about unsed parameter */
+
     for (i = 0; i < REPETITION_TIME * 100; i++)
     {
         fill_lfb(app_filling_sequence, &app_attaking_buffer);
@@ -1762,6 +1798,8 @@ void *test_core_cross_thread_rdcl_nosgx_is_1_percent_effective_adversary_thread(
 {
     int i;
 
+    (void) arg; /** bypass the warning about unsed parameter */
+
     for (i = 0; i < REPETITION_TIME; i++)
     {
         flush_enclyser_buffer(&app_encoding_buffer);
@@ -1777,7 +1815,7 @@ void *test_core_cross_thread_rdcl_nosgx_is_1_percent_effective_adversary_thread(
  *
  * @return int 0 if passed, -1 if failed.
  */
-int test_core_cross_thread_rdcl_nosgx_is_1_percent_effective()
+int test_core_cross_thread_rdcl_nosgx_is_1_percent_effective(void)
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -1789,8 +1827,8 @@ int test_core_cross_thread_rdcl_nosgx_is_1_percent_effective()
 
     CPU_ZERO(&victim_cpuset);
     CPU_ZERO(&adversary_cpuset);
-    CPU_SET(victim_core, &victim_cpuset);
-    CPU_SET(adversary_core, &adversary_cpuset);
+    CPU_SET((size_t)victim_core, &victim_cpuset);
+    CPU_SET((size_t)adversary_core, &adversary_cpuset);
 
     allowance = 16;
     for (offset = 0; offset < 64; offset++)
@@ -1861,6 +1899,8 @@ void *test_core_cross_thread_rdcl_sgx_is_1_percent_effective_victim_thread(void 
 {
     int i;
 
+    (void) arg; /** bypass the warning about unsed parameter */
+
     for (i = 0; i < REPETITION_TIME * 100; i++)
     {
         ecall_grooming(global_eid, app_filling_sequence, &app_attaking_buffer, app_clearing_sequence, &app_clearing_buffer, &app_faulting_buffer);
@@ -1879,6 +1919,8 @@ void *test_core_cross_thread_rdcl_sgx_is_1_percent_effective_adversary_thread(vo
 {
     int i;
 
+    (void) arg; /** bypass the warning about unsed parameter */
+
     for (i = 0; i < REPETITION_TIME; i++)
     {
         flush_enclyser_buffer(&app_encoding_buffer);
@@ -1894,7 +1936,7 @@ void *test_core_cross_thread_rdcl_sgx_is_1_percent_effective_adversary_thread(vo
  *
  * @return int 0 if passed, -1 if failed.
  */
-int test_core_cross_thread_rdcl_sgx_is_1_percent_effective()
+int test_core_cross_thread_rdcl_sgx_is_1_percent_effective(void)
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -1906,8 +1948,8 @@ int test_core_cross_thread_rdcl_sgx_is_1_percent_effective()
 
     CPU_ZERO(&victim_cpuset);
     CPU_ZERO(&adversary_cpuset);
-    CPU_SET(victim_core, &victim_cpuset);
-    CPU_SET(adversary_core, &adversary_cpuset);
+    CPU_SET((size_t)victim_core, &victim_cpuset);
+    CPU_SET((size_t)adversary_core, &adversary_cpuset);
 
     allowance = 16;
     for (offset = 0; offset < 64; offset++)
@@ -1978,6 +2020,8 @@ void *test_core_cross_core_rdcl_nosgx_is_1_percent_effective_victim_thread(void 
 {
     int i;
 
+    (void) arg; /** bypass the warning about unsed parameter */
+
     for (i = 0; i < REPETITION_TIME * 100; i++)
     {
         fill_lfb(app_filling_sequence, &app_attaking_buffer);
@@ -1996,6 +2040,8 @@ void *test_core_cross_core_rdcl_nosgx_is_1_percent_effective_adversary_thread(vo
 {
     int i;
 
+    (void) arg; /** bypass the warning about unsed parameter */
+
     for (i = 0; i < REPETITION_TIME; i++)
     {
         flush_enclyser_buffer(&app_encoding_buffer);
@@ -2011,7 +2057,7 @@ void *test_core_cross_core_rdcl_nosgx_is_1_percent_effective_adversary_thread(vo
  *
  * @return int 0 if passed, -1 if failed.
  */
-int test_core_cross_core_rdcl_nosgx_is_1_percent_effective()
+int test_core_cross_core_rdcl_nosgx_is_1_percent_effective(void)
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -2023,8 +2069,8 @@ int test_core_cross_core_rdcl_nosgx_is_1_percent_effective()
 
     CPU_ZERO(&victim_cpuset);
     CPU_ZERO(&adversary_cpuset);
-    CPU_SET(victim_core, &victim_cpuset);
-    CPU_SET(adversary_core, &adversary_cpuset);
+    CPU_SET((size_t)victim_core, &victim_cpuset);
+    CPU_SET((size_t)adversary_core, &adversary_cpuset);
 
     allowance = 16;
     for (offset = 0; offset < 64; offset++)
@@ -2095,6 +2141,8 @@ void *test_core_cross_core_rdcl_sgx_is_1_percent_effective_victim_thread(void *a
 {
     int i;
 
+    (void) arg; /** bypass the warning about unsed parameter */
+
     for (i = 0; i < REPETITION_TIME * 100; i++)
     {
         ecall_grooming(global_eid, app_filling_sequence, &app_attaking_buffer, app_clearing_sequence, &app_clearing_buffer, &app_faulting_buffer);
@@ -2113,6 +2161,8 @@ void *test_core_cross_core_rdcl_sgx_is_1_percent_effective_adversary_thread(void
 {
     int i;
 
+    (void) arg; /** bypass the warning about unsed parameter */
+
     for (i = 0; i < REPETITION_TIME; i++)
     {
         flush_enclyser_buffer(&app_encoding_buffer);
@@ -2128,7 +2178,7 @@ void *test_core_cross_core_rdcl_sgx_is_1_percent_effective_adversary_thread(void
  *
  * @return int 0 if passed, -1 if failed.
  */
-int test_core_cross_core_rdcl_sgx_is_1_percent_effective()
+int test_core_cross_core_rdcl_sgx_is_1_percent_effective(void)
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -2140,8 +2190,8 @@ int test_core_cross_core_rdcl_sgx_is_1_percent_effective()
 
     CPU_ZERO(&victim_cpuset);
     CPU_ZERO(&adversary_cpuset);
-    CPU_SET(victim_core, &victim_cpuset);
-    CPU_SET(adversary_core, &adversary_cpuset);
+    CPU_SET((size_t)victim_core, &victim_cpuset);
+    CPU_SET((size_t)adversary_core, &adversary_cpuset);
 
     allowance = 16;
     for (offset = 0; offset < 64; offset++)
@@ -2213,7 +2263,7 @@ TestSuite(l1tf, .init = construct_app_environment, .fini = destruct_app_environm
  *
  * @return int 0 if passed, -1 if failed.
  */
-int test_core_same_thread_l1tf_nosgx_is_10_percent_effective()
+int test_core_same_thread_l1tf_nosgx_is_10_percent_effective(void)
 {
     int i, offset, allowance;
     int core;
@@ -2222,7 +2272,7 @@ int test_core_same_thread_l1tf_nosgx_is_10_percent_effective()
     core = 1;
 
     CPU_ZERO(&cpuset);
-    CPU_SET(core, &cpuset);
+    CPU_SET((size_t)core, &cpuset);
 
     ASSERT(!sched_setaffinity(getpid(), sizeof(cpu_set_t), &cpuset));
 
@@ -2260,27 +2310,27 @@ Test(l1tf, same_thread_l1tf_nosgx_is_10_percent_effective, .disabled = true)
     ecall_assign_secret(global_eid, &encalve_secret_buffer);
     cripple_enclyser_buffer(&encalve_secret_buffer);
 
-    sleep(2);   // IMPORTANT, BUT DON'T KNOW WHY
+    sleep(2); // IMPORTANT, BUT DON'T KNOW WHY
     app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
     cr_expect(test_core_same_thread_l1tf_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
 
-    sleep(2);   // IMPORTANT, BUT DON'T KNOW WHY
+    sleep(2); // IMPORTANT, BUT DON'T KNOW WHY
     app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
     cr_expect(test_core_same_thread_l1tf_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
 
-    sleep(2);   // IMPORTANT, BUT DON'T KNOW WHY
+    sleep(2); // IMPORTANT, BUT DON'T KNOW WHY
     app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
     cr_expect(test_core_same_thread_l1tf_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
 
-    sleep(2);   // IMPORTANT, BUT DON'T KNOW WHY
+    sleep(2); // IMPORTANT, BUT DON'T KNOW WHY
     app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
     cr_expect(test_core_same_thread_l1tf_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
 
-    sleep(2);   // IMPORTANT, BUT DON'T KNOW WHY
+    sleep(2); // IMPORTANT, BUT DON'T KNOW WHY
     app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
     cr_expect(test_core_same_thread_l1tf_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
 
-    sleep(2);   // IMPORTANT, BUT DON'T KNOW WHY
+    sleep(2); // IMPORTANT, BUT DON'T KNOW WHY
     app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
     cr_expect(test_core_same_thread_l1tf_nosgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
@@ -2294,7 +2344,7 @@ Test(l1tf, same_thread_l1tf_nosgx_is_10_percent_effective, .disabled = true)
  *
  * @return int 0 if passed, -1 if failed.
  */
-int test_core_same_thread_l1tf_sgx_is_10_percent_effective()
+int test_core_same_thread_l1tf_sgx_is_10_percent_effective(void)
 {
     int i, offset, allowance;
     int core;
@@ -2303,7 +2353,7 @@ int test_core_same_thread_l1tf_sgx_is_10_percent_effective()
     core = 1;
 
     CPU_ZERO(&cpuset);
-    CPU_SET(core, &cpuset);
+    CPU_SET((size_t)core, &cpuset);
 
     ASSERT(!sched_setaffinity(getpid(), sizeof(cpu_set_t), &cpuset));
 
@@ -2340,27 +2390,27 @@ Test(l1tf, same_thread_l1tf_sgx_is_10_percent_effective, .disabled = true)
     ecall_assign_secret(global_eid, &encalve_secret_buffer);
     cripple_enclyser_buffer(&encalve_secret_buffer);
 
-    sleep(2);   // IMPORTANT, BUT DON'T KNOW WHY
+    sleep(2); // IMPORTANT, BUT DON'T KNOW WHY
     app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
     cr_expect(test_core_same_thread_l1tf_sgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_GP_LOAD");
 
-    sleep(2);   // IMPORTANT, BUT DON'T KNOW WHY
+    sleep(2); // IMPORTANT, BUT DON'T KNOW WHY
     app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
     cr_expect(test_core_same_thread_l1tf_sgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_GP_STORE");
 
-    sleep(2);   // IMPORTANT, BUT DON'T KNOW WHY
+    sleep(2); // IMPORTANT, BUT DON'T KNOW WHY
     app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
     cr_expect(test_core_same_thread_l1tf_sgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_NT_LOAD");
 
-    sleep(2);   // IMPORTANT, BUT DON'T KNOW WHY
+    sleep(2); // IMPORTANT, BUT DON'T KNOW WHY
     app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
     cr_expect(test_core_same_thread_l1tf_sgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_NT_STORE");
 
-    sleep(2);   // IMPORTANT, BUT DON'T KNOW WHY
+    sleep(2); // IMPORTANT, BUT DON'T KNOW WHY
     app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
     cr_expect(test_core_same_thread_l1tf_sgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_STR_LOAD");
 
-    sleep(2);   // IMPORTANT, BUT DON'T KNOW WHY
+    sleep(2); // IMPORTANT, BUT DON'T KNOW WHY
     app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
     cr_expect(test_core_same_thread_l1tf_sgx_is_10_percent_effective() == 0, "FILLING_SEQUENCE_STR_STORE");
 }
@@ -2378,6 +2428,8 @@ Test(l1tf, same_thread_l1tf_sgx_is_10_percent_effective, .disabled = true)
 void *test_core_cross_thread_l1tf_nosgx_is_1_percent_effective_victim_thread(void *arg)
 {
     int i;
+
+    (void) arg; /** bypass the warning about unsed parameter */
 
     for (i = 0; i < REPETITION_TIME * 100; i++)
     {
@@ -2397,6 +2449,8 @@ void *test_core_cross_thread_l1tf_nosgx_is_1_percent_effective_adversary_thread(
 {
     int i;
 
+    (void) arg; /** bypass the warning about unsed parameter */
+
     for (i = 0; i < REPETITION_TIME; i++)
     {
         flush_enclyser_buffer(&app_encoding_buffer);
@@ -2412,7 +2466,7 @@ void *test_core_cross_thread_l1tf_nosgx_is_1_percent_effective_adversary_thread(
  *
  * @return int 0 if passed, -1 if failed.
  */
-int test_core_cross_thread_l1tf_nosgx_is_1_percent_effective()
+int test_core_cross_thread_l1tf_nosgx_is_1_percent_effective(void)
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -2424,8 +2478,8 @@ int test_core_cross_thread_l1tf_nosgx_is_1_percent_effective()
 
     CPU_ZERO(&victim_cpuset);
     CPU_ZERO(&adversary_cpuset);
-    CPU_SET(victim_core, &victim_cpuset);
-    CPU_SET(adversary_core, &adversary_cpuset);
+    CPU_SET((size_t)victim_core, &victim_cpuset);
+    CPU_SET((size_t)adversary_core, &adversary_cpuset);
 
     allowance = 16;
     for (offset = 0; offset < 64; offset++)
@@ -2496,6 +2550,8 @@ void *test_core_cross_thread_l1tf_sgx_is_1_percent_effective_victim_thread(void 
 {
     int i;
 
+    (void) arg; /** bypass the warning about unsed parameter */
+
     for (i = 0; i < REPETITION_TIME * 100; i++)
     {
         ecall_grooming(global_eid, app_filling_sequence, &encalve_secret_buffer, app_clearing_sequence, &app_clearing_buffer, &app_faulting_buffer);
@@ -2514,6 +2570,8 @@ void *test_core_cross_thread_l1tf_sgx_is_1_percent_effective_adversary_thread(vo
 {
     int i;
 
+    (void) arg; /** bypass the warning about unsed parameter */
+
     for (i = 0; i < REPETITION_TIME; i++)
     {
         // ecall_grooming(global_eid, app_filling_sequence, &encalve_secret_buffer, app_clearing_sequence, &app_clearing_buffer, &app_faulting_buffer);
@@ -2530,7 +2588,7 @@ void *test_core_cross_thread_l1tf_sgx_is_1_percent_effective_adversary_thread(vo
  *
  * @return int 0 if passed, -1 if failed.
  */
-int test_core_cross_thread_l1tf_sgx_is_1_percent_effective()
+int test_core_cross_thread_l1tf_sgx_is_1_percent_effective(void)
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -2542,8 +2600,8 @@ int test_core_cross_thread_l1tf_sgx_is_1_percent_effective()
 
     CPU_ZERO(&victim_cpuset);
     CPU_ZERO(&adversary_cpuset);
-    CPU_SET(victim_core, &victim_cpuset);
-    CPU_SET(adversary_core, &adversary_cpuset);
+    CPU_SET((size_t)victim_core, &victim_cpuset);
+    CPU_SET((size_t)adversary_core, &adversary_cpuset);
 
     allowance = 16;
     for (offset = 0; offset < 64; offset++)
@@ -2614,6 +2672,8 @@ void *test_core_cross_core_l1tf_nosgx_is_1_percent_effective_victim_thread(void 
 {
     int i;
 
+    (void) arg; /** bypass the warning about unsed parameter */
+
     for (i = 0; i < REPETITION_TIME * 100; i++)
     {
         fill_lfb(app_filling_sequence, &app_attaking_buffer);
@@ -2632,6 +2692,8 @@ void *test_core_cross_core_l1tf_nosgx_is_1_percent_effective_adversary_thread(vo
 {
     int i;
 
+    (void) arg; /** bypass the warning about unsed parameter */
+
     for (i = 0; i < REPETITION_TIME; i++)
     {
         flush_enclyser_buffer(&app_encoding_buffer);
@@ -2647,7 +2709,7 @@ void *test_core_cross_core_l1tf_nosgx_is_1_percent_effective_adversary_thread(vo
  *
  * @return int 0 if passed, -1 if failed.
  */
-int test_core_cross_core_l1tf_nosgx_is_1_percent_effective()
+int test_core_cross_core_l1tf_nosgx_is_1_percent_effective(void)
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -2659,8 +2721,8 @@ int test_core_cross_core_l1tf_nosgx_is_1_percent_effective()
 
     CPU_ZERO(&victim_cpuset);
     CPU_ZERO(&adversary_cpuset);
-    CPU_SET(victim_core, &victim_cpuset);
-    CPU_SET(adversary_core, &adversary_cpuset);
+    CPU_SET((size_t)victim_core, &victim_cpuset);
+    CPU_SET((size_t)adversary_core, &adversary_cpuset);
 
     allowance = 16;
     for (offset = 0; offset < 64; offset++)
@@ -2731,6 +2793,8 @@ void *test_core_cross_core_l1tf_sgx_is_1_percent_effective_victim_thread(void *a
 {
     int i;
 
+    (void) arg; /** bypass the warning about unsed parameter */
+
     for (i = 0; i < REPETITION_TIME * 100; i++)
     {
         ecall_grooming(global_eid, app_filling_sequence, &app_attaking_buffer, app_clearing_sequence, &app_clearing_buffer, &app_faulting_buffer);
@@ -2749,6 +2813,8 @@ void *test_core_cross_core_l1tf_sgx_is_1_percent_effective_adversary_thread(void
 {
     int i;
 
+    (void) arg; /** bypass the warning about unsed parameter */
+
     for (i = 0; i < REPETITION_TIME; i++)
     {
         flush_enclyser_buffer(&app_encoding_buffer);
@@ -2764,7 +2830,7 @@ void *test_core_cross_core_l1tf_sgx_is_1_percent_effective_adversary_thread(void
  *
  * @return int 0 if passed, -1 if failed.
  */
-int test_core_cross_core_l1tf_sgx_is_1_percent_effective()
+int test_core_cross_core_l1tf_sgx_is_1_percent_effective(void)
 {
     int offset, allowance;
     int victim_core, adversary_core;
@@ -2776,8 +2842,8 @@ int test_core_cross_core_l1tf_sgx_is_1_percent_effective()
 
     CPU_ZERO(&victim_cpuset);
     CPU_ZERO(&adversary_cpuset);
-    CPU_SET(victim_core, &victim_cpuset);
-    CPU_SET(adversary_core, &adversary_cpuset);
+    CPU_SET((size_t)victim_core, &victim_cpuset);
+    CPU_SET((size_t)adversary_core, &adversary_cpuset);
 
     allowance = 16;
     for (offset = 0; offset < 64; offset++)

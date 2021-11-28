@@ -34,10 +34,6 @@ enclave {
     from "enclyser/libenclyser/info.edl" import *;
     from "enclyser/libenclyser/memory.edl" import *;
 
-    include "enclyser/libenclyser/def.h"
-    include "enclyser/libenclyser/info.h"
-    include "enclyser/libenclyser/memory.h"
-
     trusted {
         public void ecall_attack([user_check] enclyser_attack_t *attack_spec, [user_check] enclyser_buffer_t *attaking_buffer, [user_check] enclyser_buffer_t *encoding_buffer);
     };

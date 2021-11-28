@@ -6,6 +6,8 @@
  */
 #ifdef NAMESPACE_SGX_YES
 
+#include "enclyser/libenclyser/flush_reload_t.h"
+
 #endif
 
 /**
@@ -13,6 +15,10 @@
  * 
  */
 #ifdef NAMESPACE_SGX_NO
+
+#include "enclyser/libenclyser/flush_reload_u.h"
+
+#include <ctype.h> // isprint function
 
 void flush(enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffer)
 {
