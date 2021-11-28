@@ -54,7 +54,11 @@
         "enclave_u.h": "c",
         "signal.h": "c",
         "sched.h": "c",
-        "kallsyms.h": "c"
+        "kallsyms.h": "c",
+        "include.h": "c",
+        "info_t.h": "c",
+        "def.h": "c",
+        "sgx_error.h": "c"
     },
     "C_Cpp.errorSquiggles": "Enabled"
 }

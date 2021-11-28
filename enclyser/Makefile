@@ -79,7 +79,7 @@ endif
 
 APP_NAME := sgx_app
 
-APP_C_FILES := app/app.c
+APP_C_FILES := app/app.c app/l1tf.c app/mds.c app/meltdown.c app/shared.c app/spectre.c app/system.c app/taa.c app/verw.c
 APP_C_OBJECTS := $(APP_C_FILES:.c=.o)
 
 APP_INCLUDE_PATHS := -I.. -Iapp -I$(SGX_SDK)/include
