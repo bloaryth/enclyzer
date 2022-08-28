@@ -34,24 +34,25 @@ int printf(const char *fmt, ...);
 #ifdef NAMESPACE_SGX_SHARED
 
 #include <stdio.h>
+#include <errno.h>
 
-#define ASSERT(cond)                                                     \
-    do                                                                   \
-    {                                                                    \
-        if (!(cond))                                                     \
-        {                                                                \
-            printf("%s", "[" __FILE__ "] assertion '" #cond "' failed"); \
-            abort();                                                     \
-        }                                                                \
+#define ASSERT(cond)                                                                \
+    do                                                                              \
+    {                                                                               \
+        if (!(cond))                                                                \
+        {                                                                           \
+            printf("%s: %x", "[" __FILE__ "] assertion '" #cond "' failed", errno); \
+            abort();                                                                \
+        }                                                                           \
     } while (0)
 
-#define EXPECT(cond)                                                     \
-    do                                                                   \
-    {                                                                    \
-        if (!(cond))                                                     \
-        {                                                                \
-            printf("%s", "[" __FILE__ "] assertion '" #cond "' failed"); \
-        }                                                                \
+#define EXPECT(cond)                                                                \
+    do                                                                              \
+    {                                                                               \
+        if (!(cond))                                                                \
+        {                                                                           \
+            printf("%s: %x", "[" __FILE__ "] assertion '" #cond "' failed", errno); \
+        }                                                                           \
     } while (0)
 
 #define INFO(msg, ...)                                     \

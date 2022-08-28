@@ -2,7 +2,7 @@
 
 /**
  * @brief the defines and functions that are exclusive to trusted libraries
- * 
+ *
  */
 #ifdef NAMESPACE_SGX_YES
 
@@ -14,13 +14,13 @@
 
 /**
  * @brief the define that limit the maximun length of an print string
- * 
+ *
  */
 #define PRINTF_BUF_SIZE 256UL
 
-int printf(const char* fmt, ...)
+int printf(const char *fmt, ...)
 {
-    char buf[PRINTF_BUF_SIZE] = { '\0' };
+    char buf[PRINTF_BUF_SIZE] = {'\0'};
     va_list ap;
     va_start(ap, fmt);
     vsnprintf(buf, PRINTF_BUF_SIZE, fmt, ap);
@@ -33,7 +33,7 @@ int printf(const char* fmt, ...)
 
 /**
  * @brief the defines and functions that are exclusive to untrusted libraries
- * 
+ *
  */
 #ifdef NAMESPACE_SGX_NO
 
@@ -50,8 +50,8 @@ int printf(const char* fmt, ...)
  */
 void ocall_print_string(const char *str)
 {
-    /* Proxy/Bridge will check the length and null-terminate 
-     * the input string to prevent buffer overflow. 
+    /* Proxy/Bridge will check the length and null-terminate
+     * the input string to prevent buffer overflow.
      */
     printf("%s", str);
 }
@@ -60,7 +60,7 @@ void ocall_print_string(const char *str)
 
 /**
  * @brief the defines and functions that are shared by trusted libraries and untrusted libraries
- * 
+ *
  */
 #ifdef NAMESPACE_SGX_SHARED
 

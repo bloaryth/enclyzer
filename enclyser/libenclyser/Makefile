@@ -53,7 +53,7 @@ URTS_INCLUDE_PATHS := -I. -I../..  -I$(SGX_SDK)/include
 URTS_CFLAGS := $(SGX_COMMON_CFLAGS) $(URTS_INCLUDE_PATHS) -DNAMESPACE_SGX_SHARED -DNAMESPACE_SGX_NO
 
 TRTS_INCLUDE_PATHS := -I. -I../.. -I$(SGX_SDK)/include -I$(SGX_SDK)/include/tlibc
-TRTS_CFLAGS := $(SGX_COMMON_CFLAGS) $(TRTS_INCLUDE_PATHS) -DNAMESPACE_SGX_SHARED -DNAMESPACE_SGX_YES -nostdinc -fvisibility=hidden -fpie -fstack-protector
+TRTS_CFLAGS := $(SGX_COMMON_CFLAGS) $(TRTS_INCLUDE_PATHS) -DNAMESPACE_SGX_SHARED -DNAMESPACE_SGX_YES -nostdinc -fno-builtin -fvisibility=hidden -fpie -fstack-protector
 
 URTS_LIBRARY := libenclyser_urts.a
 TRTS_LIBRARY := libenclyser_trts.a

@@ -12,6 +12,7 @@ doc/dev-log
 doc/intel-cpu
 doc/microcode-update
 doc/weekly-report
+doc/paper/
 
 enclyser/enclave/enclave_u.c
 enclyser/enclave/enclave_u.h
@@ -51,6 +52,10 @@ enclyser/libenclyser/template_t.c
 enclyser/libenclyser/template_t.h
 enclyser/sgx_app
 enclyser/sgx_app.txt
+
+enclyser/enclave/enclave.o.dump
+enclyser/enclave.so.dump
+enclyser/sgx_app.dump
 
 test/enclyser/test
 test/enclyser/test.txt
