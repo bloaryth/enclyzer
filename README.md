@@ -1,4 +1,4 @@
-# README
+# Enclyzer: Automated Analysis of Transient Data Leaks for Intel SGX
 
 ### Supported Platforms
 
