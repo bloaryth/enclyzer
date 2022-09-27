@@ -404,7 +404,7 @@ Test(l1tf, l1tf_cc_nosgx, .disabled = false) {
 
 #pragma endregion
 
-#pragma region cross_core_l1tf_sgx_is_1_percent_effective
+#pragma region l1tf_cc_sgx
 
 void *victhrd_l1tf_cc_sgx(void *arg) {
   (void)arg; /** prohibit the warning about unused parameter */
@@ -466,7 +466,7 @@ int fn_l1tf_cc_sgx(char *extra_settings) {
   return 0;
 }
 
-Test(l1tf, cross_core_l1tf_sgx_is_1_percent_effective, .disabled = false) {
+Test(l1tf, l1tf_cc_sgx, .disabled = false) {
   app_attack_spec.major = ATTACK_MAJOR_L1TF;
   app_attack_spec.minor = ATTACK_MINOR_STABLE;
 
