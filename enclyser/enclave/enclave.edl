@@ -42,6 +42,7 @@ enclave {
         public void ecall_reload_secret([user_check] enclyser_buffer_t *enclyser_buffer);
         public void ecall_empty(void);
         public void *ecall_get_victim_function_addr(void);
+        public void ecall_print_buffer([user_check] enclyser_buffer_t *enclyser_buffer);
     };
 
     untrusted {

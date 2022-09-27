@@ -2,7 +2,9 @@
 
 #include "enclyser/enclave/enclave_t.h"
 
-uint8_t __attribute__((aligned(0x1000))) secret[DEFAULT_SECRET_BUFFER_SIZE];
+// TODO: DEFAULT_SECRET_BUFFER_SIZE -> DEFAULT_FILLING_BUFFER_SIZE
+// uint8_t __attribute__((aligned(0x1000))) secret[DEFAULT_SECRET_BUFFER_SIZE];
+uint8_t __attribute__((aligned(0x1000))) secret[DEFAULT_FILLING_BUFFER_SIZE];
 
 /**
  * @brief [ECALL] First fill lfb and then clear lfb by repestive \p filling_sequence and \p clearing_sequence.
@@ -45,6 +47,18 @@ uint8_t *ecall_get_secret(void)
 void ecall_assign_secret(enclyser_buffer_t *enclyser_buffer)
 {
     assign_enclyser_buffer(enclyser_buffer);
+}
+
+void ecall_print_buffer(enclyser_buffer_t *enclyser_buffer) 
+{
+    for (int i = 0; i < 8; i++)
+    {
+        for (int j = 0; j < 8; j++)
+        {
+            printf("%d ", enclyser_buffer->buffer[i * 8 + j]);
+        }
+        printf("\n");
+    }
 }
 
 void ecall_reload_secret(enclyser_buffer_t *enclyser_buffer)

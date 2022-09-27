@@ -1,7 +1,7 @@
 #!/bin/bash
 ## Usage: sudo bash install-enclyser-prerequisites.sh
 
-ENCLYSER_SYSTEM_PACKAGES="make gcc curl cpuid msr-tools linux-tools-$(uname -r)"
+ENCLYSER_SYSTEM_PACKAGES="make gcc curl cpuid msr-tools doxygen graphviz linux-tools-$(uname -r)"
 ENCLYSER_PYTHON_LIBRARIES="numpy==1.20.3 openpyxl==3.0.7 pandas==1.2.4"
 
 # System packages

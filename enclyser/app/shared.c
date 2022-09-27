@@ -72,7 +72,7 @@ enclyser_buffer_t app_printing_buffer = {
 enclyser_buffer_t encalve_secret_buffer = {
     .buffer = NULL,
     .shadow = NULL,
-    .size = DEFAULT_SECRET_BUFFER_SIZE,
+    .size = DEFAULT_FILLING_BUFFER_SIZE,
     .value = DEFAULT_BUFFER_VALUE,
     .order = DEFAULT_BUFFER_ORDER,
     .mem_type = DEFAULT_BUFFER_MEM_TYPE,
@@ -121,8 +121,6 @@ void construct_app_environment(void)
     malloc_enclyser_buffer(&encalve_secret_buffer);
 
     // ASSERT(signal(SIGSEGV, sigsegv_handler) != SIG_ERR);
-
-    // sleep(5); // IMPORTANT! FIXME robust against signals */
 }
 
 /**
