@@ -2,7 +2,7 @@
 
 ### Supported Platforms
 
-Enclyser is tested on Ubuntu 20.04 with a kernel version of 5.11. It is considered at least effective on the following tested Intel CPUs: e3-1535mv5, i5-6360u, i5-8365u, i9-8950hk, and i7-9850h.
+Enclyzer is tested on Ubuntu 20.04 with a kernel version of 5.11. It is considered at least effective on three micro-architectures: Skylake, Kaybe Lake and Coffee, with these CPUs tested: e3-1535mv5, i5-6360u, i5-8365u, i9-8950hk, and i7-9850h.
 
 ### System Requirements 
 
