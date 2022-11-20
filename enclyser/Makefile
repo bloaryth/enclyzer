@@ -221,4 +221,6 @@ dump:
 	objdump -d $(ENCLAVE_C_OBJECTS) > $(ENCLAVE_C_OBJECTS).dump
 
 clean:
+	@make -C ../enclyser/libenclyser clean --quiet
+	@sudo make -C ../kenclyser clean --quiet
 	@rm -f $(APP_NAME) $(ENCLAVE_NAME) $(SIGNED_ENCLAVE_NAME) $(APP_C_OBJECTS) enclave/enclave_u.* $(ENCLAVE_C_OBJECTS) enclave/enclave_t.* $(APP_NAME).txt
