@@ -81,7 +81,7 @@ void execute_command(char *command)
     pclose(fp); /* close */
 }
 
-void get_system_info(enclyser_sysinfo_t *sysinfo)
+void get_system_info(sysinfo_t *sysinfo)
 {
     uint32_t eax, ebx, ecx, edx;
 
@@ -186,7 +186,7 @@ void get_system_info(enclyser_sysinfo_t *sysinfo)
     sysinfo->nr_cores = (int)strtoul(command_output, NULL, 10);
 }
 
-void print_system_info(enclyser_sysinfo_t *sysinfo)
+void print_system_info(sysinfo_t *sysinfo)
 {
     INFO("%-32s: %d", "SSE2", sysinfo->sse2);
     INFO("%-32s: %d", "AVX", sysinfo->avx);

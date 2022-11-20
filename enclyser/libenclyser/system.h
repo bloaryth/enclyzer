@@ -79,14 +79,14 @@ void execute_command(char *command);
  *
  * @param sysinfo a struct that describes the system
  */
-void get_system_info(enclyser_sysinfo_t *sysinfo);
+void get_system_info(sysinfo_t *sysinfo);
 
 /**
  * @brief Print the system information that is related to the project.
  *
  * @param sysinfo a struct that describes the system
  */
-void print_system_info(enclyser_sysinfo_t *sysinfo);
+void print_system_info(sysinfo_t *sysinfo);
 
 #endif
 

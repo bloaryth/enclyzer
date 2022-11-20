@@ -42,14 +42,14 @@ buffer_t app_filling_buffer;
 buffer_t app_clearing_buffer;
 buffer_t app_faulting_buffer;
 
-enclyser_attack_t app_attack_spec;
+attack_spec_t app_attack_spec;
 
 buffer_t app_attacking_buffer;
 buffer_t app_encoding_buffer;
 buffer_t app_printing_buffer;
 
 buffer_t encalve_secret_buffer;
-enclyser_sysinfo_t app_sysinfo;
+sysinfo_t app_sysinfo;
 
 /**
  * @brief A helpher function that sets up the runnning environment.

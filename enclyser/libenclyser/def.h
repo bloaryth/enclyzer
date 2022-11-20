@@ -87,7 +87,7 @@ typedef struct
     char microcode_version[64];                                     /** cat /proc/cpuinfo | grep microcode -m 1 | awk '{print $3;}' */
     int nr_logical_cores;                                           /** grep -c ^processor /proc/cpuinfo */
     int nr_cores;                                                   /** grep 'cpu cores' /proc/cpuinfo -m 1 | awk '{print $4}' */
-} enclyser_sysinfo_t;
+} sysinfo_t;
 
 #endif
 
@@ -193,10 +193,10 @@ typedef struct
     int major;  /** different types of attacks have different \p major */
     int minor;  /** different variants of an attack referenced by \p major have different \p minor. */
     int offset; /** an offset control argument for attacks */
-} enclyser_attack_t;
+} attack_spec_t;
 
 /**
- * @brief the enum defines for \p enclyser_attack_t->major
+ * @brief the enum defines for \p attack_spec_t->major
  *
  */
 #define ATTACK_MAJOR_NONE 0x0
@@ -208,7 +208,7 @@ typedef struct
 #define ATTACK_MAJOR_TAA 0x6
 
 /**
- * @brief the enum defines for \p enclyser_attack_t->minor
+ * @brief the enum defines for \p attack_spec_t->minor
  *
  */
 #define ATTACK_MINOR_NONE 0x0
@@ -217,7 +217,7 @@ typedef struct
 #define ATTACK_MINOR_STABLE 0xff
 
 /**
- * @brief the default settings for \p enclyser_attack_t
+ * @brief the default settings for \p attack_spec_t
  *
  */
 #define DEFAULT_ATTACK_MAJOR ATTACK_MAJOR_NONE

@@ -37,7 +37,7 @@ buffer_t app_faulting_buffer = {
     .mem_type = DEFAULT_BUFFER_MEM_TYPE,
     .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
-enclyser_attack_t app_attack_spec = {
+attack_spec_t app_attack_spec = {
     .major = DEFAULT_ATTACK_MAJOR,
     .minor = DEFAULT_ATTACK_MINOR,
     .offset = DEFAULT_ATTACK_OFFSET};
@@ -78,7 +78,7 @@ buffer_t encalve_secret_buffer = {
     .mem_type = DEFAULT_BUFFER_MEM_TYPE,
     .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
-enclyser_sysinfo_t app_sysinfo = {};
+sysinfo_t app_sysinfo = {};
 
 // int sigsegv_signal;
 

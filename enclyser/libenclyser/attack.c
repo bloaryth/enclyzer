@@ -17,7 +17,7 @@
  *
  * @see FLUSH+RELOAD in enclyser/libenclyser/flush_reload.h
  */
-void ecall_attack(enclyser_attack_t *attack_spec, buffer_t *attaking_buffer, buffer_t *encoding_buffer)
+void ecall_attack(attack_spec_t *attack_spec, buffer_t *attaking_buffer, buffer_t *encoding_buffer)
 {
     attack(attack_spec, attaking_buffer, encoding_buffer);
 }
@@ -49,7 +49,7 @@ void ecall_attack(enclyser_attack_t *attack_spec, buffer_t *attaking_buffer, buf
  *
  * @see FLUSH+RELOAD in enclyser/channel/flush_reload.h
  */
-static void l1des_attack(enclyser_attack_t *attack_spec, buffer_t *attaking_buffer, buffer_t *encoding_buffer)
+static void l1des_attack(attack_spec_t *attack_spec, buffer_t *attaking_buffer, buffer_t *encoding_buffer)
 {
     /** TODO */
 }
@@ -63,7 +63,7 @@ static void l1des_attack(enclyser_attack_t *attack_spec, buffer_t *attaking_buff
  *
  * @see FLUSH+RELOAD in enclyser/channel/flush_reload.h
  */
-static void l1tf_attack(enclyser_attack_t *attack_spec, buffer_t *attaking_buffer, buffer_t *encoding_buffer)
+static void l1tf_attack(attack_spec_t *attack_spec, buffer_t *attaking_buffer, buffer_t *encoding_buffer)
 {
     uint64_t rax, rdi, rsi, rdx, rcx, r8, r9;
 
@@ -145,7 +145,7 @@ static void l1tf_attack(enclyser_attack_t *attack_spec, buffer_t *attaking_buffe
  *
  * @see FLUSH+RELOAD in enclyser/channel/flush_reload.h
  */
-static void lvi_attack(enclyser_attack_t *attack_spec, buffer_t *attaking_buffer, buffer_t *encoding_buffer)
+static void lvi_attack(attack_spec_t *attack_spec, buffer_t *attaking_buffer, buffer_t *encoding_buffer)
 {
     /** TODO */
 }
@@ -159,7 +159,7 @@ static void lvi_attack(enclyser_attack_t *attack_spec, buffer_t *attaking_buffer
  *
  * @see FLUSH+RELOAD in enclyser/channel/flush_reload.h
  */
-static void mds_attack(enclyser_attack_t *attack_spec, buffer_t *attaking_buffer, buffer_t *encoding_buffer)
+static void mds_attack(attack_spec_t *attack_spec, buffer_t *attaking_buffer, buffer_t *encoding_buffer)
 {
     uint64_t rax, rdi, rsi, rdx, rcx, r8, r9;
 
@@ -210,7 +210,7 @@ static void mds_attack(enclyser_attack_t *attack_spec, buffer_t *attaking_buffer
  *
  * @see FLUSH+RELOAD in enclyser/channel/flush_reload.h
  */
-static void rdcl_attack(enclyser_attack_t *attack_spec, buffer_t *attaking_buffer, buffer_t *encoding_buffer)
+static void rdcl_attack(attack_spec_t *attack_spec, buffer_t *attaking_buffer, buffer_t *encoding_buffer)
 {
     uint64_t rax, rdi, rsi, rdx, rcx, r8, r9;
 
@@ -292,7 +292,7 @@ static void rdcl_attack(enclyser_attack_t *attack_spec, buffer_t *attaking_buffe
  *
  * @see FLUSH+RELOAD in enclyser/channel/flush_reload.h
  */
-static void taa_attack(enclyser_attack_t *attack_spec, buffer_t *attaking_buffer, buffer_t *encoding_buffer)
+static void taa_attack(attack_spec_t *attack_spec, buffer_t *attaking_buffer, buffer_t *encoding_buffer)
 {
     uint64_t rax, rdi, rsi, rdx, rcx, r8, r9;
 
@@ -336,7 +336,7 @@ static void taa_attack(enclyser_attack_t *attack_spec, buffer_t *attaking_buffer
     }
 }
 
-void attack(enclyser_attack_t *attack_spec, buffer_t *attaking_buffer, buffer_t *encoding_buffer)
+void attack(attack_spec_t *attack_spec, buffer_t *attaking_buffer, buffer_t *encoding_buffer)
 {
     switch (attack_spec->major)
     {

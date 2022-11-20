@@ -169,7 +169,7 @@ Test(suite_lfb, test_fill_lfb_log, .init = test_fill_lfb_log_init, .fini = test_
 #include "enclyser/libenclyser/flush_reload.h"
 #include "enclyser/libenclyser/lfb.h"
 
-enclyser_attack_t attack_spec;
+attack_spec_t attack_spec;
 buffer_t filling_buffer;
 buffer_t attaking_buffer;
 buffer_t encoding_buffer;
@@ -179,7 +179,7 @@ void test_fill_lfb_arch_init()
 {
     open_system_file();
 
-    attack_spec = (enclyser_attack_t){
+    attack_spec = (attack_spec_t){
         .major = ATTACK_MAJOR_TAA,
         .minor = ATTACK_MINOR_STABLE,
         .offset = 0};
@@ -277,7 +277,7 @@ Test(suite_lfb, test_fill_lfb_arch, .init = test_fill_lfb_arch_init, .fini = tes
 // #include "enclyser/libenclyser/flush_reload.h"
 // #include "enclyser/libenclyser/lfb.h"
 
-// enclyser_attack_t attack_spec;
+// attack_spec_t attack_spec;
 // buffer_t filling_buffer;
 // buffer_t clearing_buffer;
 // buffer_t attaking_buffer;
@@ -288,7 +288,7 @@ Test(suite_lfb, test_fill_lfb_arch, .init = test_fill_lfb_arch_init, .fini = tes
 // {
 //     open_system_file();
 
-//     attack_spec = (enclyser_attack_t){
+//     attack_spec = (attack_spec_t){
 //         .major = ATTACK_MAJOR_TAA,
 //         .minor = ATTACK_MINOR_STABLE,
 //         .offset = 0};

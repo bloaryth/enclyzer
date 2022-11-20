@@ -1452,7 +1452,7 @@ Test(suit_sgx_analyser, test_app, .init = test_app_init, .fini = test_app_fini, 
 
 buffer_t filling_buffer;
 
-enclyser_attack_t attack_spec;
+attack_spec_t attack_spec;
 buffer_t attaking_buffer;
 buffer_t encoding_buffer;
 buffer_t printing_buffer;
@@ -1462,7 +1462,7 @@ void test_dual_data_init()
     open_system_file();
     config_environment();
 
-    attack_spec = (enclyser_attack_t){
+    attack_spec = (attack_spec_t){
         .major = ATTACK_MAJOR_TAA,
         .minor = ATTACK_MINOR_STABLE};
 
@@ -1617,7 +1617,7 @@ Test(suit_sgx_analyser, test_dual_data, .init = test_dual_data_init, .fini = tes
 
 buffer_t filling_buffer;
 
-enclyser_attack_t attack_spec;
+attack_spec_t attack_spec;
 buffer_t attaking_buffer;
 buffer_t encoding_buffer;
 buffer_t printing_buffer;
@@ -1627,7 +1627,7 @@ void test_dual_func_init()
     open_system_file();
     config_environment();
 
-    attack_spec = (enclyser_attack_t){
+    attack_spec = (attack_spec_t){
         .major = ATTACK_MAJOR_TAA,
         .minor = ATTACK_MINOR_STABLE};
 
