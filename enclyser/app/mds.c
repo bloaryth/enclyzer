@@ -22,7 +22,7 @@ int fn_mds_st_nosgx(char *extra_settings) {
     for (int i = 0; i < REPETITION_TIME; i++) {
       fill_lfb(app_filling_sequence, &app_filling_buffer);
       flush_enclyser_buffer(&app_encoding_buffer);
-      attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
+      attack(&app_attack_spec, &app_attacking_buffer, &app_encoding_buffer);
       reload(&app_encoding_buffer, &app_printing_buffer);
     }
     accum += app_printing_buffer.buffer[offset + app_filling_buffer.value];
@@ -43,12 +43,12 @@ Test(mds, mds_st_nosgx, .disabled = false) {
   assign_enclyser_buffer(&app_filling_buffer);
 
   // IMPORTANT: MUST BE NON-ZERO VALUE
-  app_attaking_buffer.value = 0xff;
-  app_attaking_buffer.order = BUFFER_ORDER_CONSTANT;
-  assign_enclyser_buffer(&app_attaking_buffer);
+  app_attacking_buffer.value = 0xff;
+  app_attacking_buffer.order = BUFFER_ORDER_CONSTANT;
+  assign_enclyser_buffer(&app_attacking_buffer);
   
-  app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
-  cripple_enclyser_buffer(&app_attaking_buffer);
+  app_attacking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
+  cripple_enclyser_buffer(&app_attacking_buffer);
 
   app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
   cr_expect(fn_mds_st_nosgx("GP_LOAD 0x1") == 0);
@@ -90,7 +90,7 @@ int fn_mds_st_sgx(char *extra_settings) {
                      app_clearing_sequence, &app_clearing_buffer,
                      &app_faulting_buffer);
       flush_enclyser_buffer(&app_encoding_buffer);
-      attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
+      attack(&app_attack_spec, &app_attacking_buffer, &app_encoding_buffer);
       reload(&app_encoding_buffer, &app_printing_buffer);
     }
     accum += app_printing_buffer.buffer[offset + encalve_secret_buffer.value];
@@ -111,12 +111,12 @@ Test(mds, mds_st_sgx, .disabled = false) {
   ecall_assign_secret(global_eid, &encalve_secret_buffer);
 
   // IMPORTANT: MUST BE NON-ZERO VALUE
-  app_attaking_buffer.value = 0xff;
-  app_attaking_buffer.order = BUFFER_ORDER_CONSTANT;
-  assign_enclyser_buffer(&app_attaking_buffer);
+  app_attacking_buffer.value = 0xff;
+  app_attacking_buffer.order = BUFFER_ORDER_CONSTANT;
+  assign_enclyser_buffer(&app_attacking_buffer);
 
-  app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
-  cripple_enclyser_buffer(&app_attaking_buffer);
+  app_attacking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
+  cripple_enclyser_buffer(&app_attacking_buffer);
 
   app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
   cr_expect(fn_mds_st_sgx("GP_LOAD 0x21") == 0);
@@ -158,7 +158,7 @@ void *attthrd_mds_ct_nosgx(void *arg) {
 
   for (int i = 0; i < REPETITION_TIME; i++) {
     flush_enclyser_buffer(&app_encoding_buffer);
-    attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
+    attack(&app_attack_spec, &app_attacking_buffer, &app_encoding_buffer);
     reload(&app_encoding_buffer, &app_printing_buffer);
   }
 
@@ -211,12 +211,12 @@ Test(mds, mds_ct_nosgx, .disabled = false) {
   assign_enclyser_buffer(&app_filling_buffer);
 
   // IMPORTANT: MUST BE NON-ZERO VALUE
-  app_attaking_buffer.value = 0xff;
-  app_attaking_buffer.order = BUFFER_ORDER_CONSTANT;
-  assign_enclyser_buffer(&app_attaking_buffer);
+  app_attacking_buffer.value = 0xff;
+  app_attacking_buffer.order = BUFFER_ORDER_CONSTANT;
+  assign_enclyser_buffer(&app_attacking_buffer);
   
-  app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
-  cripple_enclyser_buffer(&app_attaking_buffer);
+  app_attacking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
+  cripple_enclyser_buffer(&app_attacking_buffer);
 
   app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
   cr_expect(fn_mds_ct_nosgx("GP_LOAD 0x41") == 0);
@@ -260,7 +260,7 @@ void *attthrd_mds_ct_sgx(void *arg) {
 
   for (int i = 0; i < REPETITION_TIME; i++) {
     flush_enclyser_buffer(&app_encoding_buffer);
-    attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
+    attack(&app_attack_spec, &app_attacking_buffer, &app_encoding_buffer);
     reload(&app_encoding_buffer, &app_printing_buffer);
   }
 
@@ -312,12 +312,12 @@ Test(mds, mds_ct_sgx, .disabled = false) {
   ecall_assign_secret(global_eid, &encalve_secret_buffer);
 
   // IMPORTANT: MUST BE NON-ZERO VALUE
-  app_attaking_buffer.value = 0xff;
-  app_attaking_buffer.order = BUFFER_ORDER_CONSTANT;
-  assign_enclyser_buffer(&app_attaking_buffer);
+  app_attacking_buffer.value = 0xff;
+  app_attacking_buffer.order = BUFFER_ORDER_CONSTANT;
+  assign_enclyser_buffer(&app_attacking_buffer);
 
-  app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
-  cripple_enclyser_buffer(&app_attaking_buffer);
+  app_attacking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
+  cripple_enclyser_buffer(&app_attacking_buffer);
 
   app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
   cr_expect(fn_mds_ct_sgx("GP_LOAD 0x61") == 0);
@@ -359,7 +359,7 @@ void *attthrd_mds_cc_nosgx(void *arg) {
 
   for (int i = 0; i < REPETITION_TIME; i++) {
     flush_enclyser_buffer(&app_encoding_buffer);
-    attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
+    attack(&app_attack_spec, &app_attacking_buffer, &app_encoding_buffer);
     reload(&app_encoding_buffer, &app_printing_buffer);
   }
 
@@ -412,12 +412,12 @@ Test(mds, mds_cc_nosgx, .disabled = false) {
   assign_enclyser_buffer(&app_filling_buffer);
 
   // IMPORTANT: MUST BE NON-ZERO VALUE
-  app_attaking_buffer.value = 0xff;
-  app_attaking_buffer.order = BUFFER_ORDER_CONSTANT;
-  assign_enclyser_buffer(&app_attaking_buffer);
+  app_attacking_buffer.value = 0xff;
+  app_attacking_buffer.order = BUFFER_ORDER_CONSTANT;
+  assign_enclyser_buffer(&app_attacking_buffer);
 
-  app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
-  cripple_enclyser_buffer(&app_attaking_buffer);
+  app_attacking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
+  cripple_enclyser_buffer(&app_attacking_buffer);
 
   app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
   cr_expect(fn_mds_cc_nosgx("GP_LOAD 0x81") == 0);
@@ -461,7 +461,7 @@ void *attthrd_mds_cc_sgx(void *arg) {
 
   for (int i = 0; i < REPETITION_TIME; i++) {
     flush_enclyser_buffer(&app_encoding_buffer);
-    attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
+    attack(&app_attack_spec, &app_attacking_buffer, &app_encoding_buffer);
     reload(&app_encoding_buffer, &app_printing_buffer);
   }
 
@@ -513,12 +513,12 @@ Test(mds, mds_cc_sgx, .disabled = false) {
   ecall_assign_secret(global_eid, &encalve_secret_buffer);
 
   // IMPORTANT: MUST BE NON-ZERO VALUE
-  app_attaking_buffer.value = 0xff;
-  app_attaking_buffer.order = BUFFER_ORDER_CONSTANT;
-  assign_enclyser_buffer(&app_attaking_buffer);
+  app_attacking_buffer.value = 0xff;
+  app_attacking_buffer.order = BUFFER_ORDER_CONSTANT;
+  assign_enclyser_buffer(&app_attacking_buffer);
 
-  app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
-  cripple_enclyser_buffer(&app_attaking_buffer);
+  app_attacking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
+  cripple_enclyser_buffer(&app_attacking_buffer);
 
   app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
   cr_expect(fn_mds_cc_sgx("GP_LOAD 0xa1") == 0);

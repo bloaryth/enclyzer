@@ -1,6 +1,7 @@
 #!/bin/bash
 
-declare -a SSH_TARGET_ARR=("i7-9850h" "i9-8950hk" "e3-1535mv5" "i5-6360u" "i5-8365u")
+# declare -a SSH_TARGET_ARR=("i7-9850h" "i9-8950hk" "e3-1535mv5" "i5-6360u" "i5-8365u")
+declare -a SSH_TARGET_ARR=("i5-6360u")
 declare -a MICROCODE_ARR=("20180312" "20190514a" "20191113" "20200616" "20201110" "20210608")
 
 # $1: $PASSWORD
@@ -14,6 +15,7 @@ remote_task(){
             scp $2:enclyser/enclyser/sgx_app.txt ~/Documents/enclyser-results/$2+$MICROCODE.txt
         fi
     done
+    echo $1 | ssh $2 -tt 'sudo reboot'
 }
 
 if [ -z $PASSWORD ]; then

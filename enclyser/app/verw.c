@@ -24,7 +24,7 @@
 //             flush_enclyser_buffer(&app_encoding_buffer);
 //             fill_lfb(app_filling_sequence, &app_filling_buffer);
 //             clear_lfb(app_clearing_sequence, &app_clearing_buffer);
-//             attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
+//             attack(&app_attack_spec, &app_attacking_buffer, &app_encoding_buffer);
 //             reload(&app_encoding_buffer, &app_printing_buffer);
 //         }
 //         if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] < 10 || allowance--))
@@ -47,9 +47,9 @@
 //     app_filling_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
 //     assign_enclyser_buffer(&app_filling_buffer);
 
-//     app_attaking_buffer.value = 0xff; // IMPORTANT: MUST BE NON-ZERO VALUE
-//     app_attaking_buffer.order = BUFFER_ORDER_CONSTANT;
-//     assign_enclyser_buffer(&app_attaking_buffer);
+//     app_attacking_buffer.value = 0xff; // IMPORTANT: MUST BE NON-ZERO VALUE
+//     app_attacking_buffer.order = BUFFER_ORDER_CONSTANT;
+//     assign_enclyser_buffer(&app_attacking_buffer);
 
 //     app_clearing_sequence = CLEARING_SEQUENCE_VERW;
 
@@ -94,7 +94,7 @@
 //             flush_enclyser_buffer(&app_encoding_buffer);
 //             fill_lfb(app_filling_sequence, &app_filling_buffer);
 //             clear_lfb(app_clearing_sequence, &app_clearing_buffer);
-//             attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
+//             attack(&app_attack_spec, &app_attacking_buffer, &app_encoding_buffer);
 //             reload(&app_encoding_buffer, &app_printing_buffer);
 //         }
 //         if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] < 10 || allowance--))
@@ -117,11 +117,11 @@
 //     app_filling_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
 //     assign_enclyser_buffer(&app_filling_buffer);
 
-//     app_attaking_buffer.value = 0xff; // IMPORTANT: MUST BE NON-ZERO VALUE
-//     app_attaking_buffer.order = BUFFER_ORDER_CONSTANT;
-//     app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
-//     assign_enclyser_buffer(&app_attaking_buffer);
-//     cripple_enclyser_buffer(&app_attaking_buffer);
+//     app_attacking_buffer.value = 0xff; // IMPORTANT: MUST BE NON-ZERO VALUE
+//     app_attacking_buffer.order = BUFFER_ORDER_CONSTANT;
+//     app_attacking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
+//     assign_enclyser_buffer(&app_attacking_buffer);
+//     cripple_enclyser_buffer(&app_attacking_buffer);
 
 //     app_clearing_sequence = CLEARING_SEQUENCE_VERW;
 

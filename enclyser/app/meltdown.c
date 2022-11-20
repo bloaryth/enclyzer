@@ -20,12 +20,12 @@ int fn_meltdown_st_nosgx(char *extra_settings) {
   for (int offset = 0; offset < CACHELINE_SIZE; offset++) {
     app_attack_spec.offset = offset;
     for (int i = 0; i < REPETITION_TIME; i++) {
-      fill_lfb(app_filling_sequence, &app_attaking_buffer);
+      fill_lfb(app_filling_sequence, &app_attacking_buffer);
       flush_enclyser_buffer(&app_encoding_buffer);
-      attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
+      attack(&app_attack_spec, &app_attacking_buffer, &app_encoding_buffer);
       reload(&app_encoding_buffer, &app_printing_buffer);
     }
-    accum += app_printing_buffer.buffer[offset + app_attaking_buffer.value];
+    accum += app_printing_buffer.buffer[offset + app_attacking_buffer.value];
     reset(&app_printing_buffer);
   }
   double success_rate = ((double)accum) / CACHELINE_SIZE / REPETITION_TIME;
@@ -39,12 +39,12 @@ Test(meltdown, meltdown_st_nosgx, .disabled = false) {
   app_attack_spec.major = ATTACK_MAJOR_RDCL;
   app_attack_spec.minor = ATTACK_MINOR_NO_TSX;
 
-  app_attaking_buffer.value = 0x1;
-  app_attaking_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
-  assign_enclyser_buffer(&app_attaking_buffer);
+  app_attacking_buffer.value = 0x1;
+  app_attacking_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
+  assign_enclyser_buffer(&app_attacking_buffer);
 
-  app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_SUPERVISOR;
-  cripple_enclyser_buffer(&app_attaking_buffer);
+  app_attacking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_SUPERVISOR;
+  cripple_enclyser_buffer(&app_attacking_buffer);
 
   app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
   cr_expect(fn_meltdown_st_nosgx("GP_LOAD 0x1") == 0);
@@ -137,7 +137,7 @@ void *victhrd_meltdown_ct_nosgx(void *arg) {
   (void)arg;
 
   for (int i = 0; i < REPETITION_TIME * 100; i++) {
-    fill_lfb(app_filling_sequence, &app_attaking_buffer);
+    fill_lfb(app_filling_sequence, &app_attacking_buffer);
   }
 
   return NULL;
@@ -149,7 +149,7 @@ void *attthrd_meltdown_ct_nosgx(void *arg) {
 
   for (int i = 0; i < REPETITION_TIME; i++) {
     flush_enclyser_buffer(&app_encoding_buffer);
-    attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
+    attack(&app_attack_spec, &app_attacking_buffer, &app_encoding_buffer);
     reload(&app_encoding_buffer, &app_printing_buffer);
   }
 
@@ -185,7 +185,7 @@ int fn_meltdown_ct_nosgx(char *extra_settings) {
     pthread_join(adversary_thread, NULL);
     pthread_join(victim_thread, NULL);
 
-    accum += app_printing_buffer.buffer[offset + app_attaking_buffer.value];
+    accum += app_printing_buffer.buffer[offset + app_attacking_buffer.value];
     reset(&app_printing_buffer);
   }
   double success_rate = ((double)accum) / CACHELINE_SIZE / REPETITION_TIME;
@@ -199,12 +199,12 @@ Test(meltdown, meltdown_ct_nosgx, .disabled = false) {
   app_attack_spec.major = ATTACK_MAJOR_RDCL;
   app_attack_spec.minor = ATTACK_MINOR_NO_TSX;
 
-  app_attaking_buffer.value = 0x41;
-  app_attaking_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
-  assign_enclyser_buffer(&app_attaking_buffer);
+  app_attacking_buffer.value = 0x41;
+  app_attacking_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
+  assign_enclyser_buffer(&app_attacking_buffer);
 
-  app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_SUPERVISOR;
-  cripple_enclyser_buffer(&app_attaking_buffer);
+  app_attacking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_SUPERVISOR;
+  cripple_enclyser_buffer(&app_attacking_buffer);
 
   app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
   cr_expect(fn_meltdown_ct_nosgx("GP_LOAD 0x41") == 0);
@@ -332,7 +332,7 @@ void *victhrd_meltdown_cc_nosgx(void *arg) {
   (void)arg;
 
   for (int i = 0; i < REPETITION_TIME * 100; i++) {
-    fill_lfb(app_filling_sequence, &app_attaking_buffer);
+    fill_lfb(app_filling_sequence, &app_attacking_buffer);
   }
 
   return NULL;
@@ -344,7 +344,7 @@ void *attthrd_meltdown_cc_nosgx(void *arg) {
 
   for (int i = 0; i < REPETITION_TIME; i++) {
     flush_enclyser_buffer(&app_encoding_buffer);
-    attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
+    attack(&app_attack_spec, &app_attacking_buffer, &app_encoding_buffer);
     reload(&app_encoding_buffer, &app_printing_buffer);
   }
 
@@ -380,7 +380,7 @@ int fn_meltdown_cc_nosgx(char *extra_settings) {
     pthread_join(adversary_thread, NULL);
     pthread_join(victim_thread, NULL);
 
-    accum += app_printing_buffer.buffer[offset + app_attaking_buffer.value];
+    accum += app_printing_buffer.buffer[offset + app_attacking_buffer.value];
     reset(&app_printing_buffer);
   }
   double success_rate = ((double)accum) / CACHELINE_SIZE / REPETITION_TIME;
@@ -394,12 +394,12 @@ Test(meltdown, meltdown_cc_nosgx, .disabled = false) {
   app_attack_spec.major = ATTACK_MAJOR_RDCL;
   app_attack_spec.minor = ATTACK_MINOR_NO_TSX;
 
-  app_attaking_buffer.value = 0x81;
-  app_attaking_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
-  assign_enclyser_buffer(&app_attaking_buffer);
+  app_attacking_buffer.value = 0x81;
+  app_attacking_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
+  assign_enclyser_buffer(&app_attacking_buffer);
 
-  app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_SUPERVISOR;
-  cripple_enclyser_buffer(&app_attaking_buffer);
+  app_attacking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_SUPERVISOR;
+  cripple_enclyser_buffer(&app_attacking_buffer);
 
   app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
   cr_expect(fn_meltdown_cc_nosgx("GP_LOAD 0x81") == 0);

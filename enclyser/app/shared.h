@@ -44,7 +44,7 @@ enclyser_buffer_t app_faulting_buffer;
 
 enclyser_attack_t app_attack_spec;
 
-enclyser_buffer_t app_attaking_buffer;
+enclyser_buffer_t app_attacking_buffer;
 enclyser_buffer_t app_encoding_buffer;
 enclyser_buffer_t app_printing_buffer;
 
@@ -55,7 +55,7 @@ enclyser_sysinfo_t app_sysinfo;
  * @brief A helpher function that sets up the runnning environment.
  *
  * The environment includes \p app_filling_buffer, \p app_clearing_buffer,
- * \p app_attack, \p app_attaking_buffer, \p app_encoding_buffer.
+ * \p app_attack, \p app_attacking_buffer, \p app_encoding_buffer.
  */
 void construct_app_environment(void);
 
@@ -63,7 +63,7 @@ void construct_app_environment(void);
  * @brief A helper function that clearns up the running environment.
  *
  * The environment includes \p app_filling_buffer, \p app_clearing_buffer,
- * \p app_attack, \p app_attaking_buffer, \p app_encoding_buffer.
+ * \p app_attack, \p app_attacking_buffer, \p app_encoding_buffer.
  */
 void destruct_app_environment(void);
 

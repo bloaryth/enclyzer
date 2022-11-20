@@ -42,7 +42,7 @@ enclyser_attack_t app_attack_spec = {
     .minor = DEFAULT_ATTACK_MINOR,
     .offset = DEFAULT_ATTACK_OFFSET};
 
-enclyser_buffer_t app_attaking_buffer = {
+enclyser_buffer_t app_attacking_buffer = {
     .buffer = NULL,
     .shadow = NULL,
     .size = DEFAULT_ATTACKING_BUFFER_SIZE,
@@ -89,7 +89,7 @@ enclyser_sysinfo_t app_sysinfo = {};
 //     ASSERT(!mprotect(app_faulting_buffer.buffer, app_faulting_buffer.size, PROT_READ | PROT_WRITE));
 
 //     flush_enclyser_buffer(&app_encoding_buffer);
-//     attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
+//     attack(&app_attack_spec, &app_attacking_buffer, &app_encoding_buffer);
 //     reload(&app_encoding_buffer, &app_printing_buffer);
 
 //     sigsegv_signal = 0;
@@ -99,7 +99,7 @@ enclyser_sysinfo_t app_sysinfo = {};
  * @brief A helpher function that sets up the runnning environment.
  *
  * The environment includes \p app_filling_buffer, \p app_clearing_buffer,
- * \p app_attack, \p app_attaking_buffer, \p app_encoding_buffer.
+ * \p app_attack, \p app_attacking_buffer, \p app_encoding_buffer.
  */
 void construct_app_environment(void)
 {
@@ -115,7 +115,7 @@ void construct_app_environment(void)
     malloc_enclyser_buffer(&app_filling_buffer);
     malloc_enclyser_buffer(&app_clearing_buffer);
     malloc_enclyser_buffer(&app_faulting_buffer);
-    malloc_enclyser_buffer(&app_attaking_buffer);
+    malloc_enclyser_buffer(&app_attacking_buffer);
     malloc_enclyser_buffer(&app_encoding_buffer);
     malloc_enclyser_buffer(&app_printing_buffer);
     malloc_enclyser_buffer(&encalve_secret_buffer);
@@ -127,7 +127,7 @@ void construct_app_environment(void)
  * @brief A helper function that clearns up the running environment.
  *
  * The environment includes \p app_filling_buffer, \p app_clearing_buffer,
- * \p app_attack, \p app_attaking_buffer, \p app_encoding_buffer.
+ * \p app_attack, \p app_attacking_buffer, \p app_encoding_buffer.
  */
 void destruct_app_environment(void)
 {
@@ -136,7 +136,7 @@ void destruct_app_environment(void)
     free_enclyser_buffer(&app_filling_buffer);
     free_enclyser_buffer(&app_clearing_buffer);
     free_enclyser_buffer(&app_faulting_buffer);
-    free_enclyser_buffer(&app_attaking_buffer);
+    free_enclyser_buffer(&app_attacking_buffer);
     free_enclyser_buffer(&app_encoding_buffer);
     free_enclyser_buffer(&app_printing_buffer);
 
