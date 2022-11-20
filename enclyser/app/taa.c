@@ -20,12 +20,12 @@ int fn_taa_st_nosgx(char *extra_settings) {
   for (int offset = 0; offset < CACHELINE_SIZE; offset++) {
     attack_spec.offset = offset;
     for (int i = 0; i < REPETITION_TIME; i++) {
-      fill_lfb(*filling_sequence, &app_filling_buffer);
+      fill_lfb(*filling_sequence, filling_buffer);
       flush_buffer(&app_encoding_buffer);
       attack(&attack_spec, &app_attacking_buffer, &app_encoding_buffer);
       reload(&app_encoding_buffer, &app_printing_buffer);
     }
-    accum += app_printing_buffer.buffer[offset + app_filling_buffer.value];
+    accum += app_printing_buffer.buffer[offset + filling_buffer->value];
     reset(&app_printing_buffer);
   }
   double success_rate = ((double)accum) / CACHELINE_SIZE / REPETITION_TIME;
@@ -39,10 +39,11 @@ Test(taa, taa_st_nosgx, .disabled = false) {
   attack_spec.minor = ATTACK_MINOR_STABLE;
 
   filling_sequence = &app_filling_sequence;
+  filling_buffer = &app_filling_buffer;
 
-  app_filling_buffer.value = 0x1;
-  app_filling_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
-  assign_buffer(&app_filling_buffer);
+  filling_buffer->value = 0x1;
+  filling_buffer->order = BUFFER_ORDER_OFFSET_INLINE;
+  assign_buffer(filling_buffer);
 
   // IMPORTANT: MUST BE NON-ZERO VALUE
   app_attacking_buffer.value = 0xff;
@@ -85,12 +86,12 @@ int fn_taa_st_sgx(char *extra_settings) {
   for (int offset = 0; offset < CACHELINE_SIZE; offset++) {
     attack_spec.offset = offset;
     for (int i = 0; i < REPETITION_TIME; i++) {
-      ecall_fill_lfb(global_eid, *filling_sequence, &encalve_secret_buffer);
+      ecall_fill_lfb(global_eid, *filling_sequence, filling_buffer);
       flush_buffer(&app_encoding_buffer);
       attack(&attack_spec, &app_attacking_buffer, &app_encoding_buffer);
       reload(&app_encoding_buffer, &app_printing_buffer);
     }
-    accum += app_printing_buffer.buffer[offset + encalve_secret_buffer.value];
+    accum += app_printing_buffer.buffer[offset + filling_buffer->value];
     reset(&app_printing_buffer);
   }
   double success_rate = ((double)accum) / CACHELINE_SIZE / REPETITION_TIME;
@@ -104,10 +105,11 @@ Test(taa, taa_st_sgx, .disabled = false) {
   attack_spec.minor = ATTACK_MINOR_STABLE;
 
   filling_sequence = &enclave_filling_sequence;
+  filling_buffer = &encalve_secret_buffer;
 
-  encalve_secret_buffer.value = 0x21;
-  encalve_secret_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
-  ecall_assign_secret(global_eid, &encalve_secret_buffer);
+  filling_buffer->value = 0x21;
+  filling_buffer->order = BUFFER_ORDER_OFFSET_INLINE;
+  ecall_assign_secret(global_eid, filling_buffer);
 
   // IMPORTANT: MUST BE NON-ZERO VALUE
   app_attacking_buffer.value = 0xff;
@@ -142,7 +144,7 @@ void *victhrd_taa_ct_nosgx(void *arg) {
   (void)arg;
 
   for (int i = 0; i < REPETITION_TIME * 100; i++) {
-    fill_lfb(*filling_sequence, &app_filling_buffer);
+    fill_lfb(*filling_sequence, filling_buffer);
   }
 
   return NULL;
@@ -189,7 +191,7 @@ int fn_taa_ct_nosgx(char *extra_settings) {
     pthread_join(adversary_thread, NULL);
     pthread_join(victim_thread, NULL);
 
-    accum += app_printing_buffer.buffer[offset + app_filling_buffer.value];
+    accum += app_printing_buffer.buffer[offset + filling_buffer->value];
     reset(&app_printing_buffer);
   }
   double success_rate = ((double)accum) / CACHELINE_SIZE / REPETITION_TIME;
@@ -203,10 +205,11 @@ Test(taa, taa_ct_nosgx, .disabled = false) {
   attack_spec.minor = ATTACK_MINOR_STABLE;
 
   filling_sequence = &app_filling_sequence;
+  filling_buffer = &app_filling_buffer;
 
-  app_filling_buffer.value = 0x41;
-  app_filling_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
-  assign_buffer(&app_filling_buffer);
+  filling_buffer->value = 0x41;
+  filling_buffer->order = BUFFER_ORDER_OFFSET_INLINE;
+  assign_buffer(filling_buffer);
 
   // IMPORTANT: MUST BE NON-ZERO VALUE
   app_attacking_buffer.value = 0xff;
@@ -241,7 +244,7 @@ void *victhrd_taa_ct_sgx(void *arg) {
   (void)arg;
 
   for (int i = 0; i < REPETITION_TIME * 100; i++) {
-    ecall_fill_lfb(global_eid, *filling_sequence, &encalve_secret_buffer);
+    ecall_fill_lfb(global_eid, *filling_sequence, filling_buffer);
   }
 
   return NULL;
@@ -287,7 +290,7 @@ int fn_taa_ct_sgx(char *extra_settings) {
     pthread_join(adversary_thread, NULL);
     pthread_join(victim_thread, NULL);
 
-    accum += app_printing_buffer.buffer[offset + encalve_secret_buffer.value];
+    accum += app_printing_buffer.buffer[offset + filling_buffer->value];
     reset(&app_printing_buffer);
   }
   double success_rate = ((double)accum) / CACHELINE_SIZE / REPETITION_TIME;
@@ -301,10 +304,11 @@ Test(taa, taa_ct_sgx, .disabled = false) {
   attack_spec.minor = ATTACK_MINOR_STABLE;
 
   filling_sequence = &enclave_filling_sequence;
+  filling_buffer = &encalve_secret_buffer;
 
-  encalve_secret_buffer.value = 0x61;
-  encalve_secret_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
-  ecall_assign_secret(global_eid, &encalve_secret_buffer);
+  filling_buffer->value = 0x61;
+  filling_buffer->order = BUFFER_ORDER_OFFSET_INLINE;
+  ecall_assign_secret(global_eid, filling_buffer);
 
   // IMPORTANT: MUST BE NON-ZERO VALUE
   app_attacking_buffer.value = 0xff;
@@ -339,7 +343,7 @@ void *victhrd_taa_cc_nosgx(void *arg) {
   (void)arg;
 
   for (int i = 0; i < REPETITION_TIME * 100; i++) {
-    fill_lfb(*filling_sequence, &app_filling_buffer);
+    fill_lfb(*filling_sequence, filling_buffer);
   }
 
   return NULL;
@@ -386,7 +390,7 @@ int fn_taa_cc_nosgx(char *extra_settings) {
     pthread_join(adversary_thread, NULL);
     pthread_join(victim_thread, NULL);
 
-    accum += app_printing_buffer.buffer[offset + app_filling_buffer.value];
+    accum += app_printing_buffer.buffer[offset + filling_buffer->value];
     reset(&app_printing_buffer);
   }
   double success_rate = ((double)accum) / CACHELINE_SIZE / REPETITION_TIME;
@@ -400,10 +404,11 @@ Test(taa, taa_cc_nosgx, .disabled = false) {
   attack_spec.minor = ATTACK_MINOR_STABLE;
 
   filling_sequence = &app_filling_sequence;
+  filling_buffer = &app_filling_buffer;
 
-  app_filling_buffer.value = 0x81;
-  app_filling_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
-  assign_buffer(&app_filling_buffer);
+  filling_buffer->value = 0x81;
+  filling_buffer->order = BUFFER_ORDER_OFFSET_INLINE;
+  assign_buffer(filling_buffer);
 
   // IMPORTANT: MUST BE NON-ZERO VALUE
   app_attacking_buffer.value = 0xff;
@@ -438,7 +443,7 @@ void *victhrd_taa_cc_sgx(void *arg) {
   (void)arg;
 
   for (int i = 0; i < REPETITION_TIME * 100; i++) {
-    ecall_fill_lfb(global_eid, *filling_sequence, &encalve_secret_buffer);
+    ecall_fill_lfb(global_eid, *filling_sequence, filling_buffer);
   }
   return NULL;
 }
@@ -483,7 +488,7 @@ int fn_taa_cc_sgx(char *extra_settings) {
     pthread_join(adversary_thread, NULL);
     pthread_join(victim_thread, NULL);
 
-    accum += app_printing_buffer.buffer[offset + encalve_secret_buffer.value];
+    accum += app_printing_buffer.buffer[offset + filling_buffer->value];
     reset(&app_printing_buffer);
   }
   double success_rate = ((double)accum) / CACHELINE_SIZE / REPETITION_TIME;
@@ -497,10 +502,11 @@ Test(taa, taa_cc_sgx, .disabled = false) {
   attack_spec.minor = ATTACK_MINOR_STABLE;
 
   filling_sequence = &enclave_filling_sequence;
+  filling_buffer = &encalve_secret_buffer;
 
-  app_filling_buffer.value = 0xa1;
-  app_filling_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
-  assign_buffer(&app_filling_buffer);
+  filling_buffer->value = 0xa1;
+  filling_buffer->order = BUFFER_ORDER_OFFSET_INLINE;
+  ecall_assign_secret(global_eid, filling_buffer);
 
   // IMPORTANT: MUST BE NON-ZERO VALUE
   app_attacking_buffer.value = 0xff;
