@@ -179,7 +179,6 @@ typedef struct
 #define DEFAULT_ATTACKING_BUFFER_SIZE 4096                                                  /** the default size of an attacking buffer */
 #define DEFAULT_ENCODING_BUFFER_SIZE (ENCODING_BUFFER_SLOT_NUM * ENCODING_BUFFER_SLOT_SIZE) /** the default size of a encoding buffer */
 #define DEFAULT_PRINTING_BUFFER_SIZE (ENCODING_BUFFER_SLOT_NUM * sizeof(uint8_t))           /** the default size of a printing buffer */
-#define DEFAULT_SECRET_BUFFER_SIZE 64                                                       /** the default size of a secret buffer */
 #define DEFAULT_BUFFER_VALUE 0                                                              /** the default value of a buffer */
 #define DEFAULT_BUFFER_ORDER BUFFER_ORDER_NONE                                              /** the default order of a buffer */
 #define DEFAULT_BUFFER_MEM_TYPE BUFFER_MEM_TYPE_NONE                                        /** the default memory type of a buffer */

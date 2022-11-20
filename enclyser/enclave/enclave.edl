@@ -33,15 +33,14 @@ enclave {
     from "enclyser/libenclyser/include.edl" import *;
 
     trusted {
-        public void ecall_grooming(int filling_sequence, [user_check] enclyser_buffer_t *filling_buffer, 
-                                   int clearing_sequence, [user_check] enclyser_buffer_t *clearing_buffer, 
-                                   [user_check] enclyser_buffer_t *faulting_buffer);
-        public void ecall_rep_fill_lfb(int filling_sequence, [user_check] enclyser_buffer_t *filling_buffer);
+        /* ========== Secrets ========== */
         public uint8_t *ecall_get_secret(void);
         public void ecall_assign_secret([user_check] enclyser_buffer_t *enclyser_buffer);
-        public void ecall_reload_secret([user_check] enclyser_buffer_t *enclyser_buffer);
-        public void ecall_empty(void);
-        public void *ecall_get_victim_function_addr(void);
+
+        /* ========== Gromming & Printing ========== */
+        public void ecall_grooming(int filling_sequence, [user_check] enclyser_buffer_t *filling_buffer, 
+                            int clearing_sequence, [user_check] enclyser_buffer_t *clearing_buffer, 
+                            [user_check] enclyser_buffer_t *faulting_buffer);
         public void ecall_print_buffer([user_check] enclyser_buffer_t *enclyser_buffer);
     };
 
