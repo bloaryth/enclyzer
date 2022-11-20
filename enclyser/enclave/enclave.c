@@ -8,8 +8,8 @@ uint8_t __attribute__((aligned(0x1000))) secret[DEFAULT_FILLING_BUFFER_SIZE];
 
 uint8_t *ecall_get_secret(void) { return secret; }
 
-void ecall_assign_secret(enclyser_buffer_t *enclyser_buffer) {
-  assign_enclyser_buffer(enclyser_buffer);
+void ecall_assign_secret(buffer_t *buffer) {
+  assign_buffer(buffer);
 }
 
 /* ========== Gromming & Printing ========== */
@@ -24,19 +24,19 @@ void ecall_assign_secret(enclyser_buffer_t *enclyser_buffer) {
  * @param clearing_buffer the buffer that a clearing sequence operates on
  * @param faulting_buffer the buffer that raises SIGSEGV if accessed
  */
-void ecall_grooming(int filling_sequence, enclyser_buffer_t *filling_buffer,
-                    int clearing_sequence, enclyser_buffer_t *clearing_buffer,
-                    enclyser_buffer_t *faulting_buffer) {
+void ecall_grooming(int filling_sequence, buffer_t *filling_buffer,
+                    int clearing_sequence, buffer_t *clearing_buffer,
+                    buffer_t *faulting_buffer) {
   fill_lfb(filling_sequence, filling_buffer);
   clear_lfb(clearing_sequence, clearing_buffer);
   // faulting_buffer->buffer[0] = DEFAULT_BUFFER_VALUE;
   (void)faulting_buffer; /** bypass the warning about unsed parameter */
 }
 
-void ecall_print_buffer(enclyser_buffer_t *enclyser_buffer) {
+void ecall_print_buffer(buffer_t *buffer) {
   for (int i = 0; i < 8; i++) {
     for (int j = 0; j < 8; j++) {
-      printf("%d ", enclyser_buffer->buffer[i * 8 + j]);
+      printf("%d ", buffer->buffer[i * 8 + j]);
     }
     printf("\n");
   }

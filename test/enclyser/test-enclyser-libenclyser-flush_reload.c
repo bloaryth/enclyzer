@@ -37,14 +37,14 @@ static uint32_t access_time(uint64_t address)
  * @brief test_flush_reload
  * 
  */
-enclyser_buffer_t encoding_buffer;
-enclyser_buffer_t printing_buffer;
+buffer_t encoding_buffer;
+buffer_t printing_buffer;
 
 void test_flush_reload_init()
 {
     open_system_file();
 
-    encoding_buffer = (enclyser_buffer_t){
+    encoding_buffer = (buffer_t){
         .buffer = NULL,
         .shadow = NULL,
         .size = DEFAULT_ENCODING_BUFFER_SIZE,
@@ -53,7 +53,7 @@ void test_flush_reload_init()
         .mem_type = DEFAULT_BUFFER_MEM_TYPE,
         .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
-    printing_buffer = (enclyser_buffer_t){
+    printing_buffer = (buffer_t){
         .buffer = NULL,
         .shadow = NULL,
         .size = DEFAULT_PRINTING_BUFFER_SIZE,
@@ -62,14 +62,14 @@ void test_flush_reload_init()
         .mem_type = DEFAULT_BUFFER_MEM_TYPE,
         .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
-    malloc_enclyser_buffer(&encoding_buffer);
-    malloc_enclyser_buffer(&printing_buffer);
+    malloc_buffer(&encoding_buffer);
+    malloc_buffer(&printing_buffer);
 }
 
 void test_flush_reload_fini()
 {
-    free_enclyser_buffer(&encoding_buffer);
-    free_enclyser_buffer(&printing_buffer);
+    free_buffer(&encoding_buffer);
+    free_buffer(&printing_buffer);
 
     close_system_file();
 }

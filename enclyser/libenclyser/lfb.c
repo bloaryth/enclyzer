@@ -14,7 +14,7 @@
  * @param filling_sequence a number to choose which sequence will be used
  * @param filling_buffer the buffer which the function operates on
  */
-void ecall_fill_lfb(int filling_sequence, enclyser_buffer_t *filling_buffer)
+void ecall_fill_lfb(int filling_sequence, buffer_t *filling_buffer)
 {
     fill_lfb(filling_sequence, filling_buffer);
 }
@@ -25,7 +25,7 @@ void ecall_fill_lfb(int filling_sequence, enclyser_buffer_t *filling_buffer)
  * @param clearing_sequence a number to choose which sequence will be used
  * @param clearing_buffer the buffer which the function operates on
  */
-void ecall_clear_lfb(int clearing_sequence, enclyser_buffer_t *clearing_buffer)
+void ecall_clear_lfb(int clearing_sequence, buffer_t *clearing_buffer)
 {
     clear_lfb(clearing_sequence, clearing_buffer);
 }
@@ -54,7 +54,7 @@ void ecall_clear_lfb(int clearing_sequence, enclyser_buffer_t *clearing_buffer)
  * @param filling_sequence a number to choose which sequence will be used
  * @param filling_buffer the buffer which the function operates on
  */
-static void fill_lfb_gp_load(int filling_sequence, enclyser_buffer_t *filling_buffer)
+static void fill_lfb_gp_load(int filling_sequence, buffer_t *filling_buffer)
 {
     int i = 0;
 
@@ -74,7 +74,7 @@ static void fill_lfb_gp_load(int filling_sequence, enclyser_buffer_t *filling_bu
  * @param filling_sequence a number to choose which sequence will be used
  * @param filling_buffer the buffer which the function operates on
  */
-static void fill_lfb_gp_store(int filling_sequence, enclyser_buffer_t *filling_buffer)
+static void fill_lfb_gp_store(int filling_sequence, buffer_t *filling_buffer)
 {
     uint64_t rdi, rsi, rdx, rcx;
 
@@ -142,7 +142,7 @@ static void fill_lfb_gp_store(int filling_sequence, enclyser_buffer_t *filling_b
  * @param filling_sequence a number to choose which sequence will be used
  * @param filling_buffer the buffer which the function operates on
  */
-static void fill_lfb_nt_load(int filling_sequence, enclyser_buffer_t *filling_buffer)
+static void fill_lfb_nt_load(int filling_sequence, buffer_t *filling_buffer)
 {
     int i;
 
@@ -162,7 +162,7 @@ static void fill_lfb_nt_load(int filling_sequence, enclyser_buffer_t *filling_bu
  * @param filling_sequence a number to choose which sequence will be used
  * @param filling_buffer the buffer which the function operates on
  */
-static void fill_lfb_nt_store(int filling_sequence, enclyser_buffer_t *filling_buffer)
+static void fill_lfb_nt_store(int filling_sequence, buffer_t *filling_buffer)
 {
     uint64_t rdi, rsi, rdx, rcx;
 
@@ -230,7 +230,7 @@ static void fill_lfb_nt_store(int filling_sequence, enclyser_buffer_t *filling_b
  * @param filling_sequence a number to choose which sequence will be used
  * @param filling_buffer the buffer which the function operates on
  */
-static void fill_lfb_str_load(int filling_sequence, enclyser_buffer_t *filling_buffer)
+static void fill_lfb_str_load(int filling_sequence, buffer_t *filling_buffer)
 {
     uint64_t rsi;
 
@@ -249,7 +249,7 @@ static void fill_lfb_str_load(int filling_sequence, enclyser_buffer_t *filling_b
  * @param filling_sequence a number to choose which sequence will be used
  * @param filling_buffer the buffer which the function operates on
  */
-static void fill_lfb_str_store(int filling_sequence, enclyser_buffer_t *filling_buffer) /** TODO return int to indicate success */
+static void fill_lfb_str_store(int filling_sequence, buffer_t *filling_buffer) /** TODO return int to indicate success */
 {
     uint64_t rdi, rsi, rdx, rcx;
 
@@ -309,9 +309,9 @@ static void fill_lfb_str_store(int filling_sequence, enclyser_buffer_t *filling_
     }
 }
 
-void fill_lfb(int filling_sequence, enclyser_buffer_t *filling_buffer)
+void fill_lfb(int filling_sequence, buffer_t *filling_buffer)
 {
-    flush_enclyser_buffer(filling_buffer);   // FIXME why should this line be commented out for same_thread_l1tf_sgx_is_10_percent_effective
+    flush_buffer(filling_buffer);   // FIXME why should this line be commented out for same_thread_l1tf_sgx_is_10_percent_effective
 
     switch (filling_sequence)
     {
@@ -341,9 +341,9 @@ void fill_lfb(int filling_sequence, enclyser_buffer_t *filling_buffer)
     asm volatile("mfence\n");
 }
 
-void clear_lfb(int clearing_sequence, enclyser_buffer_t *clearing_buffer)
+void clear_lfb(int clearing_sequence, buffer_t *clearing_buffer)
 {
-    flush_enclyser_buffer(clearing_buffer);
+    flush_buffer(clearing_buffer);
 
     switch (clearing_sequence)
     {

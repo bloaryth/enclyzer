@@ -34,7 +34,7 @@
  * @param filling_sequence a number to choose which sequence will be used
  * @param filling_buffer the buffer which the function operates on
  */
-void fill_lfb(int filling_sequence, enclyser_buffer_t *filling_buffer);
+void fill_lfb(int filling_sequence, buffer_t *filling_buffer);
 
 /**
  * @brief Clear the internal buffer LFB via different sequences.
@@ -42,7 +42,7 @@ void fill_lfb(int filling_sequence, enclyser_buffer_t *filling_buffer);
  * @param clearing_sequence a number to choose which sequence will be used
  * @param clearing_buffer the buffer which the function operates on
  */
-void clear_lfb(int clearing_sequence, enclyser_buffer_t *clearing_buffer);
+void clear_lfb(int clearing_sequence, buffer_t *clearing_buffer);
 
 #endif
 

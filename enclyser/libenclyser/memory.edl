@@ -35,8 +35,8 @@ enclave {
     from "enclyser/libenclyser/pt.edl" import *;
 
     trusted {
-        public void ecall_flush_enclyser_buffer([user_check] enclyser_buffer_t *enclyser_buffer);
-        public void ecall_assign_enclyser_buffer([user_check] enclyser_buffer_t *enclyser_buffer);
+        public void ecall_flush_buffer([user_check] buffer_t *buffer);
+        public void ecall_assign_buffer([user_check] buffer_t *buffer);
     };
 
     untrusted {

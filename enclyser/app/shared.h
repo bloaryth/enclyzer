@@ -38,17 +38,17 @@ int updated;
 int app_filling_sequence;
 int app_clearing_sequence;
 
-enclyser_buffer_t app_filling_buffer;
-enclyser_buffer_t app_clearing_buffer;
-enclyser_buffer_t app_faulting_buffer;
+buffer_t app_filling_buffer;
+buffer_t app_clearing_buffer;
+buffer_t app_faulting_buffer;
 
 enclyser_attack_t app_attack_spec;
 
-enclyser_buffer_t app_attacking_buffer;
-enclyser_buffer_t app_encoding_buffer;
-enclyser_buffer_t app_printing_buffer;
+buffer_t app_attacking_buffer;
+buffer_t app_encoding_buffer;
+buffer_t app_printing_buffer;
 
-enclyser_buffer_t encalve_secret_buffer;
+buffer_t encalve_secret_buffer;
 enclyser_sysinfo_t app_sysinfo;
 
 /**

@@ -136,10 +136,10 @@ typedef struct
     int order;       /** the policy which specifies how the initial value is mutated when assigned */
     int mem_type;    /** the memory type that is modified to the page table of \p buffer */
     int access_ctrl; /** the access control that is modified to the page table of \p buffer */
-} enclyser_buffer_t;
+} buffer_t;
 
 /**
- * @brief the enum defines for \p enclyser_buffer_t->order
+ * @brief the enum defines for \p buffer_t->order
  *
  */
 #define BUFFER_ORDER_NONE 0x0
@@ -148,7 +148,7 @@ typedef struct
 // #define BUFFER_ORDER_LINE_NUM       0x3
 
 /**
- * @brief the enum defines for \p enclyser_buffer_t->mem_type
+ * @brief the enum defines for \p buffer_t->mem_type
  *
  */
 #define BUFFER_MEM_TYPE_NONE 0x0
@@ -156,7 +156,7 @@ typedef struct
 #define BUFFER_MEM_TYPE_WC 0x2
 
 /**
- * @brief the enum defines for \p enclyser_buffer_t->access_ctrl
+ * @brief the enum defines for \p buffer_t->access_ctrl
  *
  */
 #define BUFFER_ACCESS_CTRL_NONE 0x0
@@ -170,7 +170,7 @@ typedef struct
 #define BUFFER_ACCESS_CTRL_RSVD 0x8
 
 /**
- * @brief the default settings for \p enclyser_buffer_t
+ * @brief the default settings for \p buffer_t
  *
  */
 #define DEFAULT_FILLING_BUFFER_SIZE 6144                                                    /** the default and minumun size of a filling buffer */

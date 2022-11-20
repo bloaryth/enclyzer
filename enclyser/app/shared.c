@@ -10,7 +10,7 @@ int updated = 0;
 int app_filling_sequence = 0;
 int app_clearing_sequence = 0;
 
-enclyser_buffer_t app_filling_buffer = {
+buffer_t app_filling_buffer = {
     .buffer = NULL,
     .shadow = NULL,
     .size = DEFAULT_FILLING_BUFFER_SIZE,
@@ -19,7 +19,7 @@ enclyser_buffer_t app_filling_buffer = {
     .mem_type = DEFAULT_BUFFER_MEM_TYPE,
     .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
-enclyser_buffer_t app_clearing_buffer = {
+buffer_t app_clearing_buffer = {
     .buffer = NULL,
     .shadow = NULL,
     .size = DEFAULT_CLEARING_BUFFER_SIZE,
@@ -28,7 +28,7 @@ enclyser_buffer_t app_clearing_buffer = {
     .mem_type = DEFAULT_BUFFER_MEM_TYPE,
     .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
-enclyser_buffer_t app_faulting_buffer = {
+buffer_t app_faulting_buffer = {
     .buffer = NULL,
     .shadow = NULL,
     .size = DEFAULT_FAULTING_BUFFER_SIZE,
@@ -42,7 +42,7 @@ enclyser_attack_t app_attack_spec = {
     .minor = DEFAULT_ATTACK_MINOR,
     .offset = DEFAULT_ATTACK_OFFSET};
 
-enclyser_buffer_t app_attacking_buffer = {
+buffer_t app_attacking_buffer = {
     .buffer = NULL,
     .shadow = NULL,
     .size = DEFAULT_ATTACKING_BUFFER_SIZE,
@@ -51,7 +51,7 @@ enclyser_buffer_t app_attacking_buffer = {
     .mem_type = DEFAULT_BUFFER_MEM_TYPE,
     .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
-enclyser_buffer_t app_encoding_buffer = {
+buffer_t app_encoding_buffer = {
     .buffer = NULL,
     .shadow = NULL,
     .size = DEFAULT_ENCODING_BUFFER_SIZE,
@@ -60,7 +60,7 @@ enclyser_buffer_t app_encoding_buffer = {
     .mem_type = DEFAULT_BUFFER_MEM_TYPE,
     .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
-enclyser_buffer_t app_printing_buffer = {
+buffer_t app_printing_buffer = {
     .buffer = NULL,
     .shadow = NULL,
     .size = DEFAULT_PRINTING_BUFFER_SIZE,
@@ -69,7 +69,7 @@ enclyser_buffer_t app_printing_buffer = {
     .mem_type = DEFAULT_BUFFER_MEM_TYPE,
     .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
-enclyser_buffer_t encalve_secret_buffer = {
+buffer_t encalve_secret_buffer = {
     .buffer = NULL,
     .shadow = NULL,
     .size = DEFAULT_FILLING_BUFFER_SIZE,
@@ -88,7 +88,7 @@ enclyser_sysinfo_t app_sysinfo = {};
 
 //     ASSERT(!mprotect(app_faulting_buffer.buffer, app_faulting_buffer.size, PROT_READ | PROT_WRITE));
 
-//     flush_enclyser_buffer(&app_encoding_buffer);
+//     flush_buffer(&app_encoding_buffer);
 //     attack(&app_attack_spec, &app_attacking_buffer, &app_encoding_buffer);
 //     reload(&app_encoding_buffer, &app_printing_buffer);
 
@@ -112,13 +112,13 @@ void construct_app_environment(void)
 
     ecall_get_secret(global_eid, &encalve_secret_buffer.buffer);
 
-    malloc_enclyser_buffer(&app_filling_buffer);
-    malloc_enclyser_buffer(&app_clearing_buffer);
-    malloc_enclyser_buffer(&app_faulting_buffer);
-    malloc_enclyser_buffer(&app_attacking_buffer);
-    malloc_enclyser_buffer(&app_encoding_buffer);
-    malloc_enclyser_buffer(&app_printing_buffer);
-    malloc_enclyser_buffer(&encalve_secret_buffer);
+    malloc_buffer(&app_filling_buffer);
+    malloc_buffer(&app_clearing_buffer);
+    malloc_buffer(&app_faulting_buffer);
+    malloc_buffer(&app_attacking_buffer);
+    malloc_buffer(&app_encoding_buffer);
+    malloc_buffer(&app_printing_buffer);
+    malloc_buffer(&encalve_secret_buffer);
 
     // ASSERT(signal(SIGSEGV, sigsegv_handler) != SIG_ERR);
 }
@@ -133,12 +133,12 @@ void destruct_app_environment(void)
 {
     sgx_destroy_enclave(global_eid);
 
-    free_enclyser_buffer(&app_filling_buffer);
-    free_enclyser_buffer(&app_clearing_buffer);
-    free_enclyser_buffer(&app_faulting_buffer);
-    free_enclyser_buffer(&app_attacking_buffer);
-    free_enclyser_buffer(&app_encoding_buffer);
-    free_enclyser_buffer(&app_printing_buffer);
+    free_buffer(&app_filling_buffer);
+    free_buffer(&app_clearing_buffer);
+    free_buffer(&app_faulting_buffer);
+    free_buffer(&app_attacking_buffer);
+    free_buffer(&app_encoding_buffer);
+    free_buffer(&app_printing_buffer);
 
     close_system_file();
 

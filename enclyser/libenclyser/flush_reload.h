@@ -32,7 +32,7 @@
  * @param encoding_buffer the buffer that contains temporary data
  * @param printing_buffer the buffer that accumulates persistent data
  */
-void flush(enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffer);
+void flush(buffer_t *encoding_buffer, buffer_t *printing_buffer);
 
 /**
  * @brief The RELOAD phase of the FLUSH+RELOAD technique.
@@ -40,14 +40,14 @@ void flush(enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffe
  * @param encoding_buffer the buffer that contains temporary data
  * @param printing_buffer the buffer that accumulates persistent data
  */
-void reload(enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffer);
+void reload(buffer_t *encoding_buffer, buffer_t *printing_buffer);
 
 /**
  * @brief Reset all of the accumulated data to zero.
  *
  * @param printing_buffer the buffer that accumulates persistent data
  */
-void reset(enclyser_buffer_t *printing_buffer);
+void reset(buffer_t *printing_buffer);
 
 /**
  * @brief Print the printing_buffer in a clear and concise way.
@@ -55,7 +55,7 @@ void reset(enclyser_buffer_t *printing_buffer);
  * @param printing_buffer the buffer that accumulates persistent data
  * @param printing_bar it decides whether an answer should be printed
  */
-void print(enclyser_buffer_t *printing_buffer, uint8_t printing_bar);
+void print(buffer_t *printing_buffer, uint8_t printing_bar);
 
 #endif
 

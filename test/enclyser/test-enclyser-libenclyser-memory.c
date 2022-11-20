@@ -14,9 +14,9 @@ void fini(void)
 
 TestSuite(suite_memory, .init = init, .fini = fini);
 
-Test(suite_memory, test_malloc_enclyser_buffer, .disabled = false)
+Test(suite_memory, test_malloc_buffer, .disabled = false)
 {
-    enclyser_buffer_t enclyser_buffer = {
+    buffer_t buffer = {
         .buffer = NULL,
         .shadow = NULL,
         .size = DEFAULT_FILLING_BUFFER_SIZE,
@@ -29,50 +29,50 @@ Test(suite_memory, test_malloc_enclyser_buffer, .disabled = false)
      * @brief Test if \p buffer is malloced, and other variables are not changed.
      *
      */
-    malloc_enclyser_buffer(&enclyser_buffer);
+    malloc_buffer(&buffer);
 
-    cr_expect(enclyser_buffer.size == DEFAULT_FILLING_BUFFER_SIZE);
-    cr_expect(enclyser_buffer.value == DEFAULT_BUFFER_VALUE);
-    cr_expect(enclyser_buffer.order == DEFAULT_BUFFER_ORDER);
-    cr_expect(enclyser_buffer.mem_type == DEFAULT_BUFFER_MEM_TYPE);
-    cr_expect(enclyser_buffer.access_ctrl == DEFAULT_BUFFER_ACCESS_CTRL);
+    cr_expect(buffer.size == DEFAULT_FILLING_BUFFER_SIZE);
+    cr_expect(buffer.value == DEFAULT_BUFFER_VALUE);
+    cr_expect(buffer.order == DEFAULT_BUFFER_ORDER);
+    cr_expect(buffer.mem_type == DEFAULT_BUFFER_MEM_TYPE);
+    cr_expect(buffer.access_ctrl == DEFAULT_BUFFER_ACCESS_CTRL);
 
-    cr_assert(enclyser_buffer.buffer != NULL);
-    cr_assert(enclyser_buffer.shadow != NULL);
+    cr_assert(buffer.buffer != NULL);
+    cr_assert(buffer.shadow != NULL);
 
     /**
      * @brief Test if \p shadow is a copy of \p buffer.
      *
      */
-    enclyser_buffer.buffer[enclyser_buffer.size * 1 / 4] = 1;
-    enclyser_buffer.buffer[enclyser_buffer.size * 2 / 4] = 2;
-    enclyser_buffer.buffer[enclyser_buffer.size * 3 / 4] = 3;
+    buffer.buffer[buffer.size * 1 / 4] = 1;
+    buffer.buffer[buffer.size * 2 / 4] = 2;
+    buffer.buffer[buffer.size * 3 / 4] = 3;
 
-    cr_expect(enclyser_buffer.shadow[enclyser_buffer.size * 1 / 4] == 1);
-    cr_expect(enclyser_buffer.shadow[enclyser_buffer.size * 2 / 4] == 2);
-    cr_expect(enclyser_buffer.shadow[enclyser_buffer.size * 3 / 4] == 3);
+    cr_expect(buffer.shadow[buffer.size * 1 / 4] == 1);
+    cr_expect(buffer.shadow[buffer.size * 2 / 4] == 2);
+    cr_expect(buffer.shadow[buffer.size * 3 / 4] == 3);
 
-    enclyser_buffer.shadow[enclyser_buffer.size * 1 / 4] = 4;
-    enclyser_buffer.shadow[enclyser_buffer.size * 2 / 4] = 5;
-    enclyser_buffer.shadow[enclyser_buffer.size * 3 / 4] = 6;
+    buffer.shadow[buffer.size * 1 / 4] = 4;
+    buffer.shadow[buffer.size * 2 / 4] = 5;
+    buffer.shadow[buffer.size * 3 / 4] = 6;
 
-    cr_expect(enclyser_buffer.buffer[enclyser_buffer.size * 1 / 4] == 4);
-    cr_expect(enclyser_buffer.buffer[enclyser_buffer.size * 2 / 4] == 5);
-    cr_expect(enclyser_buffer.buffer[enclyser_buffer.size * 3 / 4] == 6);
+    cr_expect(buffer.buffer[buffer.size * 1 / 4] == 4);
+    cr_expect(buffer.buffer[buffer.size * 2 / 4] == 5);
+    cr_expect(buffer.buffer[buffer.size * 3 / 4] == 6);
 
     /**
      * @brief Test if \p buffer and \p shadow is 4 KB aligned.
      *
      */
-    cr_expect(((uint64_t)enclyser_buffer.buffer & 0xfff) == 0);
-    cr_expect(((uint64_t)enclyser_buffer.shadow & 0xfff) == 0);
+    cr_expect(((uint64_t)buffer.buffer & 0xfff) == 0);
+    cr_expect(((uint64_t)buffer.shadow & 0xfff) == 0);
 
-    free_enclyser_buffer(&enclyser_buffer);
+    free_buffer(&buffer);
 }
 
-Test(suite_memory, test_free_enclyser_buffer, .signal = SIGSEGV, .disabled = false)
+Test(suite_memory, test_free_buffer, .signal = SIGSEGV, .disabled = false)
 {
-    enclyser_buffer_t enclyser_buffer = {
+    buffer_t buffer = {
         .buffer = NULL,
         .shadow = NULL,
         .size = DEFAULT_FILLING_BUFFER_SIZE,
@@ -85,27 +85,27 @@ Test(suite_memory, test_free_enclyser_buffer, .signal = SIGSEGV, .disabled = fal
      * @brief Test if \p buffer is malloced and then freed, and other variables are not changed.
      *
      */
-    malloc_enclyser_buffer(&enclyser_buffer);
-    free_enclyser_buffer(&enclyser_buffer);
+    malloc_buffer(&buffer);
+    free_buffer(&buffer);
 
-    cr_expect(enclyser_buffer.size == DEFAULT_FILLING_BUFFER_SIZE);
-    cr_expect(enclyser_buffer.value == DEFAULT_BUFFER_VALUE);
-    cr_expect(enclyser_buffer.order == DEFAULT_BUFFER_ORDER);
-    cr_expect(enclyser_buffer.mem_type == DEFAULT_BUFFER_MEM_TYPE);
-    cr_expect(enclyser_buffer.access_ctrl == DEFAULT_BUFFER_ACCESS_CTRL);
+    cr_expect(buffer.size == DEFAULT_FILLING_BUFFER_SIZE);
+    cr_expect(buffer.value == DEFAULT_BUFFER_VALUE);
+    cr_expect(buffer.order == DEFAULT_BUFFER_ORDER);
+    cr_expect(buffer.mem_type == DEFAULT_BUFFER_MEM_TYPE);
+    cr_expect(buffer.access_ctrl == DEFAULT_BUFFER_ACCESS_CTRL);
 
     /**
      * @brief Test if the freed \p buffer could be accessed.
      *
      */
-    enclyser_buffer.buffer[DEFAULT_FILLING_BUFFER_SIZE * 1 / 4] = 1;
-    enclyser_buffer.buffer[DEFAULT_FILLING_BUFFER_SIZE * 2 / 4] = 2;
-    enclyser_buffer.buffer[DEFAULT_FILLING_BUFFER_SIZE * 3 / 4] = 3;
+    buffer.buffer[DEFAULT_FILLING_BUFFER_SIZE * 1 / 4] = 1;
+    buffer.buffer[DEFAULT_FILLING_BUFFER_SIZE * 2 / 4] = 2;
+    buffer.buffer[DEFAULT_FILLING_BUFFER_SIZE * 3 / 4] = 3;
 }
 
-Test(suite_memory, test_cripple_enclyser_buffer, .disabled = false)
+Test(suite_memory, test_cripple_buffer, .disabled = false)
 {
-    enclyser_buffer_t enclyser_buffer = {
+    buffer_t buffer = {
         .buffer = NULL,
         .shadow = NULL,
         .size = DEFAULT_FILLING_BUFFER_SIZE,
@@ -117,27 +117,27 @@ Test(suite_memory, test_cripple_enclyser_buffer, .disabled = false)
     uint64_t *pte;
     int i;
 
-    malloc_enclyser_buffer(&enclyser_buffer);
+    malloc_buffer(&buffer);
 
     /**
      * @brief BUFFER_ACCESS_CTRL
      *
      */
-    enclyser_buffer.mem_type = BUFFER_MEM_TYPE_WB;
-    cripple_enclyser_buffer(&enclyser_buffer);
-    for (i = 0; i < enclyser_buffer.size; i += PAGE_SIZE)
+    buffer.mem_type = BUFFER_MEM_TYPE_WB;
+    cripple_buffer(&buffer);
+    for (i = 0; i < buffer.size; i += PAGE_SIZE)
     {
-        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.shadow + i), PTE);
+        pte = (unsigned long *)remap_page_table((uintptr_t)(buffer.shadow + i), PTE);
         cr_expect(PAT(*pte) == 0);
         cr_expect(PCD(*pte) == 0);
         cr_expect(PWT(*pte) == 0);
     }
 
-    enclyser_buffer.mem_type = BUFFER_MEM_TYPE_WC;
-    cripple_enclyser_buffer(&enclyser_buffer);
-    for (i = 0; i < enclyser_buffer.size; i += PAGE_SIZE)
+    buffer.mem_type = BUFFER_MEM_TYPE_WC;
+    cripple_buffer(&buffer);
+    for (i = 0; i < buffer.size; i += PAGE_SIZE)
     {
-        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.shadow + i), PTE);
+        pte = (unsigned long *)remap_page_table((uintptr_t)(buffer.shadow + i), PTE);
         cr_expect(PAT(*pte) == 0);
         cr_expect(PCD(*pte) == 0);
         cr_expect(PWT(*pte) == 1);
@@ -147,71 +147,71 @@ Test(suite_memory, test_cripple_enclyser_buffer, .disabled = false)
      * @brief Test setting BUFFER_ACCESS_CTRL.
      *
      */
-    enclyser_buffer.access_ctrl = BUFFER_ACCESS_CTRL_ACCESSED;
-    cripple_enclyser_buffer(&enclyser_buffer);
-    for (i = 0; i < enclyser_buffer.size; i += PAGE_SIZE)
+    buffer.access_ctrl = BUFFER_ACCESS_CTRL_ACCESSED;
+    cripple_buffer(&buffer);
+    for (i = 0; i < buffer.size; i += PAGE_SIZE)
     {
-        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.shadow + i), PTE);
+        pte = (unsigned long *)remap_page_table((uintptr_t)(buffer.shadow + i), PTE);
         cr_expect(ACCESSED(*pte) == 1);
     }
 
-    enclyser_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_ACCESSED;
-    cripple_enclyser_buffer(&enclyser_buffer);
-    for (i = 0; i < enclyser_buffer.size; i += PAGE_SIZE)
+    buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_ACCESSED;
+    cripple_buffer(&buffer);
+    for (i = 0; i < buffer.size; i += PAGE_SIZE)
     {
-        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.shadow + i), PTE);
+        pte = (unsigned long *)remap_page_table((uintptr_t)(buffer.shadow + i), PTE);
         cr_expect(ACCESSED(*pte) == 0);
     }
 
-    enclyser_buffer.access_ctrl = BUFFER_ACCESS_CTRL_USER;
-    cripple_enclyser_buffer(&enclyser_buffer);
-    for (i = 0; i < enclyser_buffer.size; i += PAGE_SIZE)
+    buffer.access_ctrl = BUFFER_ACCESS_CTRL_USER;
+    cripple_buffer(&buffer);
+    for (i = 0; i < buffer.size; i += PAGE_SIZE)
     {
-        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.shadow + i), PTE);
+        pte = (unsigned long *)remap_page_table((uintptr_t)(buffer.shadow + i), PTE);
         cr_expect(USER(*pte) == 1);
     }
 
-    enclyser_buffer.access_ctrl = BUFFER_ACCESS_CTRL_SUPERVISOR;
-    cripple_enclyser_buffer(&enclyser_buffer);
-    for (i = 0; i < enclyser_buffer.size; i += PAGE_SIZE)
+    buffer.access_ctrl = BUFFER_ACCESS_CTRL_SUPERVISOR;
+    cripple_buffer(&buffer);
+    for (i = 0; i < buffer.size; i += PAGE_SIZE)
     {
-        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.shadow + i), PTE);
+        pte = (unsigned long *)remap_page_table((uintptr_t)(buffer.shadow + i), PTE);
         cr_expect(USER(*pte) == 0);
     }
 
-    enclyser_buffer.access_ctrl = BUFFER_ACCESS_CTRL_PRESENT;
-    cripple_enclyser_buffer(&enclyser_buffer);
-    for (i = 0; i < enclyser_buffer.size; i += PAGE_SIZE)
+    buffer.access_ctrl = BUFFER_ACCESS_CTRL_PRESENT;
+    cripple_buffer(&buffer);
+    for (i = 0; i < buffer.size; i += PAGE_SIZE)
     {
-        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.shadow + i), PTE);
+        pte = (unsigned long *)remap_page_table((uintptr_t)(buffer.shadow + i), PTE);
         cr_expect(PRESENT(*pte) == 1);
     }
 
-    enclyser_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
-    cripple_enclyser_buffer(&enclyser_buffer);
-    for (i = 0; i < enclyser_buffer.size; i += PAGE_SIZE)
+    buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
+    cripple_buffer(&buffer);
+    for (i = 0; i < buffer.size; i += PAGE_SIZE)
     {
-        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.shadow + i), PTE);
+        pte = (unsigned long *)remap_page_table((uintptr_t)(buffer.shadow + i), PTE);
         cr_expect(PRESENT(*pte) == 0);
     }
 
-    enclyser_buffer.access_ctrl = BUFFER_ACCESS_CTRL_RSVD;
-    cripple_enclyser_buffer(&enclyser_buffer);
-    for (i = 0; i < enclyser_buffer.size; i += PAGE_SIZE)
+    buffer.access_ctrl = BUFFER_ACCESS_CTRL_RSVD;
+    cripple_buffer(&buffer);
+    for (i = 0; i < buffer.size; i += PAGE_SIZE)
     {
-        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.shadow + i), PTE);
+        pte = (unsigned long *)remap_page_table((uintptr_t)(buffer.shadow + i), PTE);
         cr_expect(RSVD(*pte) == 1);
     }
 
-    enclyser_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_RSVD;
-    cripple_enclyser_buffer(&enclyser_buffer);
-    for (i = 0; i < enclyser_buffer.size; i += PAGE_SIZE)
+    buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_RSVD;
+    cripple_buffer(&buffer);
+    for (i = 0; i < buffer.size; i += PAGE_SIZE)
     {
-        pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer.shadow + i), PTE);
+        pte = (unsigned long *)remap_page_table((uintptr_t)(buffer.shadow + i), PTE);
         cr_expect(RSVD(*pte) == 0);
     }
 
-    free_enclyser_buffer(&enclyser_buffer);
+    free_buffer(&buffer);
 }
 
 /**
@@ -244,9 +244,9 @@ static uint32_t access_time(uint64_t address)
     return cycles;
 }
 
-Test(suite_memory, test_flush_enclyser_buffer, .disabled = false) // TODO fix remapping
+Test(suite_memory, test_flush_buffer, .disabled = false) // TODO fix remapping
 {
-    enclyser_buffer_t enclyser_buffer = {
+    buffer_t buffer = {
         .buffer = NULL,
         .shadow = NULL,
         .size = DEFAULT_FILLING_BUFFER_SIZE,
@@ -257,22 +257,22 @@ Test(suite_memory, test_flush_enclyser_buffer, .disabled = false) // TODO fix re
 
     int i;
 
-    malloc_enclyser_buffer(&enclyser_buffer);
+    malloc_buffer(&buffer);
 
-    flush_enclyser_buffer(&enclyser_buffer);
+    flush_buffer(&buffer);
 
-    for (i = 0; i < enclyser_buffer.size; i += CACHELINE_SIZE)
+    for (i = 0; i < buffer.size; i += CACHELINE_SIZE)
     {
-        cr_expect(access_time((unsigned long)((uintptr_t)(enclyser_buffer.buffer + i))) > 120);
+        cr_expect(access_time((unsigned long)((uintptr_t)(buffer.buffer + i))) > 120);
     }
     asm volatile("mfence\n");
 
-    free_enclyser_buffer(&enclyser_buffer);
+    free_buffer(&buffer);
 }
 
-Test(suite_memory, test_assign_enclyser_buffer, .disabled = false)
+Test(suite_memory, test_assign_buffer, .disabled = false)
 {
-    enclyser_buffer_t enclyser_buffer = {
+    buffer_t buffer = {
         .buffer = NULL,
         .shadow = NULL,
         .size = DEFAULT_FILLING_BUFFER_SIZE,
@@ -283,32 +283,32 @@ Test(suite_memory, test_assign_enclyser_buffer, .disabled = false)
 
     int i;
 
-    malloc_enclyser_buffer(&enclyser_buffer);
+    malloc_buffer(&buffer);
 
-    enclyser_buffer.value = 0x10;
-    enclyser_buffer.order = BUFFER_ORDER_CONSTANT;
-    assign_enclyser_buffer(&enclyser_buffer);
-    for (i = 0; i < enclyser_buffer.size; i++)
+    buffer.value = 0x10;
+    buffer.order = BUFFER_ORDER_CONSTANT;
+    assign_buffer(&buffer);
+    for (i = 0; i < buffer.size; i++)
     {
-        cr_expect(enclyser_buffer.buffer[i] == enclyser_buffer.value);
+        cr_expect(buffer.buffer[i] == buffer.value);
     }
 
-    enclyser_buffer.value = 0x20;
-    enclyser_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
-    assign_enclyser_buffer(&enclyser_buffer);
-    for (i = 0; i < enclyser_buffer.size; i++)
+    buffer.value = 0x20;
+    buffer.order = BUFFER_ORDER_OFFSET_INLINE;
+    assign_buffer(&buffer);
+    for (i = 0; i < buffer.size; i++)
     {
-        cr_expect(enclyser_buffer.buffer[i] == enclyser_buffer.value + i % 0x40);
+        cr_expect(buffer.buffer[i] == buffer.value + i % 0x40);
     }
 
-    // enclyser_buffer.value = 0x30;
-    // enclyser_buffer.order = BUFFER_ORDER_LINE_NUM;
-    // assign_enclyser_buffer(&enclyser_buffer);
-    // cr_assert(enclyser_buffer.value = 0x30);
-    // for (i = 0; i < enclyser_buffer.size; i++)
+    // buffer.value = 0x30;
+    // buffer.order = BUFFER_ORDER_LINE_NUM;
+    // assign_buffer(&buffer);
+    // cr_assert(buffer.value = 0x30);
+    // for (i = 0; i < buffer.size; i++)
     // {
-    //     cr_expect(enclyser_buffer.buffer[i] == enclyser_buffer.value + i / 0x40);
+    //     cr_expect(buffer.buffer[i] == buffer.value + i / 0x40);
     // }
 
-    free_enclyser_buffer(&enclyser_buffer);
+    free_buffer(&buffer);
 }

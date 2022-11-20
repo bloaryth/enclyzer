@@ -8,13 +8,13 @@
  * @brief suite_lfb::test_fill_lfb
  * 
  */
-enclyser_buffer_t filling_buffer;
+buffer_t filling_buffer;
 
 void test_fill_lfb_log_init()
 {
     open_system_file();
 
-    filling_buffer = (enclyser_buffer_t){
+    filling_buffer = (buffer_t){
         .buffer = NULL,
         .shadow = NULL,
         .size = DEFAULT_FILLING_BUFFER_SIZE,
@@ -23,14 +23,14 @@ void test_fill_lfb_log_init()
         .mem_type = DEFAULT_BUFFER_MEM_TYPE,
         .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
-    malloc_enclyser_buffer(&filling_buffer);
+    malloc_buffer(&filling_buffer);
 
     sleep(2);
 }
 
 void test_fill_lfb_log_fini()
 {
-    free_enclyser_buffer(&filling_buffer);
+    free_buffer(&filling_buffer);
 
     close_system_file();
 }
@@ -47,14 +47,14 @@ Test(suite_lfb, test_fill_lfb_log, .init = test_fill_lfb_log_init, .fini = test_
     filling_sequence = FILLING_SEQUENCE_GP_LOAD;
     filling_buffer.value = 0x5;
     filling_buffer.order = BUFFER_ORDER_CONSTANT;
-    assign_enclyser_buffer(&filling_buffer);
+    assign_buffer(&filling_buffer);
     fill_lfb(filling_sequence, &filling_buffer);
     for (i = 0; i < filling_buffer.size; i++)
     {
         cr_expect(filling_buffer.buffer[i] == filling_buffer.value);
     }
     filling_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
-    assign_enclyser_buffer(&filling_buffer);
+    assign_buffer(&filling_buffer);
     fill_lfb(filling_sequence, &filling_buffer);
     for (i = 0; i < filling_buffer.size; i++)
     {
@@ -87,14 +87,14 @@ Test(suite_lfb, test_fill_lfb_log, .init = test_fill_lfb_log_init, .fini = test_
     filling_sequence = FILLING_SEQUENCE_NT_LOAD;
     filling_buffer.value = 0x5;
     filling_buffer.order = BUFFER_ORDER_CONSTANT;
-    assign_enclyser_buffer(&filling_buffer);
+    assign_buffer(&filling_buffer);
     fill_lfb(filling_sequence, &filling_buffer);
     for (i = 0; i < filling_buffer.size; i++)
     {
         cr_expect(filling_buffer.buffer[i] == filling_buffer.value);
     }
     filling_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
-    assign_enclyser_buffer(&filling_buffer);
+    assign_buffer(&filling_buffer);
     fill_lfb(filling_sequence, &filling_buffer);
     for (i = 0; i < filling_buffer.size; i++)
     {
@@ -127,14 +127,14 @@ Test(suite_lfb, test_fill_lfb_log, .init = test_fill_lfb_log_init, .fini = test_
     filling_sequence = FILLING_SEQUENCE_STR_LOAD;
     filling_buffer.value = 0x5;
     filling_buffer.order = BUFFER_ORDER_CONSTANT;
-    assign_enclyser_buffer(&filling_buffer);
+    assign_buffer(&filling_buffer);
     fill_lfb(filling_sequence, &filling_buffer);
     for (i = 0; i < filling_buffer.size; i++)
     {
         cr_expect(filling_buffer.buffer[i] == filling_buffer.value);
     }
     filling_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
-    assign_enclyser_buffer(&filling_buffer);
+    assign_buffer(&filling_buffer);
     fill_lfb(filling_sequence, &filling_buffer);
     for (i = 0; i < filling_buffer.size; i++)
     {
@@ -170,10 +170,10 @@ Test(suite_lfb, test_fill_lfb_log, .init = test_fill_lfb_log_init, .fini = test_
 #include "enclyser/libenclyser/lfb.h"
 
 enclyser_attack_t attack_spec;
-enclyser_buffer_t filling_buffer;
-enclyser_buffer_t attaking_buffer;
-enclyser_buffer_t encoding_buffer;
-enclyser_buffer_t printing_buffer;
+buffer_t filling_buffer;
+buffer_t attaking_buffer;
+buffer_t encoding_buffer;
+buffer_t printing_buffer;
 
 void test_fill_lfb_arch_init()
 {
@@ -184,7 +184,7 @@ void test_fill_lfb_arch_init()
         .minor = ATTACK_MINOR_STABLE,
         .offset = 0};
 
-    filling_buffer = (enclyser_buffer_t){
+    filling_buffer = (buffer_t){
         .buffer = NULL,
         .shadow = NULL,
         .size = DEFAULT_FILLING_BUFFER_SIZE,
@@ -193,7 +193,7 @@ void test_fill_lfb_arch_init()
         .mem_type = DEFAULT_BUFFER_MEM_TYPE,
         .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
-    attaking_buffer = (enclyser_buffer_t){
+    attaking_buffer = (buffer_t){
         .buffer = NULL,
         .shadow = NULL,
         .size = DEFAULT_ATTACKING_BUFFER_SIZE,
@@ -202,7 +202,7 @@ void test_fill_lfb_arch_init()
         .mem_type = DEFAULT_BUFFER_MEM_TYPE,
         .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
-    encoding_buffer = (enclyser_buffer_t){
+    encoding_buffer = (buffer_t){
         .buffer = NULL,
         .shadow = NULL,
         .size = DEFAULT_ENCODING_BUFFER_SIZE,
@@ -211,7 +211,7 @@ void test_fill_lfb_arch_init()
         .mem_type = DEFAULT_BUFFER_MEM_TYPE,
         .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
-    printing_buffer = (enclyser_buffer_t){
+    printing_buffer = (buffer_t){
         .buffer = NULL,
         .shadow = NULL,
         .size = DEFAULT_PRINTING_BUFFER_SIZE,
@@ -220,21 +220,21 @@ void test_fill_lfb_arch_init()
         .mem_type = DEFAULT_BUFFER_MEM_TYPE,
         .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
-    malloc_enclyser_buffer(&filling_buffer);
-    malloc_enclyser_buffer(&attaking_buffer);
-    malloc_enclyser_buffer(&encoding_buffer);
-    malloc_enclyser_buffer(&printing_buffer);
+    malloc_buffer(&filling_buffer);
+    malloc_buffer(&attaking_buffer);
+    malloc_buffer(&encoding_buffer);
+    malloc_buffer(&printing_buffer);
 
-    assign_enclyser_buffer(&filling_buffer);
-    assign_enclyser_buffer(&attaking_buffer);
+    assign_buffer(&filling_buffer);
+    assign_buffer(&attaking_buffer);
 }
 
 void test_fill_lfb_arch_fini()
 {
-    free_enclyser_buffer(&filling_buffer);
-    free_enclyser_buffer(&attaking_buffer);
-    free_enclyser_buffer(&encoding_buffer);
-    free_enclyser_buffer(&printing_buffer);
+    free_buffer(&filling_buffer);
+    free_buffer(&attaking_buffer);
+    free_buffer(&encoding_buffer);
+    free_buffer(&printing_buffer);
 
     close_system_file();
 }
@@ -254,7 +254,7 @@ Test(suite_lfb, test_fill_lfb_arch, .init = test_fill_lfb_arch_init, .fini = tes
             attack_spec.offset = offset;
             for (i = 0; i < REPETITION_TIME; i++)
             {
-                flush_enclyser_buffer(&encoding_buffer);
+                flush_buffer(&encoding_buffer);
                 fill_lfb(filling_sequence_array[j], &filling_buffer);
                 attack(&attack_spec, &attaking_buffer, &encoding_buffer);
                 reload(&encoding_buffer, &printing_buffer);
@@ -278,11 +278,11 @@ Test(suite_lfb, test_fill_lfb_arch, .init = test_fill_lfb_arch_init, .fini = tes
 // #include "enclyser/libenclyser/lfb.h"
 
 // enclyser_attack_t attack_spec;
-// enclyser_buffer_t filling_buffer;
-// enclyser_buffer_t clearing_buffer;
-// enclyser_buffer_t attaking_buffer;
-// enclyser_buffer_t encoding_buffer;
-// enclyser_buffer_t printing_buffer;
+// buffer_t filling_buffer;
+// buffer_t clearing_buffer;
+// buffer_t attaking_buffer;
+// buffer_t encoding_buffer;
+// buffer_t printing_buffer;
 
 // void test_clear_lfb_init()
 // {
@@ -293,7 +293,7 @@ Test(suite_lfb, test_fill_lfb_arch, .init = test_fill_lfb_arch_init, .fini = tes
 //         .minor = ATTACK_MINOR_STABLE,
 //         .offset = 0};
 
-//     filling_buffer = (enclyser_buffer_t){
+//     filling_buffer = (buffer_t){
 //         .buffer = NULL,
 //         .shadow = NULL,
 //         .size = DEFAULT_FILLING_BUFFER_SIZE,
@@ -302,7 +302,7 @@ Test(suite_lfb, test_fill_lfb_arch, .init = test_fill_lfb_arch_init, .fini = tes
 //         .mem_type = DEFAULT_BUFFER_MEM_TYPE,
 //         .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
-//     clearing_buffer = (enclyser_buffer_t){
+//     clearing_buffer = (buffer_t){
 //         .buffer = NULL,
 //         .shadow = NULL,
 //         .size = DEFAULT_CLEARING_BUFFER_SIZE,
@@ -311,7 +311,7 @@ Test(suite_lfb, test_fill_lfb_arch, .init = test_fill_lfb_arch_init, .fini = tes
 //         .mem_type = DEFAULT_BUFFER_MEM_TYPE,
 //         .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
-//     attaking_buffer = (enclyser_buffer_t){
+//     attaking_buffer = (buffer_t){
 //         .buffer = NULL,
 //         .shadow = NULL,
 //         .size = DEFAULT_ATTACKING_BUFFER_SIZE,
@@ -320,7 +320,7 @@ Test(suite_lfb, test_fill_lfb_arch, .init = test_fill_lfb_arch_init, .fini = tes
 //         .mem_type = DEFAULT_BUFFER_MEM_TYPE,
 //         .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
-//     encoding_buffer = (enclyser_buffer_t){
+//     encoding_buffer = (buffer_t){
 //         .buffer = NULL,
 //         .shadow = NULL,
 //         .size = DEFAULT_ENCODING_BUFFER_SIZE,
@@ -329,7 +329,7 @@ Test(suite_lfb, test_fill_lfb_arch, .init = test_fill_lfb_arch_init, .fini = tes
 //         .mem_type = DEFAULT_BUFFER_MEM_TYPE,
 //         .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
-//     printing_buffer = (enclyser_buffer_t){
+//     printing_buffer = (buffer_t){
 //         .buffer = NULL,
 //         .shadow = NULL,
 //         .size = DEFAULT_PRINTING_BUFFER_SIZE,
@@ -338,23 +338,23 @@ Test(suite_lfb, test_fill_lfb_arch, .init = test_fill_lfb_arch_init, .fini = tes
 //         .mem_type = DEFAULT_BUFFER_MEM_TYPE,
 //         .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
-//     malloc_enclyser_buffer(&filling_buffer);
-//     malloc_enclyser_buffer(&clearing_buffer);
-//     malloc_enclyser_buffer(&attaking_buffer);
-//     malloc_enclyser_buffer(&encoding_buffer);
-//     malloc_enclyser_buffer(&printing_buffer);
+//     malloc_buffer(&filling_buffer);
+//     malloc_buffer(&clearing_buffer);
+//     malloc_buffer(&attaking_buffer);
+//     malloc_buffer(&encoding_buffer);
+//     malloc_buffer(&printing_buffer);
 
-//     assign_enclyser_buffer(&filling_buffer);
-//     assign_enclyser_buffer(&attaking_buffer);
+//     assign_buffer(&filling_buffer);
+//     assign_buffer(&attaking_buffer);
 // }
 
 // void test_clear_lfb_fini()
 // {
-//     free_enclyser_buffer(&filling_buffer);
-//     free_enclyser_buffer(&clearing_buffer);
-//     free_enclyser_buffer(&attaking_buffer);
-//     free_enclyser_buffer(&encoding_buffer);
-//     free_enclyser_buffer(&printing_buffer);
+//     free_buffer(&filling_buffer);
+//     free_buffer(&clearing_buffer);
+//     free_buffer(&attaking_buffer);
+//     free_buffer(&encoding_buffer);
+//     free_buffer(&printing_buffer);
 
 //     close_system_file();
 // }
@@ -374,7 +374,7 @@ Test(suite_lfb, test_fill_lfb_arch, .init = test_fill_lfb_arch_init, .fini = tes
 //             attack_spec.offset = offset;
 //             for (i = 0; i < REPETITION_TIME; i++)
 //             {
-//                 flush_enclyser_buffer(&encoding_buffer);
+//                 flush_buffer(&encoding_buffer);
 //                 fill_lfb(filling_sequence_array[j], &filling_buffer);
 //                 clear_lfb(CLEARING_SEQUENCE_VERW, &clearing_buffer);
 //                 attack(&attack_spec, &attaking_buffer, &encoding_buffer);

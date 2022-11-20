@@ -28,23 +28,23 @@
  * So the this function can be called multiple times safely, and parameter can be preset to allow
  * more flexibility if the buffer is already allocated or shadowed in other ways.
  *
- * @param enclyser_buffer the buffer which the function operates on
+ * @param buffer the buffer which the function operates on
  */
-void malloc_enclyser_buffer(enclyser_buffer_t *enclyser_buffer);
+void malloc_buffer(buffer_t *buffer);
 
 /**
  * @brief Free the space of a enclyser buffer.
  *
- * @param enclyser_buffer the buffer which the function operates on
+ * @param buffer the buffer which the function operates on
  */
-void free_enclyser_buffer(enclyser_buffer_t *enclyser_buffer);
+void free_buffer(buffer_t *buffer);
 
 /**
  * @brief Modify the page table entry of a enclyser buffer.
  *
- * @param enclyser_buffer the buffer which the function operates on
+ * @param buffer the buffer which the function operates on
  */
-void cripple_enclyser_buffer(enclyser_buffer_t *enclyser_buffer);
+void cripple_buffer(buffer_t *buffer);
 
 #endif
 
@@ -57,16 +57,16 @@ void cripple_enclyser_buffer(enclyser_buffer_t *enclyser_buffer);
 /**
  * @brief Flush the enclyser buffer to ensure a later enclyser.
  *
- * @param enclyser_buffer the buffer which the function operates on
+ * @param buffer the buffer which the function operates on
  */
-void flush_enclyser_buffer(enclyser_buffer_t *enclyser_buffer);
+void flush_buffer(buffer_t *buffer);
 
 /**
  * @brief Assign values to a enclyser buffer according to a policy.
  *
- * @param enclyser_buffer the buffer which the function operates on
+ * @param buffer the buffer which the function operates on
  */
-void assign_enclyser_buffer(enclyser_buffer_t *enclyser_buffer);
+void assign_buffer(buffer_t *buffer);
 
 #endif
 

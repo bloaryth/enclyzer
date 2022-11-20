@@ -35,7 +35,7 @@ enclave {
     from "enclyser/libenclyser/memory.edl" import *;
 
     trusted {
-        public void ecall_attack([user_check] enclyser_attack_t *attack_spec, [user_check] enclyser_buffer_t *attaking_buffer, [user_check] enclyser_buffer_t *encoding_buffer);
+        public void ecall_attack([user_check] enclyser_attack_t *attack_spec, [user_check] buffer_t *attaking_buffer, [user_check] buffer_t *encoding_buffer);
     };
 
     untrusted {

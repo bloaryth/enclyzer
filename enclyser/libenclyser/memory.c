@@ -11,21 +11,21 @@
 /**
  * @brief [ECALL] Flush the enclyser buffer to ensure a later enclyser.
  *
- * @param enclyser_buffer the buffer which the function operates on
+ * @param buffer the buffer which the function operates on
  */
-void ecall_flush_enclyser_buffer(enclyser_buffer_t *enclyser_buffer)
+void ecall_flush_buffer(buffer_t *buffer)
 {
-    flush_enclyser_buffer(enclyser_buffer);
+    flush_buffer(buffer);
 }
 
 /**
  * @brief [ECALL] Assign values to a enclyser buffer according to a policy.
  *
- * @param enclyser_buffer the buffer which the function operates on
+ * @param buffer the buffer which the function operates on
  */
-void ecall_assign_enclyser_buffer(enclyser_buffer_t *enclyser_buffer)
+void ecall_assign_buffer(buffer_t *buffer)
 {
-    assign_enclyser_buffer(enclyser_buffer);
+    assign_buffer(buffer);
 }
 
 #endif
@@ -40,82 +40,82 @@ void ecall_assign_enclyser_buffer(enclyser_buffer_t *enclyser_buffer)
 
 #include <sys/mman.h>
 
-void malloc_enclyser_buffer(enclyser_buffer_t *enclyser_buffer)
+void malloc_buffer(buffer_t *buffer)
 {
-    if (enclyser_buffer->buffer == NULL)
+    if (buffer->buffer == NULL)
     {
-        enclyser_buffer->buffer = (uint8_t *)mmap(NULL, enclyser_buffer->size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_SHARED | MAP_POPULATE, -1, 0);
-        ASSERT(enclyser_buffer->buffer != MAP_FAILED);
+        buffer->buffer = (uint8_t *)mmap(NULL, buffer->size, PROT_READ | PROT_WRITE, MAP_ANONYMOUS | MAP_SHARED | MAP_POPULATE, -1, 0);
+        ASSERT(buffer->buffer != MAP_FAILED);
     }
-    if (enclyser_buffer->shadow == NULL)
+    if (buffer->shadow == NULL)
     {
-        enclyser_buffer->shadow = (uint8_t *)remap_pages((uintptr_t)enclyser_buffer->buffer, enclyser_buffer->size);
+        buffer->shadow = (uint8_t *)remap_pages((uintptr_t)buffer->buffer, buffer->size);
     }
 }
 
-void free_enclyser_buffer(enclyser_buffer_t *enclyser_buffer)
+void free_buffer(buffer_t *buffer)
 {
-    ASSERT(!munmap(enclyser_buffer->buffer, enclyser_buffer->size));
-    ASSERT(!munmap(enclyser_buffer->shadow, enclyser_buffer->size));
+    ASSERT(!munmap(buffer->buffer, buffer->size));
+    ASSERT(!munmap(buffer->shadow, buffer->size));
 }
 
-void cripple_enclyser_buffer(enclyser_buffer_t *enclyser_buffer)
+void cripple_buffer(buffer_t *buffer)
 {
     uint64_t *remapped_pte;
     int i;
 
-    for (i = 0; i < enclyser_buffer->size; i += PAGE_SIZE)
+    for (i = 0; i < buffer->size; i += PAGE_SIZE)
     {
-        switch (enclyser_buffer->mem_type)
+        switch (buffer->mem_type)
         {
         case BUFFER_MEM_TYPE_NONE:
             break;
         case BUFFER_MEM_TYPE_WB:
-            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer->shadow + i), PTE);
+            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(buffer->shadow + i), PTE);
             *remapped_pte = MARK_PAT0(*remapped_pte);
             break;
         case BUFFER_MEM_TYPE_WC:
-            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer->shadow + i), PTE);
+            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(buffer->shadow + i), PTE);
             *remapped_pte = MARK_PAT1(*remapped_pte);
             break;
         default:
             break;
         }
 
-        switch (enclyser_buffer->access_ctrl) // FIXME support concurrent bits set
+        switch (buffer->access_ctrl) // FIXME support concurrent bits set
         {
         case BUFFER_ACCESS_CTRL_NONE:
             break;
         case BUFFER_ACCESS_CTRL_ACCESSED:
-            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer->shadow + i), PTE);
+            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(buffer->shadow + i), PTE);
             *remapped_pte = MARK_ACCESSED(*remapped_pte);
             break;
         case BUFFER_ACCESS_CTRL_NOT_ACCESSED:
-            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer->shadow + i), PTE);
+            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(buffer->shadow + i), PTE);
             *remapped_pte = MARK_NOT_ACCESSED(*remapped_pte);
             break;
         case BUFFER_ACCESS_CTRL_USER:
-            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer->shadow + i), PTE);
+            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(buffer->shadow + i), PTE);
             *remapped_pte = MARK_USER(*remapped_pte);
             break;
         case BUFFER_ACCESS_CTRL_SUPERVISOR:
-            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer->shadow + i), PTE);
+            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(buffer->shadow + i), PTE);
             *remapped_pte = MARK_SUPERVISOR(*remapped_pte);
             break;
         case BUFFER_ACCESS_CTRL_PRESENT:
-            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer->shadow + i), PTE);
+            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(buffer->shadow + i), PTE);
             *remapped_pte = MARK_PRESENT(*remapped_pte);
             break;
         case BUFFER_ACCESS_CTRL_NOT_PRESENT:
-            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer->shadow + i), PTE);
+            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(buffer->shadow + i), PTE);
             *remapped_pte = MARK_NOT_PRESENT(*remapped_pte);
             break;
         case BUFFER_ACCESS_CTRL_RSVD:
-            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer->shadow + i), PTE);
+            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(buffer->shadow + i), PTE);
             *remapped_pte = MARK_RSVD(*remapped_pte);
             break;
         case BUFFER_ACCESS_CTRL_NOT_RSVD:
-            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(enclyser_buffer->shadow + i), PTE);
+            remapped_pte = (unsigned long *)remap_page_table((uintptr_t)(buffer->shadow + i), PTE);
             *remapped_pte = MARK_NOT_RSVD(*remapped_pte);
             break;
         default:
@@ -132,41 +132,41 @@ void cripple_enclyser_buffer(enclyser_buffer_t *enclyser_buffer)
  */
 #ifdef NAMESPACE_SGX_SHARED
 
-void flush_enclyser_buffer(enclyser_buffer_t *enclyser_buffer)
+void flush_buffer(buffer_t *buffer)
 {
     int i;
 
-    for (i = 0; i < enclyser_buffer->size; i += CACHELINE_SIZE)
+    for (i = 0; i < buffer->size; i += CACHELINE_SIZE)
     {
-        asm volatile("clflush (%0)\n" ::"r"(enclyser_buffer->buffer + i));
+        asm volatile("clflush (%0)\n" ::"r"(buffer->buffer + i));
     }
     asm volatile("mfence\n");
 }
 
-void assign_enclyser_buffer(enclyser_buffer_t *enclyser_buffer)
+void assign_buffer(buffer_t *buffer)
 {
     int i;
 
-    switch (enclyser_buffer->order)
+    switch (buffer->order)
     {
     case BUFFER_ORDER_NONE:
         break;
     case BUFFER_ORDER_CONSTANT:
-        for (i = 0; i < enclyser_buffer->size; i++)
+        for (i = 0; i < buffer->size; i++)
         {
-            enclyser_buffer->buffer[i] = enclyser_buffer->value;
+            buffer->buffer[i] = buffer->value;
         }
         break;
     case BUFFER_ORDER_OFFSET_INLINE:
-        for (i = 0; i < enclyser_buffer->size; i++)
+        for (i = 0; i < buffer->size; i++)
         {
-            enclyser_buffer->buffer[i] = enclyser_buffer->value + i % 0x40;
+            buffer->buffer[i] = buffer->value + i % 0x40;
         }
         break;
     // case BUFFER_ORDER_LINE_NUM:
-    //     for (i = 0; i < enclyser_buffer->size; i++)
+    //     for (i = 0; i < buffer->size; i++)
     //     {
-    //         enclyser_buffer->buffer[i] = enclyser_buffer->value + i / 0x40;
+    //         buffer->buffer[i] = buffer->value + i / 0x40;
     //     }
     //     break;
     default:

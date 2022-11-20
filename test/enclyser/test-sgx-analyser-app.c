@@ -1010,16 +1010,16 @@ void mark_mds_attack_buffer(uint8_t *leak_source)
     {
 #if LEAK_SOURCE_PTE == ENUM_NORMAL
 #elif LEAK_SOURCE_PTE == ENUM_NOT_ACCESSED
-        leak_source_pte = (unsigned long *)remap_page_table((uintptr_t)((uintptr_t)(()uintptr_t)()enclyser_buffer.buffer + i), PTE, PAGE_SIZE);
+        leak_source_pte = (unsigned long *)remap_page_table((uintptr_t)((uintptr_t)(()uintptr_t)()buffer.buffer + i), PTE, PAGE_SIZE);
         *leak_source_pte = MARK_NOT_ACCESSED(*leak_source_pte);
 #elif LEAK_SOURCE_PTE == ENUM_NOT_PRESENT
-        leak_source_pte = (unsigned long *)remap_page_table((uintptr_t)((uintptr_t)(()uintptr_t)()enclyser_buffer.buffer + i), PTE, PAGE_SIZE);
+        leak_source_pte = (unsigned long *)remap_page_table((uintptr_t)((uintptr_t)(()uintptr_t)()buffer.buffer + i), PTE, PAGE_SIZE);
         *leak_source_pte = MARK_NOT_PRESENT(*leak_source_pte);
 #elif LEAK_SOURCE_PTE == ENUM_RSVD
-        leak_source_pte = (unsigned long *)remap_page_table((uintptr_t)((uintptr_t)(()uintptr_t)()enclyser_buffer.buffer + i), PTE, PAGE_SIZE);
+        leak_source_pte = (unsigned long *)remap_page_table((uintptr_t)((uintptr_t)(()uintptr_t)()buffer.buffer + i), PTE, PAGE_SIZE);
         *leak_source_pte = MARK_RSVD(*leak_source_pte);
 #elif LEAK_SOURCE_PTE == ENUM_SUPERVISOR
-        leak_source_pte = (unsigned long *)remap_page_table((uintptr_t)((uintptr_t)(()uintptr_t)()enclyser_buffer.buffer + i), PTE, PAGE_SIZE);
+        leak_source_pte = (unsigned long *)remap_page_table((uintptr_t)((uintptr_t)(()uintptr_t)()buffer.buffer + i), PTE, PAGE_SIZE);
         *leak_source_pte = MARK_SUPERVISOR(*leak_source_pte);
 #endif
     }
@@ -1450,12 +1450,12 @@ Test(suit_sgx_analyser, test_app, .init = test_app_init, .fini = test_app_fini, 
 #include "enclyser/libenclyser/attack.h"
 #include "enclyser/libenclyser/flush_reload.h"
 
-enclyser_buffer_t filling_buffer;
+buffer_t filling_buffer;
 
 enclyser_attack_t attack_spec;
-enclyser_buffer_t attaking_buffer;
-enclyser_buffer_t encoding_buffer;
-enclyser_buffer_t printing_buffer;
+buffer_t attaking_buffer;
+buffer_t encoding_buffer;
+buffer_t printing_buffer;
 
 void test_dual_data_init()
 {
@@ -1466,7 +1466,7 @@ void test_dual_data_init()
         .major = ATTACK_MAJOR_TAA,
         .minor = ATTACK_MINOR_STABLE};
 
-    filling_buffer = (enclyser_buffer_t){
+    filling_buffer = (buffer_t){
         .buffer = NULL,
         .shadow = NULL,
         .size = DEFAULT_FILLING_BUFFER_SIZE,
@@ -1475,7 +1475,7 @@ void test_dual_data_init()
         .mem_type = DEFAULT_BUFFER_MEM_TYPE,
         .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
-    attaking_buffer = (enclyser_buffer_t){
+    attaking_buffer = (buffer_t){
         .buffer = NULL,
         .shadow = NULL,
         .size = DEFAULT_ATTACKING_BUFFER_SIZE,
@@ -1484,7 +1484,7 @@ void test_dual_data_init()
         .mem_type = DEFAULT_BUFFER_MEM_TYPE,
         .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
-    encoding_buffer = (enclyser_buffer_t){
+    encoding_buffer = (buffer_t){
         .buffer = NULL,
         .shadow = NULL,
         .size = DEFAULT_ENCODING_BUFFER_SIZE,
@@ -1493,7 +1493,7 @@ void test_dual_data_init()
         .mem_type = DEFAULT_BUFFER_MEM_TYPE,
         .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
-    printing_buffer = (enclyser_buffer_t){
+    printing_buffer = (buffer_t){
         .buffer = NULL,
         .shadow = NULL,
         .size = DEFAULT_PRINTING_BUFFER_SIZE,
@@ -1502,22 +1502,22 @@ void test_dual_data_init()
         .mem_type = DEFAULT_BUFFER_MEM_TYPE,
         .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
-    malloc_enclyser_buffer(&filling_buffer);
+    malloc_buffer(&filling_buffer);
 
-    malloc_enclyser_buffer(&attaking_buffer);
-    malloc_enclyser_buffer(&encoding_buffer);
-    malloc_enclyser_buffer(&printing_buffer);
+    malloc_buffer(&attaking_buffer);
+    malloc_buffer(&encoding_buffer);
+    malloc_buffer(&printing_buffer);
 
-    assign_enclyser_buffer(&attaking_buffer); // IMPORTANT, BUT DONT KNOW WHY
+    assign_buffer(&attaking_buffer); // IMPORTANT, BUT DONT KNOW WHY
 }
 
 void test_dual_data_fini()
 {
-    free_enclyser_buffer(&filling_buffer);
+    free_buffer(&filling_buffer);
 
-    free_enclyser_buffer(&attaking_buffer);
-    free_enclyser_buffer(&encoding_buffer);
-    free_enclyser_buffer(&printing_buffer);
+    free_buffer(&attaking_buffer);
+    free_buffer(&encoding_buffer);
+    free_buffer(&printing_buffer);
 
     unconfig_environment();
     close_system_file();
@@ -1615,12 +1615,12 @@ Test(suit_sgx_analyser, test_dual_data, .init = test_dual_data_init, .fini = tes
 #include "enclyser/libenclyser/flush_reload.h"
 #include "enclyser/libenclyser/lfb.h"
 
-enclyser_buffer_t filling_buffer;
+buffer_t filling_buffer;
 
 enclyser_attack_t attack_spec;
-enclyser_buffer_t attaking_buffer;
-enclyser_buffer_t encoding_buffer;
-enclyser_buffer_t printing_buffer;
+buffer_t attaking_buffer;
+buffer_t encoding_buffer;
+buffer_t printing_buffer;
 
 void test_dual_func_init()
 {
@@ -1631,7 +1631,7 @@ void test_dual_func_init()
         .major = ATTACK_MAJOR_TAA,
         .minor = ATTACK_MINOR_STABLE};
 
-    filling_buffer = (enclyser_buffer_t){
+    filling_buffer = (buffer_t){
         .buffer = NULL,
         .shadow = NULL,
         .size = DEFAULT_FILLING_BUFFER_SIZE,
@@ -1640,7 +1640,7 @@ void test_dual_func_init()
         .mem_type = DEFAULT_BUFFER_MEM_TYPE,
         .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
-    attaking_buffer = (enclyser_buffer_t){
+    attaking_buffer = (buffer_t){
         .buffer = NULL,
         .shadow = NULL,
         .size = DEFAULT_ATTACKING_BUFFER_SIZE,
@@ -1649,7 +1649,7 @@ void test_dual_func_init()
         .mem_type = DEFAULT_BUFFER_MEM_TYPE,
         .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
-    encoding_buffer = (enclyser_buffer_t){
+    encoding_buffer = (buffer_t){
         .buffer = NULL,
         .shadow = NULL,
         .size = DEFAULT_ENCODING_BUFFER_SIZE,
@@ -1658,7 +1658,7 @@ void test_dual_func_init()
         .mem_type = DEFAULT_BUFFER_MEM_TYPE,
         .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
-    printing_buffer = (enclyser_buffer_t){
+    printing_buffer = (buffer_t){
         .buffer = NULL,
         .shadow = NULL,
         .size = DEFAULT_PRINTING_BUFFER_SIZE,
@@ -1667,24 +1667,24 @@ void test_dual_func_init()
         .mem_type = DEFAULT_BUFFER_MEM_TYPE,
         .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
-    malloc_enclyser_buffer(&filling_buffer);
+    malloc_buffer(&filling_buffer);
 
-    malloc_enclyser_buffer(&attaking_buffer);
-    malloc_enclyser_buffer(&encoding_buffer);
-    malloc_enclyser_buffer(&printing_buffer);
+    malloc_buffer(&attaking_buffer);
+    malloc_buffer(&encoding_buffer);
+    malloc_buffer(&printing_buffer);
 
-    assign_enclyser_buffer(&filling_buffer);
+    assign_buffer(&filling_buffer);
 
-    assign_enclyser_buffer(&attaking_buffer); // IMPORTANT, BUT DONT KNOW WHY
+    assign_buffer(&attaking_buffer); // IMPORTANT, BUT DONT KNOW WHY
 }
 
 void test_dual_func_fini()
 {
-    free_enclyser_buffer(&filling_buffer);
+    free_buffer(&filling_buffer);
 
-    free_enclyser_buffer(&attaking_buffer);
-    free_enclyser_buffer(&encoding_buffer);
-    free_enclyser_buffer(&printing_buffer);
+    free_buffer(&attaking_buffer);
+    free_buffer(&encoding_buffer);
+    free_buffer(&printing_buffer);
 
     unconfig_environment();
     close_system_file();
@@ -1723,7 +1723,7 @@ Test(suit_sgx_analyser, test_dual_func, .init = test_dual_func_init, .fini = tes
     for (rep = 0; rep < REPETITION_LIMIT; rep++)
     {
         // flush_reload_buffer(reload_buffer);
-        flush_enclyser_buffer(&encoding_buffer);
+        flush_buffer(&encoding_buffer);
         step_buffer_grooming(grooming_buffer_1, grooming_buffer_2, clear_buffer);
         // step_mds_attack(leak_source, reload_buffer, leak_source_shadow);
         attack(&attack_spec, &attaking_buffer, &encoding_buffer);
@@ -1739,7 +1739,7 @@ Test(suit_sgx_analyser, test_dual_func, .init = test_dual_func_init, .fini = tes
     for (rep = 0; rep < REPETITION_LIMIT; rep++)
     {
         // flush_reload_buffer(reload_buffer);
-        flush_enclyser_buffer(&encoding_buffer);
+        flush_buffer(&encoding_buffer);
         // step_buffer_grooming(grooming_buffer_1, grooming_buffer_2, clear_buffer);
         fill_lfb(FILLING_SEQUENCE_STR_STORE, &filling_buffer);
         // step_mds_attack(leak_source, reload_buffer, leak_source_shadow);

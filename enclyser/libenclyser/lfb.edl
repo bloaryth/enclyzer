@@ -35,8 +35,8 @@ enclave {
     from "enclyser/libenclyser/memory.edl" import *;
 
     trusted {
-        public void ecall_fill_lfb(int filling_sequence, [user_check] enclyser_buffer_t *filling_buffer);
-        public void ecall_clear_lfb(int clearing_sequence, [user_check] enclyser_buffer_t *clearing_buffer);
+        public void ecall_fill_lfb(int filling_sequence, [user_check] buffer_t *filling_buffer);
+        public void ecall_clear_lfb(int clearing_sequence, [user_check] buffer_t *clearing_buffer);
     };
 
     untrusted {

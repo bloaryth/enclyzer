@@ -20,7 +20,7 @@
 
 #include <ctype.h> // isprint function
 
-void flush(enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffer)
+void flush(buffer_t *encoding_buffer, buffer_t *printing_buffer)
 {
     int i;
 
@@ -62,7 +62,7 @@ static uint32_t access_time(uint64_t address)
     return cycles;
 }
 
-void reload(enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buffer)
+void reload(buffer_t *encoding_buffer, buffer_t *printing_buffer)
 {
     int i;
     uint64_t dt;
@@ -79,7 +79,7 @@ void reload(enclyser_buffer_t *encoding_buffer, enclyser_buffer_t *printing_buff
     }
 }
 
-void reset(enclyser_buffer_t *printing_buffer)
+void reset(buffer_t *printing_buffer)
 {
     int i;
 
@@ -89,7 +89,7 @@ void reset(enclyser_buffer_t *printing_buffer)
     }
 }
 
-void print(enclyser_buffer_t *printing_buffer, uint8_t printing_bar)
+void print(buffer_t *printing_buffer, uint8_t printing_bar)
 {
     int i;
 
