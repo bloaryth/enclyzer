@@ -3,19 +3,19 @@
 #pragma region l1tf
 
 TestSuite(l1tf, .init = construct_app_environment,
-          .fini = destruct_app_environment);
+          .fini = destruct_app_environment, .disabled = true);
 
 #pragma region l1tf_st_nosgx
 
 int fn_l1tf_st_nosgx(char *extra_settings) {
-  // set cpu affinity
+  // SET CPU AFFINITY
   int core = 1;
   cpu_set_t cpuset;
   CPU_ZERO(&cpuset);
   CPU_SET((size_t)core, &cpuset);
   ASSERT(!sched_setaffinity(getpid(), sizeof(cpu_set_t), &cpuset));
 
-  // calculate success rate
+  // CALCULATE SUCCESS RATE
   int accum = 0;
   for (int offset = 0; offset < CACHELINE_SIZE; offset++) {
     app_attack_spec.offset = offset;
@@ -40,8 +40,9 @@ Test(l1tf, l1tf_st_nosgx, .disabled = false) {
 
   app_attaking_buffer.value = 0x1;
   app_attaking_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
-  app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
   assign_enclyser_buffer(&app_attaking_buffer);
+  
+  app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
   cripple_enclyser_buffer(&app_attaking_buffer);
 
   app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
@@ -68,14 +69,14 @@ Test(l1tf, l1tf_st_nosgx, .disabled = false) {
 #pragma region l1tf_st_sgx
 
 int fn_l1tf_st_sgx(char *extra_settings) {
-  // set cpu affinity
+  // SET CPU AFFINITY
   int core = 1;
   cpu_set_t cpuset;
   CPU_ZERO(&cpuset);
   CPU_SET((size_t)core, &cpuset);
   ASSERT(!sched_setaffinity(getpid(), sizeof(cpu_set_t), &cpuset));
 
-  // calculate success rate
+  // CALCULATE SUCCESS RATE
   int accum = 0;
   for (int offset = 0; offset < CACHELINE_SIZE; offset++) {
     app_attack_spec.offset = offset;
@@ -102,8 +103,9 @@ Test(l1tf, l1tf_st_sgx, .disabled = false) {
 
   encalve_secret_buffer.value = 0x21;
   encalve_secret_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
-  encalve_secret_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
   ecall_assign_secret(global_eid, &encalve_secret_buffer);
+  
+  encalve_secret_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
   cripple_enclyser_buffer(&encalve_secret_buffer);
 
   app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
@@ -130,7 +132,8 @@ Test(l1tf, l1tf_st_sgx, .disabled = false) {
 #pragma region l1tf_ct_nosgx
 
 void *victhrd_l1tf_ct_nosgx(void *arg) {
-  (void)arg; /** prohibit the warning about unused parameter */
+  // BYPASS THE WARNING ABOUT UNUSED PARAMETER
+  (void)arg;
 
   for (int i = 0; i < REPETITION_TIME * 100; i++) {
     fill_lfb(app_filling_sequence, &app_attaking_buffer);
@@ -140,7 +143,8 @@ void *victhrd_l1tf_ct_nosgx(void *arg) {
 }
 
 void *attthrd_l1tf_ct_nosgx(void *arg) {
-  (void)arg; /** prohibit the warning about unused parameter */
+  // BYPASS THE WARNING ABOUT UNUSED PARAMETER
+  (void)arg;
 
   for (int i = 0; i < REPETITION_TIME; i++) {
     flush_enclyser_buffer(&app_encoding_buffer);
@@ -152,7 +156,7 @@ void *attthrd_l1tf_ct_nosgx(void *arg) {
 }
 
 int fn_l1tf_ct_nosgx(char *extra_settings) {
-  // set cpu affinity
+  // SET CPU AFFINITY
   int victim_core = 1;
   int adversary_core = victim_core + app_sysinfo.nr_cores;
   pthread_t victim_thread, adversary_thread;
@@ -162,7 +166,7 @@ int fn_l1tf_ct_nosgx(char *extra_settings) {
   CPU_SET((size_t)victim_core, &victim_cpuset);
   CPU_SET((size_t)adversary_core, &adversary_cpuset);
 
-  // calculate success rate
+  // CALCULATE SUCCESS RATE
   int accum = 0;
   for (int offset = 0; offset < CACHELINE_SIZE; offset++) {
     app_attack_spec.offset = offset;
@@ -194,8 +198,9 @@ Test(l1tf, l1tf_ct_nosgx, .disabled = false) {
 
   app_attaking_buffer.value = 0x41;
   app_attaking_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
-  app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
   assign_enclyser_buffer(&app_attaking_buffer);
+  
+  app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
   cripple_enclyser_buffer(&app_attaking_buffer);
 
   app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
@@ -222,7 +227,8 @@ Test(l1tf, l1tf_ct_nosgx, .disabled = false) {
 #pragma region l1tf_ct_sgx
 
 void *victhrd_l1tf_ct_sgx(void *arg) {
-  (void)arg; /** prohibit the warning about unused parameter */
+  // BYPASS THE WARNING ABOUT UNUSED PARAMETER
+  (void)arg;
 
   for (int i = 0; i < REPETITION_TIME * 100; i++) {
     ecall_grooming(global_eid, app_filling_sequence, &encalve_secret_buffer,
@@ -234,7 +240,8 @@ void *victhrd_l1tf_ct_sgx(void *arg) {
 }
 
 void *attthrd_l1tf_ct_sgx(void *arg) {
-  (void)arg; /** prohibit the warning about unused parameter */
+  // BYPASS THE WARNING ABOUT UNUSED PARAMETER
+  (void)arg;
 
   for (int i = 0; i < REPETITION_TIME; i++) {
     flush_enclyser_buffer(&app_encoding_buffer);
@@ -246,7 +253,7 @@ void *attthrd_l1tf_ct_sgx(void *arg) {
 }
 
 int fn_l1tf_ct_sgx(char *extra_settings) {
-  // set cpu affinity
+  // SET CPU AFFINITY
   int victim_core = 1;
   int adversary_core = victim_core + app_sysinfo.nr_cores;
   pthread_t victim_thread, adversary_thread;
@@ -256,7 +263,7 @@ int fn_l1tf_ct_sgx(char *extra_settings) {
   CPU_SET((size_t)victim_core, &victim_cpuset);
   CPU_SET((size_t)adversary_core, &adversary_cpuset);
 
-  // calculate success rate
+  // CALCULATE SUCCESS RATE
   int accum = 0;
   for (int offset = 0; offset < CACHELINE_SIZE; offset++) {
     app_attack_spec.offset = offset;
@@ -287,8 +294,9 @@ Test(l1tf, l1tf_ct_sgx, .disabled = false) {
 
   encalve_secret_buffer.value = 0x61;
   encalve_secret_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
-  encalve_secret_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
   ecall_assign_secret(global_eid, &encalve_secret_buffer);
+  
+  encalve_secret_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
   cripple_enclyser_buffer(&encalve_secret_buffer);
 
   app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
@@ -315,7 +323,8 @@ Test(l1tf, l1tf_ct_sgx, .disabled = false) {
 #pragma region l1tf_cc_nosgx
 
 void *victhrd_l1tf_cc_nosgx(void *arg) {
-  (void)arg; /** prohibit the warning about unused parameter */
+  // BYPASS THE WARNING ABOUT UNUSED PARAMETER
+  (void)arg;
 
   for (int i = 0; i < REPETITION_TIME * 100; i++) {
     fill_lfb(app_filling_sequence, &app_attaking_buffer);
@@ -325,7 +334,8 @@ void *victhrd_l1tf_cc_nosgx(void *arg) {
 }
 
 void *attthrd_l1tf_cc_nosgx(void *arg) {
-  (void)arg; /** prohibit the warning about unused parameter */
+  // BYPASS THE WARNING ABOUT UNUSED PARAMETER
+  (void)arg;
 
   for (int i = 0; i < REPETITION_TIME; i++) {
     flush_enclyser_buffer(&app_encoding_buffer);
@@ -337,7 +347,7 @@ void *attthrd_l1tf_cc_nosgx(void *arg) {
 }
 
 int fn_l1tf_cc_nosgx(char *extra_settings) {
-  // set cpu affinity
+  // SET CPU AFFINITY
   int victim_core = 1;
   int adversary_core = victim_core + app_sysinfo.nr_cores - 1;
   pthread_t victim_thread, adversary_thread;
@@ -347,7 +357,7 @@ int fn_l1tf_cc_nosgx(char *extra_settings) {
   CPU_SET((size_t)victim_core, &victim_cpuset);
   CPU_SET((size_t)adversary_core, &adversary_cpuset);
 
-  // calculate success rate
+  // CALCULATE SUCCESS RATE
   int accum = 0;
   for (int offset = 0; offset < CACHELINE_SIZE; offset++) {
     app_attack_spec.offset = offset;
@@ -379,8 +389,9 @@ Test(l1tf, l1tf_cc_nosgx, .disabled = false) {
 
   app_attaking_buffer.value = 0x81;
   app_attaking_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
-  app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
   assign_enclyser_buffer(&app_attaking_buffer);
+  
+  app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
   cripple_enclyser_buffer(&app_attaking_buffer);
 
   app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
@@ -407,7 +418,8 @@ Test(l1tf, l1tf_cc_nosgx, .disabled = false) {
 #pragma region l1tf_cc_sgx
 
 void *victhrd_l1tf_cc_sgx(void *arg) {
-  (void)arg; /** prohibit the warning about unused parameter */
+  // BYPASS THE WARNING ABOUT UNUSED PARAMETER
+  (void)arg;
 
   for (int i = 0; i < REPETITION_TIME * 100; i++) {
     ecall_grooming(global_eid, app_filling_sequence, &encalve_secret_buffer,
@@ -419,7 +431,8 @@ void *victhrd_l1tf_cc_sgx(void *arg) {
 }
 
 void *attthrd_l1tf_cc_sgx(void *arg) {
-  (void)arg; /** prohibit the warning about unused parameter */
+  // BYPASS THE WARNING ABOUT UNUSED PARAMETER
+  (void)arg;
 
   for (int i = 0; i < REPETITION_TIME; i++) {
     flush_enclyser_buffer(&app_encoding_buffer);
@@ -431,7 +444,7 @@ void *attthrd_l1tf_cc_sgx(void *arg) {
 }
 
 int fn_l1tf_cc_sgx(char *extra_settings) {
-  // set cpu affinity
+  // SET CPU AFFINITY
   int victim_core = 1;
   int adversary_core = victim_core + app_sysinfo.nr_cores - 1;
   pthread_t victim_thread, adversary_thread;
@@ -441,7 +454,7 @@ int fn_l1tf_cc_sgx(char *extra_settings) {
   CPU_SET((size_t)victim_core, &victim_cpuset);
   CPU_SET((size_t)adversary_core, &adversary_cpuset);
 
-  // calculate success rate
+  // CALCULATE SUCCESS RATE
   int accum = 0;
   for (int offset = 0; offset < CACHELINE_SIZE; offset++) {
     app_attack_spec.offset = offset;
@@ -472,8 +485,9 @@ Test(l1tf, l1tf_cc_sgx, .disabled = false) {
 
   encalve_secret_buffer.value = 0xa1;
   encalve_secret_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
-  encalve_secret_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
   ecall_assign_secret(global_eid, &encalve_secret_buffer);
+  
+  encalve_secret_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
   cripple_enclyser_buffer(&encalve_secret_buffer);
 
   app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;

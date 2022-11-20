@@ -24,5 +24,3 @@ Run `sudo make -C kenclyser clean all unload load` to load the kernel module of 
 ### Build and Run Tests
 
 Run `sudo make -C enclyser clean all run` to build and run all tests of Enclyzer. By default, all tests are enabled and can be partially disabled by setting `.disabled = on`. Print out content of `enclyser/sgx_app.txt` to see the execution results. For example, `cat enclyser/sgx_app.txt`
-
-Warning: Tests under the Test suite `markdown` and `taa` are under refactoring. Use the results from Test suite `l1tf` and `mds` only for now.

