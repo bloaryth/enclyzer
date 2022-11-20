@@ -23,10 +23,10 @@ int fn_taa_st_nosgx(char *extra_settings) {
       fill_lfb(*filling_sequence, filling_buffer);
       flush_buffer(encoding_buffer);
       attack(&attack_spec, attacking_buffer, encoding_buffer);
-      reload(encoding_buffer, &app_printing_buffer);
+      reload(encoding_buffer, printing_buffer);
     }
-    accum += app_printing_buffer.buffer[offset + filling_buffer->value];
-    reset(&app_printing_buffer);
+    accum += printing_buffer->buffer[offset + filling_buffer->value];
+    reset(printing_buffer);
   }
   double success_rate = ((double)accum) / CACHELINE_SIZE / REPETITION_TIME;
   cr_log_warn("TAA ST NOSGX %s: %f %%", extra_settings, success_rate * 100);
@@ -42,6 +42,7 @@ Test(taa, taa_st_nosgx, .disabled = false) {
   filling_buffer = &app_filling_buffer;
   attacking_buffer = &app_attacking_buffer;
   encoding_buffer = &app_encoding_buffer;
+  printing_buffer = &app_printing_buffer;
 
   filling_buffer->value = 0x1;
   filling_buffer->order = BUFFER_ORDER_OFFSET_INLINE;
@@ -91,10 +92,10 @@ int fn_taa_st_sgx(char *extra_settings) {
       ecall_fill_lfb(global_eid, *filling_sequence, filling_buffer);
       flush_buffer(encoding_buffer);
       attack(&attack_spec, attacking_buffer, encoding_buffer);
-      reload(encoding_buffer, &app_printing_buffer);
+      reload(encoding_buffer, printing_buffer);
     }
-    accum += app_printing_buffer.buffer[offset + filling_buffer->value];
-    reset(&app_printing_buffer);
+    accum += printing_buffer->buffer[offset + filling_buffer->value];
+    reset(printing_buffer);
   }
   double success_rate = ((double)accum) / CACHELINE_SIZE / REPETITION_TIME;
   cr_log_warn("TAA ST SGX %s: %f %%", extra_settings, success_rate * 100);
@@ -110,6 +111,7 @@ Test(taa, taa_st_sgx, .disabled = false) {
   filling_buffer = &encalve_secret_buffer;
   attacking_buffer = &app_attacking_buffer;
   encoding_buffer = &app_encoding_buffer;
+  printing_buffer = &app_printing_buffer;
 
   filling_buffer->value = 0x21;
   filling_buffer->order = BUFFER_ORDER_OFFSET_INLINE;
@@ -161,7 +163,7 @@ void *attthrd_taa_ct_nosgx(void *arg) {
   for (int i = 0; i < REPETITION_TIME; i++) {
     flush_buffer(encoding_buffer);
     attack(&attack_spec, attacking_buffer, encoding_buffer);
-    reload(encoding_buffer, &app_printing_buffer);
+    reload(encoding_buffer, printing_buffer);
   }
 
   return NULL;
@@ -195,8 +197,8 @@ int fn_taa_ct_nosgx(char *extra_settings) {
     pthread_join(adversary_thread, NULL);
     pthread_join(victim_thread, NULL);
 
-    accum += app_printing_buffer.buffer[offset + filling_buffer->value];
-    reset(&app_printing_buffer);
+    accum += printing_buffer->buffer[offset + filling_buffer->value];
+    reset(printing_buffer);
   }
   double success_rate = ((double)accum) / CACHELINE_SIZE / REPETITION_TIME;
   cr_log_warn("TAA CT NOSGX %s: %f %%", extra_settings, success_rate * 100);
@@ -212,6 +214,7 @@ Test(taa, taa_ct_nosgx, .disabled = false) {
   filling_buffer = &app_filling_buffer;
   attacking_buffer = &app_attacking_buffer;
   encoding_buffer = &app_encoding_buffer;
+  printing_buffer = &app_printing_buffer;
 
   filling_buffer->value = 0x41;
   filling_buffer->order = BUFFER_ORDER_OFFSET_INLINE;
@@ -263,7 +266,7 @@ void *attthrd_taa_ct_sgx(void *arg) {
   for (int i = 0; i < REPETITION_TIME; i++) {
     flush_buffer(encoding_buffer);
     attack(&attack_spec, attacking_buffer, encoding_buffer);
-    reload(encoding_buffer, &app_printing_buffer);
+    reload(encoding_buffer, printing_buffer);
   }
 
   return NULL;
@@ -296,8 +299,8 @@ int fn_taa_ct_sgx(char *extra_settings) {
     pthread_join(adversary_thread, NULL);
     pthread_join(victim_thread, NULL);
 
-    accum += app_printing_buffer.buffer[offset + filling_buffer->value];
-    reset(&app_printing_buffer);
+    accum += printing_buffer->buffer[offset + filling_buffer->value];
+    reset(printing_buffer);
   }
   double success_rate = ((double)accum) / CACHELINE_SIZE / REPETITION_TIME;
   cr_log_warn("TAA CT SGX %s: %f %%", extra_settings, success_rate * 100);
@@ -313,6 +316,7 @@ Test(taa, taa_ct_sgx, .disabled = false) {
   filling_buffer = &encalve_secret_buffer;
   attacking_buffer = &app_attacking_buffer;
   encoding_buffer = &app_encoding_buffer;
+  printing_buffer = &app_printing_buffer;
 
   filling_buffer->value = 0x61;
   filling_buffer->order = BUFFER_ORDER_OFFSET_INLINE;
@@ -364,7 +368,7 @@ void *attthrd_taa_cc_nosgx(void *arg) {
   for (int i = 0; i < REPETITION_TIME; i++) {
     flush_buffer(encoding_buffer);
     attack(&attack_spec, attacking_buffer, encoding_buffer);
-    reload(encoding_buffer, &app_printing_buffer);
+    reload(encoding_buffer, printing_buffer);
   }
 
   return NULL;
@@ -398,8 +402,8 @@ int fn_taa_cc_nosgx(char *extra_settings) {
     pthread_join(adversary_thread, NULL);
     pthread_join(victim_thread, NULL);
 
-    accum += app_printing_buffer.buffer[offset + filling_buffer->value];
-    reset(&app_printing_buffer);
+    accum += printing_buffer->buffer[offset + filling_buffer->value];
+    reset(printing_buffer);
   }
   double success_rate = ((double)accum) / CACHELINE_SIZE / REPETITION_TIME;
   cr_log_warn("TAA CC NOSGX %s: %f %%", extra_settings, success_rate * 100);
@@ -415,6 +419,7 @@ Test(taa, taa_cc_nosgx, .disabled = false) {
   filling_buffer = &app_filling_buffer;
   attacking_buffer = &app_attacking_buffer;
   encoding_buffer = &app_encoding_buffer;
+  printing_buffer = &app_printing_buffer;
 
   filling_buffer->value = 0x81;
   filling_buffer->order = BUFFER_ORDER_OFFSET_INLINE;
@@ -465,7 +470,7 @@ void *attthrd_taa_cc_sgx(void *arg) {
   for (int i = 0; i < REPETITION_TIME; i++) {
     flush_buffer(encoding_buffer);
     attack(&attack_spec, attacking_buffer, encoding_buffer);
-    reload(encoding_buffer, &app_printing_buffer);
+    reload(encoding_buffer, printing_buffer);
   }
 
   return NULL;
@@ -498,8 +503,8 @@ int fn_taa_cc_sgx(char *extra_settings) {
     pthread_join(adversary_thread, NULL);
     pthread_join(victim_thread, NULL);
 
-    accum += app_printing_buffer.buffer[offset + filling_buffer->value];
-    reset(&app_printing_buffer);
+    accum += printing_buffer->buffer[offset + filling_buffer->value];
+    reset(printing_buffer);
   }
   double success_rate = ((double)accum) / CACHELINE_SIZE / REPETITION_TIME;
   cr_log_warn("TAA CC SGX %s: %f %%", extra_settings, success_rate * 100);
@@ -515,6 +520,7 @@ Test(taa, taa_cc_sgx, .disabled = false) {
   filling_buffer = &encalve_secret_buffer;
   attacking_buffer = &app_attacking_buffer;
   encoding_buffer = &app_encoding_buffer;
+  printing_buffer = &app_printing_buffer;
 
   filling_buffer->value = 0xa1;
   filling_buffer->order = BUFFER_ORDER_OFFSET_INLINE;
