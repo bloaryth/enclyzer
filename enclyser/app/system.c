@@ -6,8 +6,8 @@ Test(_system, print_system_info)
 {
     open_system_file();
 
-    get_system_info(&app_sysinfo);
-    print_system_info(&app_sysinfo);
+    get_system_info(&sysinfo);
+    print_system_info(&sysinfo);
 
     close_system_file();
 }

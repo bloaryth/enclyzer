@@ -49,7 +49,7 @@ buffer_t app_encoding_buffer;
 buffer_t app_printing_buffer;
 
 buffer_t encalve_secret_buffer;
-sysinfo_t app_sysinfo;
+sysinfo_t sysinfo;
 
 /**
  * @brief A helpher function that sets up the runnning environment.

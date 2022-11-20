@@ -166,7 +166,7 @@ void *attthrd_mds_ct_nosgx(void *arg) {
 int fn_mds_ct_nosgx(char *extra_settings) {
   // SET CPU AFFINITY
   int victim_core = 1;
-  int adversary_core = victim_core + app_sysinfo.nr_cores;
+  int adversary_core = victim_core + sysinfo.nr_cores;
   pthread_t victim_thread, adversary_thread;
   cpu_set_t victim_cpuset, adversary_cpuset;
   CPU_ZERO(&victim_cpuset);
@@ -266,7 +266,7 @@ void *attthrd_mds_ct_sgx(void *arg) {
 int fn_mds_ct_sgx(char *extra_settings) {
   // SET CPU AFFINITY
   int victim_core = 1;
-  int adversary_core = victim_core + app_sysinfo.nr_cores;
+  int adversary_core = victim_core + sysinfo.nr_cores;
   pthread_t victim_thread, adversary_thread;
   cpu_set_t victim_cpuset, adversary_cpuset;
   CPU_ZERO(&victim_cpuset);
@@ -365,7 +365,7 @@ void *attthrd_mds_cc_nosgx(void *arg) {
 int fn_mds_cc_nosgx(char *extra_settings) {
   // SET CPU AFFINITY
   int victim_core = 1;
-  int adversary_core = victim_core + app_sysinfo.nr_cores - 1;
+  int adversary_core = victim_core + sysinfo.nr_cores - 1;
   pthread_t victim_thread, adversary_thread;
   cpu_set_t victim_cpuset, adversary_cpuset;
   CPU_ZERO(&victim_cpuset);
@@ -465,7 +465,7 @@ void *attthrd_mds_cc_sgx(void *arg) {
 int fn_mds_cc_sgx(char *extra_settings) {
   // SET CPU AFFINITY
   int victim_core = 1;
-  int adversary_core = victim_core + app_sysinfo.nr_cores - 1;
+  int adversary_core = victim_core + sysinfo.nr_cores - 1;
   pthread_t victim_thread, adversary_thread;
   cpu_set_t victim_cpuset, adversary_cpuset;
   CPU_ZERO(&victim_cpuset);

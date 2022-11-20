@@ -7,8 +7,15 @@ sgx_launch_token_t token = {};
 sgx_status_t ret = 0;
 int updated = 0;
 
+sysinfo_t sysinfo = {};
+
 int app_filling_sequence = 0;
 int app_clearing_sequence = 0;
+
+attack_spec_t app_attack_spec = {
+    .major = DEFAULT_ATTACK_MAJOR,
+    .minor = DEFAULT_ATTACK_MINOR,
+    .offset = DEFAULT_ATTACK_OFFSET};
 
 buffer_t app_filling_buffer = {
     .buffer = NULL,
@@ -19,28 +26,23 @@ buffer_t app_filling_buffer = {
     .mem_type = DEFAULT_BUFFER_MEM_TYPE,
     .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
-buffer_t app_clearing_buffer = {
-    .buffer = NULL,
-    .shadow = NULL,
-    .size = DEFAULT_CLEARING_BUFFER_SIZE,
-    .value = DEFAULT_BUFFER_VALUE,
-    .order = DEFAULT_BUFFER_ORDER,
-    .mem_type = DEFAULT_BUFFER_MEM_TYPE,
-    .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
+// buffer_t app_clearing_buffer = {
+//     .buffer = NULL,
+//     .shadow = NULL,
+//     .size = DEFAULT_CLEARING_BUFFER_SIZE,
+//     .value = DEFAULT_BUFFER_VALUE,
+//     .order = DEFAULT_BUFFER_ORDER,
+//     .mem_type = DEFAULT_BUFFER_MEM_TYPE,
+//     .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
-buffer_t app_faulting_buffer = {
-    .buffer = NULL,
-    .shadow = NULL,
-    .size = DEFAULT_FAULTING_BUFFER_SIZE,
-    .value = DEFAULT_BUFFER_VALUE,
-    .order = DEFAULT_BUFFER_ORDER,
-    .mem_type = DEFAULT_BUFFER_MEM_TYPE,
-    .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
-
-attack_spec_t app_attack_spec = {
-    .major = DEFAULT_ATTACK_MAJOR,
-    .minor = DEFAULT_ATTACK_MINOR,
-    .offset = DEFAULT_ATTACK_OFFSET};
+// buffer_t app_faulting_buffer = {
+//     .buffer = NULL,
+//     .shadow = NULL,
+//     .size = DEFAULT_FAULTING_BUFFER_SIZE,
+//     .value = DEFAULT_BUFFER_VALUE,
+//     .order = DEFAULT_BUFFER_ORDER,
+//     .mem_type = DEFAULT_BUFFER_MEM_TYPE,
+//     .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
 buffer_t app_attacking_buffer = {
     .buffer = NULL,
@@ -78,8 +80,6 @@ buffer_t encalve_secret_buffer = {
     .mem_type = DEFAULT_BUFFER_MEM_TYPE,
     .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
-sysinfo_t app_sysinfo = {};
-
 // int sigsegv_signal;
 
 // void sigsegv_handler(int signal)
@@ -108,7 +108,7 @@ void construct_app_environment(void)
 
     open_system_file();
 
-    get_system_info(&app_sysinfo);
+    get_system_info(&sysinfo);
 
     ecall_get_secret(global_eid, &encalve_secret_buffer.buffer);
 
