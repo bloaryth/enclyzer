@@ -18,11 +18,11 @@ int fn_taa_st_nosgx(char *extra_settings) {
   // CALCULATE SUCCESS RATE
   int accum = 0;
   for (int offset = 0; offset < CACHELINE_SIZE; offset++) {
-    app_attack_spec.offset = offset;
+    attack_spec.offset = offset;
     for (int i = 0; i < REPETITION_TIME; i++) {
       fill_lfb(app_filling_sequence, &app_filling_buffer);
       flush_buffer(&app_encoding_buffer);
-      attack(&app_attack_spec, &app_attacking_buffer, &app_encoding_buffer);
+      attack(&attack_spec, &app_attacking_buffer, &app_encoding_buffer);
       reload(&app_encoding_buffer, &app_printing_buffer);
     }
     accum += app_printing_buffer.buffer[offset + app_filling_buffer.value];
@@ -35,8 +35,8 @@ int fn_taa_st_nosgx(char *extra_settings) {
 }
 
 Test(taa, taa_st_nosgx, .disabled = false) {
-  app_attack_spec.major = ATTACK_MAJOR_TAA;
-  app_attack_spec.minor = ATTACK_MINOR_STABLE;
+  attack_spec.major = ATTACK_MAJOR_TAA;
+  attack_spec.minor = ATTACK_MINOR_STABLE;
 
   app_filling_buffer.value = 0x1;
   app_filling_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
@@ -81,11 +81,11 @@ int fn_taa_st_sgx(char *extra_settings) {
   // CALCULATE SUCCESS RATE
   int accum = 0;
   for (int offset = 0; offset < CACHELINE_SIZE; offset++) {
-    app_attack_spec.offset = offset;
+    attack_spec.offset = offset;
     for (int i = 0; i < REPETITION_TIME; i++) {
       ecall_fill_lfb(global_eid, app_filling_sequence, &encalve_secret_buffer);
       flush_buffer(&app_encoding_buffer);
-      attack(&app_attack_spec, &app_attacking_buffer, &app_encoding_buffer);
+      attack(&attack_spec, &app_attacking_buffer, &app_encoding_buffer);
       reload(&app_encoding_buffer, &app_printing_buffer);
     }
     accum += app_printing_buffer.buffer[offset + encalve_secret_buffer.value];
@@ -98,8 +98,8 @@ int fn_taa_st_sgx(char *extra_settings) {
 }
 
 Test(taa, taa_st_sgx, .disabled = false) {
-  app_attack_spec.major = ATTACK_MAJOR_TAA;
-  app_attack_spec.minor = ATTACK_MINOR_STABLE;
+  attack_spec.major = ATTACK_MAJOR_TAA;
+  attack_spec.minor = ATTACK_MINOR_STABLE;
 
   encalve_secret_buffer.value = 0x21;
   encalve_secret_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
@@ -150,7 +150,7 @@ void *attthrd_taa_ct_nosgx(void *arg) {
 
   for (int i = 0; i < REPETITION_TIME; i++) {
     flush_buffer(&app_encoding_buffer);
-    attack(&app_attack_spec, &app_attacking_buffer, &app_encoding_buffer);
+    attack(&attack_spec, &app_attacking_buffer, &app_encoding_buffer);
     reload(&app_encoding_buffer, &app_printing_buffer);
   }
 
@@ -171,7 +171,7 @@ int fn_taa_ct_nosgx(char *extra_settings) {
   // CALCULATE SUCCESS RATE
   int accum = 0;
   for (int offset = 0; offset < CACHELINE_SIZE; offset++) {
-    app_attack_spec.offset = offset;
+    attack_spec.offset = offset;
 
     ASSERT(!pthread_create(&victim_thread, NULL, victhrd_taa_ct_nosgx, NULL));
     ASSERT(
@@ -195,8 +195,8 @@ int fn_taa_ct_nosgx(char *extra_settings) {
 }
 
 Test(taa, taa_ct_nosgx, .disabled = false) {
-  app_attack_spec.major = ATTACK_MAJOR_TAA;
-  app_attack_spec.minor = ATTACK_MINOR_STABLE;
+  attack_spec.major = ATTACK_MAJOR_TAA;
+  attack_spec.minor = ATTACK_MINOR_STABLE;
 
   app_filling_buffer.value = 0x41;
   app_filling_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
@@ -247,7 +247,7 @@ void *attthrd_taa_ct_sgx(void *arg) {
 
   for (int i = 0; i < REPETITION_TIME; i++) {
     flush_buffer(&app_encoding_buffer);
-    attack(&app_attack_spec, &app_attacking_buffer, &app_encoding_buffer);
+    attack(&attack_spec, &app_attacking_buffer, &app_encoding_buffer);
     reload(&app_encoding_buffer, &app_printing_buffer);
   }
 
@@ -268,7 +268,7 @@ int fn_taa_ct_sgx(char *extra_settings) {
   // CALCULATE SUCCESS RATE
   int accum = 0;
   for (int offset = 0; offset < CACHELINE_SIZE; offset++) {
-    app_attack_spec.offset = offset;
+    attack_spec.offset = offset;
 
     ASSERT(!pthread_create(&victim_thread, NULL, victhrd_taa_ct_sgx, NULL));
     ASSERT(!pthread_create(&adversary_thread, NULL, attthrd_taa_ct_sgx, NULL));
@@ -291,8 +291,8 @@ int fn_taa_ct_sgx(char *extra_settings) {
 }
 
 Test(taa, taa_ct_sgx, .disabled = false) {
-  app_attack_spec.major = ATTACK_MAJOR_TAA;
-  app_attack_spec.minor = ATTACK_MINOR_STABLE;
+  attack_spec.major = ATTACK_MAJOR_TAA;
+  attack_spec.minor = ATTACK_MINOR_STABLE;
 
   encalve_secret_buffer.value = 0x61;
   encalve_secret_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
@@ -343,7 +343,7 @@ void *attthrd_taa_cc_nosgx(void *arg) {
 
   for (int i = 0; i < REPETITION_TIME; i++) {
     flush_buffer(&app_encoding_buffer);
-    attack(&app_attack_spec, &app_attacking_buffer, &app_encoding_buffer);
+    attack(&attack_spec, &app_attacking_buffer, &app_encoding_buffer);
     reload(&app_encoding_buffer, &app_printing_buffer);
   }
 
@@ -364,7 +364,7 @@ int fn_taa_cc_nosgx(char *extra_settings) {
   // CALCULATE SUCCESS RATE
   int accum = 0;
   for (int offset = 0; offset < CACHELINE_SIZE; offset++) {
-    app_attack_spec.offset = offset;
+    attack_spec.offset = offset;
 
     ASSERT(!pthread_create(&victim_thread, NULL, victhrd_taa_cc_nosgx, NULL));
     ASSERT(
@@ -388,8 +388,8 @@ int fn_taa_cc_nosgx(char *extra_settings) {
 }
 
 Test(taa, taa_cc_nosgx, .disabled = false) {
-  app_attack_spec.major = ATTACK_MAJOR_TAA;
-  app_attack_spec.minor = ATTACK_MINOR_STABLE;
+  attack_spec.major = ATTACK_MAJOR_TAA;
+  attack_spec.minor = ATTACK_MINOR_STABLE;
 
   app_filling_buffer.value = 0x81;
   app_filling_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
@@ -439,7 +439,7 @@ void *attthrd_taa_cc_sgx(void *arg) {
 
   for (int i = 0; i < REPETITION_TIME; i++) {
     flush_buffer(&app_encoding_buffer);
-    attack(&app_attack_spec, &app_attacking_buffer, &app_encoding_buffer);
+    attack(&attack_spec, &app_attacking_buffer, &app_encoding_buffer);
     reload(&app_encoding_buffer, &app_printing_buffer);
   }
 
@@ -460,7 +460,7 @@ int fn_taa_cc_sgx(char *extra_settings) {
   // CALCULATE SUCCESS RATE
   int accum = 0;
   for (int offset = 0; offset < CACHELINE_SIZE; offset++) {
-    app_attack_spec.offset = offset;
+    attack_spec.offset = offset;
 
     ASSERT(!pthread_create(&victim_thread, NULL, victhrd_taa_cc_sgx, NULL));
     ASSERT(!pthread_create(&adversary_thread, NULL, attthrd_taa_cc_sgx, NULL));
@@ -483,8 +483,8 @@ int fn_taa_cc_sgx(char *extra_settings) {
 }
 
 Test(taa, taa_cc_sgx, .disabled = false) {
-  app_attack_spec.major = ATTACK_MAJOR_TAA;
-  app_attack_spec.minor = ATTACK_MINOR_STABLE;
+  attack_spec.major = ATTACK_MAJOR_TAA;
+  attack_spec.minor = ATTACK_MINOR_STABLE;
 
   app_filling_buffer.value = 0xa1;
   app_filling_buffer.order = BUFFER_ORDER_OFFSET_INLINE;

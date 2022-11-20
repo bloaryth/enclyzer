@@ -18,11 +18,11 @@ int fn_l1tf_st_nosgx(char *extra_settings) {
   // CALCULATE SUCCESS RATE
   int accum = 0;
   for (int offset = 0; offset < CACHELINE_SIZE; offset++) {
-    app_attack_spec.offset = offset;
+    attack_spec.offset = offset;
     for (int i = 0; i < REPETITION_TIME; i++) {
       fill_lfb(app_filling_sequence, &app_attacking_buffer);
       flush_buffer(&app_encoding_buffer);
-      attack(&app_attack_spec, &app_attacking_buffer, &app_encoding_buffer);
+      attack(&attack_spec, &app_attacking_buffer, &app_encoding_buffer);
       reload(&app_encoding_buffer, &app_printing_buffer);
     }
     accum += app_printing_buffer.buffer[offset + app_attacking_buffer.value];
@@ -35,8 +35,8 @@ int fn_l1tf_st_nosgx(char *extra_settings) {
 }
 
 Test(l1tf, l1tf_st_nosgx, .disabled = false) {
-  app_attack_spec.major = ATTACK_MAJOR_L1TF;
-  app_attack_spec.minor = ATTACK_MINOR_STABLE;
+  attack_spec.major = ATTACK_MAJOR_L1TF;
+  attack_spec.minor = ATTACK_MINOR_STABLE;
 
   app_attacking_buffer.value = 0x1;
   app_attacking_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
@@ -79,11 +79,11 @@ int fn_l1tf_st_sgx(char *extra_settings) {
   // CALCULATE SUCCESS RATE
   int accum = 0;
   for (int offset = 0; offset < CACHELINE_SIZE; offset++) {
-    app_attack_spec.offset = offset;
+    attack_spec.offset = offset;
     for (int i = 0; i < REPETITION_TIME; i++) {
       ecall_fill_lfb(global_eid, app_filling_sequence, &encalve_secret_buffer);
       flush_buffer(&app_encoding_buffer);
-      attack(&app_attack_spec, &encalve_secret_buffer, &app_encoding_buffer);
+      attack(&attack_spec, &encalve_secret_buffer, &app_encoding_buffer);
       reload(&app_encoding_buffer, &app_printing_buffer);
     }
     accum += app_printing_buffer.buffer[offset + encalve_secret_buffer.value];
@@ -96,8 +96,8 @@ int fn_l1tf_st_sgx(char *extra_settings) {
 }
 
 Test(l1tf, l1tf_st_sgx, .disabled = false) {
-  app_attack_spec.major = ATTACK_MAJOR_L1TF;
-  app_attack_spec.minor = ATTACK_MINOR_STABLE;
+  attack_spec.major = ATTACK_MAJOR_L1TF;
+  attack_spec.minor = ATTACK_MINOR_STABLE;
 
   encalve_secret_buffer.value = 0x21;
   encalve_secret_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
@@ -146,7 +146,7 @@ void *attthrd_l1tf_ct_nosgx(void *arg) {
 
   for (int i = 0; i < REPETITION_TIME; i++) {
     flush_buffer(&app_encoding_buffer);
-    attack(&app_attack_spec, &app_attacking_buffer, &app_encoding_buffer);
+    attack(&attack_spec, &app_attacking_buffer, &app_encoding_buffer);
     reload(&app_encoding_buffer, &app_printing_buffer);
   }
 
@@ -167,7 +167,7 @@ int fn_l1tf_ct_nosgx(char *extra_settings) {
   // CALCULATE SUCCESS RATE
   int accum = 0;
   for (int offset = 0; offset < CACHELINE_SIZE; offset++) {
-    app_attack_spec.offset = offset;
+    attack_spec.offset = offset;
 
     ASSERT(!pthread_create(&victim_thread, NULL, victhrd_l1tf_ct_nosgx, NULL));
     ASSERT(
@@ -191,8 +191,8 @@ int fn_l1tf_ct_nosgx(char *extra_settings) {
 }
 
 Test(l1tf, l1tf_ct_nosgx, .disabled = false) {
-  app_attack_spec.major = ATTACK_MAJOR_L1TF;
-  app_attack_spec.minor = ATTACK_MINOR_STABLE;
+  attack_spec.major = ATTACK_MAJOR_L1TF;
+  attack_spec.minor = ATTACK_MINOR_STABLE;
 
   app_attacking_buffer.value = 0x41;
   app_attacking_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
@@ -241,7 +241,7 @@ void *attthrd_l1tf_ct_sgx(void *arg) {
 
   for (int i = 0; i < REPETITION_TIME; i++) {
     flush_buffer(&app_encoding_buffer);
-    attack(&app_attack_spec, &encalve_secret_buffer, &app_encoding_buffer);
+    attack(&attack_spec, &encalve_secret_buffer, &app_encoding_buffer);
     reload(&app_encoding_buffer, &app_printing_buffer);
   }
 
@@ -262,7 +262,7 @@ int fn_l1tf_ct_sgx(char *extra_settings) {
   // CALCULATE SUCCESS RATE
   int accum = 0;
   for (int offset = 0; offset < CACHELINE_SIZE; offset++) {
-    app_attack_spec.offset = offset;
+    attack_spec.offset = offset;
 
     ASSERT(!pthread_create(&victim_thread, NULL, victhrd_l1tf_ct_sgx, NULL));
     ASSERT(!pthread_create(&adversary_thread, NULL, attthrd_l1tf_ct_sgx, NULL));
@@ -285,8 +285,8 @@ int fn_l1tf_ct_sgx(char *extra_settings) {
 }
 
 Test(l1tf, l1tf_ct_sgx, .disabled = false) {
-  app_attack_spec.major = ATTACK_MAJOR_L1TF;
-  app_attack_spec.minor = ATTACK_MINOR_STABLE;
+  attack_spec.major = ATTACK_MAJOR_L1TF;
+  attack_spec.minor = ATTACK_MINOR_STABLE;
 
   encalve_secret_buffer.value = 0x61;
   encalve_secret_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
@@ -335,7 +335,7 @@ void *attthrd_l1tf_cc_nosgx(void *arg) {
 
   for (int i = 0; i < REPETITION_TIME; i++) {
     flush_buffer(&app_encoding_buffer);
-    attack(&app_attack_spec, &app_attacking_buffer, &app_encoding_buffer);
+    attack(&attack_spec, &app_attacking_buffer, &app_encoding_buffer);
     reload(&app_encoding_buffer, &app_printing_buffer);
   }
 
@@ -356,7 +356,7 @@ int fn_l1tf_cc_nosgx(char *extra_settings) {
   // CALCULATE SUCCESS RATE
   int accum = 0;
   for (int offset = 0; offset < CACHELINE_SIZE; offset++) {
-    app_attack_spec.offset = offset;
+    attack_spec.offset = offset;
 
     ASSERT(!pthread_create(&victim_thread, NULL, victhrd_l1tf_cc_nosgx, NULL));
     ASSERT(
@@ -380,8 +380,8 @@ int fn_l1tf_cc_nosgx(char *extra_settings) {
 }
 
 Test(l1tf, l1tf_cc_nosgx, .disabled = false) {
-  app_attack_spec.major = ATTACK_MAJOR_L1TF;
-  app_attack_spec.minor = ATTACK_MINOR_STABLE;
+  attack_spec.major = ATTACK_MAJOR_L1TF;
+  attack_spec.minor = ATTACK_MINOR_STABLE;
 
   app_attacking_buffer.value = 0x81;
   app_attacking_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
@@ -430,7 +430,7 @@ void *attthrd_l1tf_cc_sgx(void *arg) {
 
   for (int i = 0; i < REPETITION_TIME; i++) {
     flush_buffer(&app_encoding_buffer);
-    attack(&app_attack_spec, &encalve_secret_buffer, &app_encoding_buffer);
+    attack(&attack_spec, &encalve_secret_buffer, &app_encoding_buffer);
     reload(&app_encoding_buffer, &app_printing_buffer);
   }
 
@@ -451,7 +451,7 @@ int fn_l1tf_cc_sgx(char *extra_settings) {
   // CALCULATE SUCCESS RATE
   int accum = 0;
   for (int offset = 0; offset < CACHELINE_SIZE; offset++) {
-    app_attack_spec.offset = offset;
+    attack_spec.offset = offset;
 
     ASSERT(!pthread_create(&victim_thread, NULL, victhrd_l1tf_cc_sgx, NULL));
     ASSERT(!pthread_create(&adversary_thread, NULL, attthrd_l1tf_cc_sgx, NULL));
@@ -474,8 +474,8 @@ int fn_l1tf_cc_sgx(char *extra_settings) {
 }
 
 Test(l1tf, l1tf_cc_sgx, .disabled = false) {
-  app_attack_spec.major = ATTACK_MAJOR_L1TF;
-  app_attack_spec.minor = ATTACK_MINOR_STABLE;
+  attack_spec.major = ATTACK_MAJOR_L1TF;
+  attack_spec.minor = ATTACK_MINOR_STABLE;
 
   encalve_secret_buffer.value = 0xa1;
   encalve_secret_buffer.order = BUFFER_ORDER_OFFSET_INLINE;

@@ -9,13 +9,29 @@ int updated = 0;
 
 sysinfo_t sysinfo = {};
 
-int app_filling_sequence = 0;
-int app_clearing_sequence = 0;
-
-attack_spec_t app_attack_spec = {
+attack_spec_t attack_spec = {
     .major = DEFAULT_ATTACK_MAJOR,
     .minor = DEFAULT_ATTACK_MINOR,
     .offset = DEFAULT_ATTACK_OFFSET};
+
+/* ========== Virtual ========== */
+
+int* filling_sequence;
+int* clearing_sequence;
+
+// buffer_t filling_buffer
+// buffer_t
+// buffer_t
+// buffer_t
+// buffer_t
+
+
+/* ========== APP ========== */
+
+int app_filling_sequence = 0;
+int app_clearing_sequence = 0;
+
+
 
 buffer_t app_filling_buffer = {
     .buffer = NULL,
@@ -89,7 +105,7 @@ buffer_t encalve_secret_buffer = {
 //     ASSERT(!mprotect(app_faulting_buffer.buffer, app_faulting_buffer.size, PROT_READ | PROT_WRITE));
 
 //     flush_buffer(&app_encoding_buffer);
-//     attack(&app_attack_spec, &app_attacking_buffer, &app_encoding_buffer);
+//     attack(&attack_spec, &app_attacking_buffer, &app_encoding_buffer);
 //     reload(&app_encoding_buffer, &app_printing_buffer);
 
 //     sigsegv_signal = 0;
