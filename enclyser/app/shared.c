@@ -14,24 +14,10 @@ attack_spec_t attack_spec = {
     .minor = DEFAULT_ATTACK_MINOR,
     .offset = DEFAULT_ATTACK_OFFSET};
 
-/* ========== Virtual ========== */
-
-int* filling_sequence;
-int* clearing_sequence;
-
-// buffer_t filling_buffer
-// buffer_t
-// buffer_t
-// buffer_t
-// buffer_t
-
-
 /* ========== APP ========== */
 
 int app_filling_sequence = 0;
-int app_clearing_sequence = 0;
-
-
+// int app_clearing_sequence = 0;
 
 buffer_t app_filling_buffer = {
     .buffer = NULL,
@@ -87,6 +73,11 @@ buffer_t app_printing_buffer = {
     .mem_type = DEFAULT_BUFFER_MEM_TYPE,
     .access_ctrl = DEFAULT_BUFFER_ACCESS_CTRL};
 
+/* ========== ENCLAVE ========== */
+
+int enclave_filling_sequence = 0;
+// int enclave_clearing_sequence = 0;
+
 buffer_t encalve_secret_buffer = {
     .buffer = NULL,
     .shadow = NULL,
@@ -129,8 +120,8 @@ void construct_app_environment(void)
     ecall_get_secret(global_eid, &encalve_secret_buffer.buffer);
 
     malloc_buffer(&app_filling_buffer);
-    malloc_buffer(&app_clearing_buffer);
-    malloc_buffer(&app_faulting_buffer);
+    // malloc_buffer(&app_clearing_buffer);
+    // malloc_buffer(&app_faulting_buffer);
     malloc_buffer(&app_attacking_buffer);
     malloc_buffer(&app_encoding_buffer);
     malloc_buffer(&app_printing_buffer);
@@ -150,8 +141,8 @@ void destruct_app_environment(void)
     sgx_destroy_enclave(global_eid);
 
     free_buffer(&app_filling_buffer);
-    free_buffer(&app_clearing_buffer);
-    free_buffer(&app_faulting_buffer);
+    // free_buffer(&app_clearing_buffer);
+    // free_buffer(&app_faulting_buffer);
     free_buffer(&app_attacking_buffer);
     free_buffer(&app_encoding_buffer);
     free_buffer(&app_printing_buffer);

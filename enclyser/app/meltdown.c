@@ -20,7 +20,7 @@ int fn_meltdown_st_nosgx(char *extra_settings) {
   for (int offset = 0; offset < CACHELINE_SIZE; offset++) {
     attack_spec.offset = offset;
     for (int i = 0; i < REPETITION_TIME; i++) {
-      fill_lfb(app_filling_sequence, &app_attacking_buffer);
+      fill_lfb(*filling_sequence, &app_attacking_buffer);
       flush_buffer(&app_encoding_buffer);
       attack(&attack_spec, &app_attacking_buffer, &app_encoding_buffer);
       reload(&app_encoding_buffer, &app_printing_buffer);
@@ -39,6 +39,8 @@ Test(meltdown, meltdown_st_nosgx, .disabled = false) {
   attack_spec.major = ATTACK_MAJOR_RDCL;
   attack_spec.minor = ATTACK_MINOR_NO_TSX;
 
+  filling_sequence = &app_filling_sequence;
+
   app_attacking_buffer.value = 0x1;
   app_attacking_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
   assign_buffer(&app_attacking_buffer);
@@ -46,22 +48,22 @@ Test(meltdown, meltdown_st_nosgx, .disabled = false) {
   app_attacking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_SUPERVISOR;
   cripple_buffer(&app_attacking_buffer);
 
-  app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
+  *filling_sequence = FILLING_SEQUENCE_GP_LOAD;
   cr_expect(fn_meltdown_st_nosgx("GP_LOAD 0x1") == 0);
 
-  app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
+  *filling_sequence = FILLING_SEQUENCE_GP_STORE;
   cr_expect(fn_meltdown_st_nosgx("GP_STORE 0x1") == 0);
 
-  app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
+  *filling_sequence = FILLING_SEQUENCE_NT_LOAD;
   cr_expect(fn_meltdown_st_nosgx("NT_LOAD 0x1") == 0);
 
-  app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
+  *filling_sequence = FILLING_SEQUENCE_NT_STORE;
   cr_expect(fn_meltdown_st_nosgx("NT_STORE 0x1") == 0);
 
-  app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
+  *filling_sequence = FILLING_SEQUENCE_STR_LOAD;
   cr_expect(fn_meltdown_st_nosgx("STR_LOAD 0x1") == 0);
 
-  app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
+  *filling_sequence = FILLING_SEQUENCE_STR_STORE;
   cr_expect(fn_meltdown_st_nosgx("STR_STORE 0x1") == 0);
 }
 
@@ -82,7 +84,7 @@ int fn_meltdown_st_sgx(char *extra_settings) {
   for (int offset = 0; offset < CACHELINE_SIZE; offset++) {
     attack_spec.offset = offset;
     for (int i = 0; i < REPETITION_TIME; i++) {
-      ecall_fill_lfb(global_eid, app_filling_sequence, &encalve_secret_buffer);
+      ecall_fill_lfb(global_eid, *filling_sequence, &encalve_secret_buffer);
       flush_buffer(&app_encoding_buffer);
       attack(&attack_spec, &encalve_secret_buffer, &app_encoding_buffer);
       reload(&app_encoding_buffer, &app_printing_buffer);
@@ -100,6 +102,8 @@ Test(meltdown, meltdown_st_sgx, .disabled = false) {
   attack_spec.major = ATTACK_MAJOR_RDCL;
   attack_spec.minor = ATTACK_MINOR_NO_TSX;
 
+  filling_sequence = &enclave_filling_sequence;
+
   encalve_secret_buffer.value = 0x21;
   encalve_secret_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
   ecall_assign_secret(global_eid, &encalve_secret_buffer);
@@ -107,22 +111,22 @@ Test(meltdown, meltdown_st_sgx, .disabled = false) {
   encalve_secret_buffer.access_ctrl = BUFFER_ACCESS_CTRL_SUPERVISOR;
   cripple_buffer(&encalve_secret_buffer);
 
-  app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
+  *filling_sequence = FILLING_SEQUENCE_GP_LOAD;
   cr_expect(fn_meltdown_st_sgx("GP_LOAD 0x21") == 0);
 
-  app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
+  *filling_sequence = FILLING_SEQUENCE_GP_STORE;
   cr_expect(fn_meltdown_st_sgx("GP_STORE 0x21") == 0);
 
-  app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
+  *filling_sequence = FILLING_SEQUENCE_NT_LOAD;
   cr_expect(fn_meltdown_st_sgx("NT_LOAD 0x21") == 0);
 
-  app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
+  *filling_sequence = FILLING_SEQUENCE_NT_STORE;
   cr_expect(fn_meltdown_st_sgx("NT_STORE 0x21") == 0);
 
-  app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
+  *filling_sequence = FILLING_SEQUENCE_STR_LOAD;
   cr_expect(fn_meltdown_st_sgx("STR_LOAD 0x21") == 0);
 
-  app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
+  *filling_sequence = FILLING_SEQUENCE_STR_STORE;
   cr_expect(fn_meltdown_st_sgx("STR_STORE 0x21") == 0);
 }
 
@@ -135,7 +139,7 @@ void *victhrd_meltdown_ct_nosgx(void *arg) {
   (void)arg;
 
   for (int i = 0; i < REPETITION_TIME * 100; i++) {
-    fill_lfb(app_filling_sequence, &app_attacking_buffer);
+    fill_lfb(*filling_sequence, &app_attacking_buffer);
   }
 
   return NULL;
@@ -197,6 +201,8 @@ Test(meltdown, meltdown_ct_nosgx, .disabled = false) {
   attack_spec.major = ATTACK_MAJOR_RDCL;
   attack_spec.minor = ATTACK_MINOR_NO_TSX;
 
+  filling_sequence = &app_filling_sequence;
+
   app_attacking_buffer.value = 0x41;
   app_attacking_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
   assign_buffer(&app_attacking_buffer);
@@ -204,22 +210,22 @@ Test(meltdown, meltdown_ct_nosgx, .disabled = false) {
   app_attacking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_SUPERVISOR;
   cripple_buffer(&app_attacking_buffer);
 
-  app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
+  *filling_sequence = FILLING_SEQUENCE_GP_LOAD;
   cr_expect(fn_meltdown_ct_nosgx("GP_LOAD 0x41") == 0);
 
-  app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
+  *filling_sequence = FILLING_SEQUENCE_GP_STORE;
   cr_expect(fn_meltdown_ct_nosgx("GP_STORE 0x41") == 0);
 
-  app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
+  *filling_sequence = FILLING_SEQUENCE_NT_LOAD;
   cr_expect(fn_meltdown_ct_nosgx("NT_LOAD 0x41") == 0);
 
-  app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
+  *filling_sequence = FILLING_SEQUENCE_NT_STORE;
   cr_expect(fn_meltdown_ct_nosgx("NT_STORE 0x41") == 0);
 
-  app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
+  *filling_sequence = FILLING_SEQUENCE_STR_LOAD;
   cr_expect(fn_meltdown_ct_nosgx("STR_LOAD 0x41") == 0);
 
-  app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
+  *filling_sequence = FILLING_SEQUENCE_STR_STORE;
   cr_expect(fn_meltdown_ct_nosgx("STR_STORE 0x41") == 0);
 }
 
@@ -232,7 +238,7 @@ void *victhrd_meltdown_ct_sgx(void *arg) {
   (void)arg;
 
   for (int i = 0; i < REPETITION_TIME * 100; i++) {
-    ecall_fill_lfb(global_eid, app_filling_sequence, &encalve_secret_buffer);
+    ecall_fill_lfb(global_eid, *filling_sequence, &encalve_secret_buffer);
   }
 
   return NULL;
@@ -293,6 +299,8 @@ Test(meltdown, meltdown_ct_sgx, .disabled = false) {
   attack_spec.major = ATTACK_MAJOR_RDCL;
   attack_spec.minor = ATTACK_MINOR_NO_TSX;
 
+  filling_sequence = &enclave_filling_sequence;
+
   encalve_secret_buffer.value = 0x61;
   encalve_secret_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
   ecall_assign_secret(global_eid, &encalve_secret_buffer);
@@ -300,22 +308,22 @@ Test(meltdown, meltdown_ct_sgx, .disabled = false) {
   encalve_secret_buffer.access_ctrl = BUFFER_ACCESS_CTRL_SUPERVISOR;
   cripple_buffer(&encalve_secret_buffer);
 
-  app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
+  *filling_sequence = FILLING_SEQUENCE_GP_LOAD;
   cr_expect(fn_meltdown_ct_sgx("GP_LOAD 0x61") == 0);
 
-  app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
+  *filling_sequence = FILLING_SEQUENCE_GP_STORE;
   cr_expect(fn_meltdown_ct_sgx("GP_STORE 0x61") == 0);
 
-  app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
+  *filling_sequence = FILLING_SEQUENCE_NT_LOAD;
   cr_expect(fn_meltdown_ct_sgx("NT_LOAD 0x61") == 0);
 
-  app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
+  *filling_sequence = FILLING_SEQUENCE_NT_STORE;
   cr_expect(fn_meltdown_ct_sgx("NT_STORE 0x61") == 0);
 
-  app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
+  *filling_sequence = FILLING_SEQUENCE_STR_LOAD;
   cr_expect(fn_meltdown_ct_sgx("STR_LOAD 0x61") == 0);
 
-  app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
+  *filling_sequence = FILLING_SEQUENCE_STR_STORE;
   cr_expect(fn_meltdown_ct_sgx("STR_STORE 0x61") == 0);
 }
 
@@ -328,7 +336,7 @@ void *victhrd_meltdown_cc_nosgx(void *arg) {
   (void)arg;
 
   for (int i = 0; i < REPETITION_TIME * 100; i++) {
-    fill_lfb(app_filling_sequence, &app_attacking_buffer);
+    fill_lfb(*filling_sequence, &app_attacking_buffer);
   }
 
   return NULL;
@@ -390,6 +398,8 @@ Test(meltdown, meltdown_cc_nosgx, .disabled = false) {
   attack_spec.major = ATTACK_MAJOR_RDCL;
   attack_spec.minor = ATTACK_MINOR_NO_TSX;
 
+  filling_sequence = &app_filling_sequence;
+
   app_attacking_buffer.value = 0x81;
   app_attacking_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
   assign_buffer(&app_attacking_buffer);
@@ -397,22 +407,22 @@ Test(meltdown, meltdown_cc_nosgx, .disabled = false) {
   app_attacking_buffer.access_ctrl = BUFFER_ACCESS_CTRL_SUPERVISOR;
   cripple_buffer(&app_attacking_buffer);
 
-  app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
+  *filling_sequence = FILLING_SEQUENCE_GP_LOAD;
   cr_expect(fn_meltdown_cc_nosgx("GP_LOAD 0x81") == 0);
 
-  app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
+  *filling_sequence = FILLING_SEQUENCE_GP_STORE;
   cr_expect(fn_meltdown_cc_nosgx("GP_STORE 0x81") == 0);
 
-  app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
+  *filling_sequence = FILLING_SEQUENCE_NT_LOAD;
   cr_expect(fn_meltdown_cc_nosgx("NT_LOAD 0x81") == 0);
 
-  app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
+  *filling_sequence = FILLING_SEQUENCE_NT_STORE;
   cr_expect(fn_meltdown_cc_nosgx("NT_STORE 0x81") == 0);
 
-  app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
+  *filling_sequence = FILLING_SEQUENCE_STR_LOAD;
   cr_expect(fn_meltdown_cc_nosgx("STR_LOAD 0x81") == 0);
 
-  app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
+  *filling_sequence = FILLING_SEQUENCE_STR_STORE;
   cr_expect(fn_meltdown_cc_nosgx("STR_STORE 0x81") == 0);
 }
 
@@ -425,7 +435,7 @@ void *victhrd_meltdown_cc_sgx(void *arg) {
   (void)arg;
 
   for (int i = 0; i < REPETITION_TIME * 100; i++) {
-    ecall_fill_lfb(global_eid, app_filling_sequence, &encalve_secret_buffer);
+    ecall_fill_lfb(global_eid, *filling_sequence, &encalve_secret_buffer);
   }
 
   return NULL;
@@ -486,6 +496,8 @@ Test(meltdown, meltdown_cc_sgx, .disabled = false) {
   attack_spec.major = ATTACK_MAJOR_RDCL;
   attack_spec.minor = ATTACK_MINOR_NO_TSX;
 
+  filling_sequence = &enclave_filling_sequence;
+
   encalve_secret_buffer.value = 0xa1;
   encalve_secret_buffer.order = BUFFER_ORDER_OFFSET_INLINE;
   ecall_assign_secret(global_eid, &encalve_secret_buffer);
@@ -493,22 +505,22 @@ Test(meltdown, meltdown_cc_sgx, .disabled = false) {
   encalve_secret_buffer.access_ctrl = BUFFER_ACCESS_CTRL_SUPERVISOR;
   cripple_buffer(&encalve_secret_buffer);
 
-  app_filling_sequence = FILLING_SEQUENCE_GP_LOAD;
+  *filling_sequence = FILLING_SEQUENCE_GP_LOAD;
   cr_expect(fn_meltdown_cc_sgx("GP_LOAD 0xa1") == 0);
 
-  app_filling_sequence = FILLING_SEQUENCE_GP_STORE;
+  *filling_sequence = FILLING_SEQUENCE_GP_STORE;
   cr_expect(fn_meltdown_cc_sgx("GP_STORE 0xa1") == 0);
 
-  app_filling_sequence = FILLING_SEQUENCE_NT_LOAD;
+  *filling_sequence = FILLING_SEQUENCE_NT_LOAD;
   cr_expect(fn_meltdown_cc_sgx("NT_LOAD 0xa1") == 0);
 
-  app_filling_sequence = FILLING_SEQUENCE_NT_STORE;
+  *filling_sequence = FILLING_SEQUENCE_NT_STORE;
   cr_expect(fn_meltdown_cc_sgx("NT_STORE 0xa1") == 0);
 
-  app_filling_sequence = FILLING_SEQUENCE_STR_LOAD;
+  *filling_sequence = FILLING_SEQUENCE_STR_LOAD;
   cr_expect(fn_meltdown_cc_sgx("STR_LOAD 0xa1") == 0);
 
-  app_filling_sequence = FILLING_SEQUENCE_STR_STORE;
+  *filling_sequence = FILLING_SEQUENCE_STR_STORE;
   cr_expect(fn_meltdown_cc_sgx("STR_STORE 0xa1") == 0);
 }
 

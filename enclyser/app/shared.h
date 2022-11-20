@@ -35,21 +35,38 @@ int updated;
  * @brief defines and variables for grooming and attack.
  *
  */
-int app_filling_sequence;
-int app_clearing_sequence;
-
-buffer_t app_filling_buffer;
-buffer_t app_clearing_buffer;
-buffer_t app_faulting_buffer;
-
+sysinfo_t sysinfo;
 attack_spec_t attack_spec;
 
+/* ========== Virtual ========== */
+
+int* filling_sequence;
+// int* clearing_sequence;
+
+buffer_t* filling_buffer;
+// buffer_t* clearing_buffer;
+// buffer_t* faulting_buffer;
+buffer_t* attacking_buffer;
+buffer_t* encoding_buffer;
+buffer_t* printing_buffer;
+
+/* ========== Real ========== */
+
+int app_filling_sequence;
+// int app_clearing_sequence;
+
+buffer_t app_filling_buffer;
+// buffer_t app_clearing_buffer;
+// buffer_t app_faulting_buffer;
 buffer_t app_attacking_buffer;
 buffer_t app_encoding_buffer;
 buffer_t app_printing_buffer;
 
+int enclave_filling_sequence;
+// int enclave_clearing_sequence;
+
 buffer_t encalve_secret_buffer;
-sysinfo_t sysinfo;
+
 
 /**
  * @brief A helpher function that sets up the runnning environment.
