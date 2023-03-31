@@ -8,11 +8,12 @@
 3rdparty/criterion-v2.3.2
 3rdparty/criterion-v2.3.2-linux-x86_64.tar.bz2
 
-doc/dev-log
-doc/intel-cpu
-doc/microcode-update
-doc/weekly-report
-doc/paper/
+docs/dev-log
+docs/intel-cpu
+docs/microcode-update
+docs/weekly-report
+docs/paper/
+docs/doxygen
 
 enclyzer/enclave/enclave_u.c
 enclyzer/enclave/enclave_u.h
