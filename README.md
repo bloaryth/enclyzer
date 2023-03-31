@@ -17,7 +17,7 @@ Enclyzer is tested on Ubuntu 20.04 with a kernel version of 5.11. It is consider
 
 ### System Requirements 
 
-Run `cd 3rdparty; sudo bash install.sh` to install third-party packages required by Enclyzer. This command will automatically call second-level scripts including `install-linux-sgx-2.13.sh`, `install-linux-sgx-driver-master.sh`, `install-sgx-software-enable-master.sh`, `install-criterion-v2.3.2.sh`, `install-enclyser-prerequisites.sh` and `install-enclyser-settings.sh`. 
+Run `cd 3rdparty; sudo bash install.sh` to install third-party packages required by Enclyzer. This command will automatically call second-level scripts including `install-linux-sgx-2.13.sh`, `install-linux-sgx-driver-master.sh`, `install-sgx-software-enable-master.sh`, `install-criterion-v2.3.2.sh`, `install-enclyzer-prerequisites.sh` and `install-enclyzer-settings.sh`. 
 
 | Script Name                           | Functions                                                                           |
 | ------------------------------------- | ----------------------------------------------------------------------------------- |
@@ -25,22 +25,22 @@ Run `cd 3rdparty; sudo bash install.sh` to install third-party packages required
 | install-linux-sgx-driver-master.sh    | Install SGX Driver of up-to-date Version.                                           |
 | install-sgx-software-enable-master.sh | Enable SGX in case the BIOS does not provide options to turn it on.                 |
 | install-criterion-v2.3.2.sh           | Install Criterion of Version 2.3.2 that is required by Enclyzer.                    |
-| install-enclyser-prerequisites.sh     | Install required system packages and python libraries.                              |
-| install-enclyser-settings.sh          | Add necessary command line parameter for booting. **Need a reboot to take effect.** |
+| install-enclyzer-prerequisites.sh     | Install required system packages and python libraries.                              |
+| install-enclyzer-settings.sh          | Add necessary command line parameter for booting. **Need a reboot to take effect.** |
 
 ### Load Kernel Modules
 
-Run `sudo make -C kenclyser clean all unload load` to load the kernel module of Enclyzer. 
+Run `sudo make -C kenclyzer clean all unload load` to load the kernel module of Enclyzer. 
 
 ### Build and Run Tests
 
-Run `sudo make -C enclyser clean all run` to build and run all tests of Enclyzer. By default, all tests are enabled and can be partially disabled by setting `.disabled = on`. Print out content of `enclyser/sgx_app.txt` to see the execution results. For example, `cat enclyser/sgx_app.txt`
+Run `sudo make -C enclyzer clean all run` to build and run all tests of Enclyzer. By default, all tests are enabled and can be partially disabled by setting `.disabled = on`. Print out content of `enclyzer/sgx_app.txt` to see the execution results. For example, `cat enclyzer/sgx_app.txt`
 
 ### TODO
 
 - [ ] Code Refactoring
 	- [ ] Rename files and functions: lfb -> micro
-	- [ ] Rename files and macros: enclyser -> enclyzer
+	- [ ] Rename files and macros: enclyzer -> enclyzer
 - [ ] Docs Update
 	- [ ] README, README_ZH
 	- [ ] Doxygen Docs, Host Documentation Website

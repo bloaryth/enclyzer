@@ -2,7 +2,7 @@
     "files.associations": {
         "template.h": "c",
         "system.h": "c",
-        "kenclyser_ioctl.h": "c",
+        "kenclyzer_ioctl.h": "c",
         "memory.h": "c",
         "lfb.h": "c",
         "app.h": "c",

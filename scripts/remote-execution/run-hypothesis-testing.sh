@@ -5,10 +5,10 @@ declare -a SSH_TARGET_ARR=("i7-9850h" "i9-8950hk" "e3-1535mv5" "i5-6360u" "i5-83
 # $1: $PASSWORD
 # $2: $SSH_TARGET
 remote_task(){
-    mkdir -p ~/Documents/enclyser-results
-    ssh $2 'cd enclyser; git pull;'
-    echo $1 | ssh $2 -tt 'sudo make -C enclyser/enclyser clean all run'
-    scp $2:enclyser/enclyser/sgx_app.txt ~/Documents/enclyser-results/$2.txt
+    mkdir -p ~/Documents/enclyzer-results
+    ssh $2 'cd enclyzer; git pull;'
+    echo $1 | ssh $2 -tt 'sudo make -C enclyzer/enclyzer clean all run'
+    scp $2:enclyzer/enclyzer/sgx_app.txt ~/Documents/enclyzer-results/$2.txt
 }
 
 if [ -z $PASSWORD ]; then

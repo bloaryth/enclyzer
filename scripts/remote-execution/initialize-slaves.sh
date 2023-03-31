@@ -5,13 +5,13 @@ declare -a SSH_TARGET_ARR=("i7-9850h" "i9-8950hk" "e3-1535mv5" "i5-6360u" "i5-83
 # $1: $PASSWORD
 # $2: $SSH_TARGET
 remote_task(){
-    ssh $2 'cd enclyser; git pull;'
+    ssh $2 'cd enclyzer; git pull;'
     echo $1 | ssh $2 -tt 'sudo apt-get update'
     echo $1 | ssh $2 -tt 'sudo apt-get -f install'
-    echo $1 | ssh $2 -tt 'sudo bash enclyser/3rdparty/install-linux-sgx-driver-master.sh'
-    echo $1 | ssh $2 -tt 'sudo bash enclyser/3rdparty/install-enclyser-settings.sh'
-    echo $1 | ssh $2 -tt 'sudo bash enclyser/3rdparty/install-enclyser-prerequisites.sh'
-    echo $1 | ssh $2 -tt 'cd enclyser/scripts/microcode-update/; sudo bash early-os-update.sh 20180312'
+    echo $1 | ssh $2 -tt 'sudo bash enclyzer/3rdparty/install-linux-sgx-driver-master.sh'
+    echo $1 | ssh $2 -tt 'sudo bash enclyzer/3rdparty/install-enclyzer-settings.sh'
+    echo $1 | ssh $2 -tt 'sudo bash enclyzer/3rdparty/install-enclyzer-prerequisites.sh'
+    echo $1 | ssh $2 -tt 'cd enclyzer/scripts/microcode-update/; sudo bash early-os-update.sh 20180312'
     echo $1 | ssh $2 -tt 'sudo reboot'
 }
 

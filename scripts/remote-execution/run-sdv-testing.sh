@@ -6,13 +6,13 @@ declare -a MICROCODE_ARR=("20210608")
 # $1: $PASSWORD
 # $2: $SSH_TARGET
 remote_task(){
-    mkdir -p ~/Documents/enclyser-results
-    ssh $2 'cd enclyser; git pull;'
+    mkdir -p ~/Documents/enclyzer-results
+    ssh $2 'cd enclyzer; git pull;'
     for MICROCODE in "${MICROCODE_ARR[@]}"; do
-        if echo $1 | ssh $2 -tt "cd enclyser/scripts/microcode-update/; sudo bash runtime-update.sh $MICROCODE" true; then
+        if echo $1 | ssh $2 -tt "cd enclyzer/scripts/microcode-update/; sudo bash runtime-update.sh $MICROCODE" true; then
             echo $1 | ssh $2 -tt 'sudo wrmsr -a 0x10f 4' # Set SDV_ENABLE_RTM
-            echo $1 | ssh $2 -tt 'sudo make -C enclyser/enclyser clean all run'
-            scp $2:enclyser/enclyser/sgx_app.txt ~/Documents/enclyser-results/$2+$MICROCODE+sdv.txt
+            echo $1 | ssh $2 -tt 'sudo make -C enclyzer/enclyzer clean all run'
+            scp $2:enclyzer/enclyzer/sgx_app.txt ~/Documents/enclyzer-results/$2+$MICROCODE+sdv.txt
         fi
     done
 }
