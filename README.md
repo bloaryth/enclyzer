@@ -69,17 +69,31 @@ $ sudo bash install.sh
 > sudo bash install-linux-sgx-driver-master.sh
 > ```
 
-5. Reboot the machine.
+5. Run the following scripts to rollback the microcode provided by OS start.
+
+```shell
+cd scripts/microcode-update
+sudo bash early-os-update 20180312
+```
+
+6. Reboot the machine.
 
 ### How to Run
 
-1. Load kernel modules
+1. Update the microcode version to a targeted one.
+
+```shell
+cd scripts/microcode-update
+sudo bash runtime-update 20200616
+```
+
+2. Load kernel modules (from the root directory)
 
 ```shell
 $ sudo make -C kenclyzer clean all unload load
 ```
 
-2. Build and run tests
+3. Build and run tests  (from the root directory)
 
 ```shell
 sudo make -C enclyzer clean all run
