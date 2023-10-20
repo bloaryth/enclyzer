@@ -8,6 +8,9 @@
 3rdparty/criterion-v2.3.2
 3rdparty/criterion-v2.3.2-linux-x86_64.tar.bz2
 
+docs/.vitepress/dist
+docs/.vitepress/cache
+
 docs/dev-log
 docs/intel-cpu
 docs/microcode-update
