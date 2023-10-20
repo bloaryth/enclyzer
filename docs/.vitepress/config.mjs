@@ -25,5 +25,5 @@ export default defineConfig({
       { icon: 'github', link: 'https://github.com/bloaryth/enclyzer' }
     ]
   },
-  base: "/docs/"
+  base: "/enclyzer/"
 })
