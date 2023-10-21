@@ -1,6 +1,6 @@
-#ifndef Kenclyzer_Kenclyzer
+#ifndef KENCLYZER_KENCLYZER
 
-#define Kenclyzer_Kenclyzer
+#define KENCLYZER_KENCLYZER
 
 #include <linux/module.h>
 #include <linux/kernel.h>

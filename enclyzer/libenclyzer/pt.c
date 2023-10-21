@@ -27,7 +27,7 @@
 // 	invpg_t param = {.adrs = (uint64_t)adrs};
 
 // 	ASSERT(fd_enclyzer >= 0);										/** /dev/enclyzer is opened. */
-// 	ASSERT(ioctl(fd_enclyzer, Kenclyzer_IOCTL_INVPG, &param) >= 0); /** ioctl returns successfully. */
+// 	ASSERT(ioctl(fd_enclyzer, KENCLYZER_IOCTL_INVPG, &param) >= 0); /** ioctl returns successfully. */
 // }
 
 /**
@@ -132,7 +132,7 @@ address_mapping_t get_mapping(uintptr_t virt_addr)
 
 	mapping.virt_addr = virt_addr;
 	ASSERT(fd_enclyzer >= 0);												   /** /dev/enclyzer is opened. */
-	ASSERT(ioctl(fd_enclyzer, Kenclyzer_IOCTL_GET_PT_MAPPING, &mapping) >= 0); /** ioctl returns successfully. */
+	ASSERT(ioctl(fd_enclyzer, KENCLYZER_IOCTL_GET_PT_MAPPING, &mapping) >= 0); /** ioctl returns successfully. */
 
 	return mapping;
 }

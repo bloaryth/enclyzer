@@ -57,11 +57,19 @@ void native_rdmsr(uint32_t *eax, uint32_t *ecx, uint32_t *edx)
     msr_t msr = {.eax = *eax, .ecx = *ecx, .edx = *edx};
 
     ASSERT(fd_enclyzer >= 0);                                     /** /dev/enclyzer is opened. */
-    ASSERT(ioctl(fd_enclyzer, Kenclyzer_IOCTL_RDMSR, &msr) >= 0); /** ioctl returns successfully. */
+    ASSERT(ioctl(fd_enclyzer, KENCLYZER_IOCTL_RDMSR, &msr) >= 0); /** ioctl returns successfully. */
 
     *eax = msr.eax;
     *ecx = msr.ecx;
     *edx = msr.edx;
+}
+
+void native_wrmsr(uint32_t *eax, uint32_t *ecx, uint32_t *edx)
+{
+    msr_t msr = {.eax = *eax, .ecx = *ecx, .edx = *edx};
+
+    ASSERT(fd_enclyzer >= 0);                                     /** /dev/enclyzer is opened. */
+    ASSERT(ioctl(fd_enclyzer, KENCLYZER_IOCTL_RDMSR, &msr) >= 0); /** ioctl returns successfully. */
 }
 
 void execute_command(char *command)

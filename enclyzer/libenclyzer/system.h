@@ -68,6 +68,15 @@ void native_cpuid(uint32_t *eax, uint32_t *ebx, uint32_t *ecx, uint32_t *edx);
 void native_rdmsr(uint32_t *eax, uint32_t *ecx, uint32_t *edx);
 
 /**
+ * @brief a function of the wrmsr instruction
+ *
+ * @param eax the eax register
+ * @param ecx the ecx register
+ * @param edx the edx register
+ */
+void native_wrmsr(uint32_t *eax, uint32_t *ecx, uint32_t *edx);
+
+/**
  * @brief Execute shell command and store output to \p command_output.
  *
  * @param command the command string to execute
@@ -91,7 +100,8 @@ void print_system_info(sysinfo_t *sysinfo);
 #endif
 
 /**
- * @brief the defines and functions that are shared by trusted libraries and untrusted libraries
+ * @brief the defines and functions that are shared by trusted libraries and
+ * untrusted libraries
  *
  */
 #ifdef NAMESPACE_SGX_SHARED

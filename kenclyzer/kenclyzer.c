@@ -144,22 +144,22 @@ long kenclyzer_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
 
     switch (cmd)
     {
-    case Kenclyzer_IOCTL_VICTIM_INFO:
+    case KENCLYZER_IOCTL_VICTIM_INFO:
         return -EINVAL;
         break;
-    case Kenclyzer_IOCTL_GET_PT_MAPPING:
+    case KENCLYZER_IOCTL_GET_PT_MAPPING:
         handler = kenclyzer_get_pt_mapping;
         break;
-    case Kenclyzer_IOCTL_EDBGRD:
+    case KENCLYZER_IOCTL_EDBGRD:
         return -EINVAL;
         break;
-    case Kenclyzer_IOCTL_INVPG:
+    case KENCLYZER_IOCTL_INVPG:
         return -EINVAL;
         break;
-    case Kenclyzer_IOCTL_RDMSR:
+    case KENCLYZER_IOCTL_RDMSR:
         handler = kenclyzer_rdmsr;
         break;
-    case Kenclyzer_IOCTL_WRMSR:
+    case KENCLYZER_IOCTL_WRMSR:
         handler = kenclyzer_wrmsr;
         break;
     default:

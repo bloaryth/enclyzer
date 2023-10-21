@@ -1,16 +1,16 @@
-#ifndef Kenclyzer_Kenclyzer_IOCTL
+#ifndef KENCLYZER_KENCLYZER_IOCTL
 
-#define Kenclyzer_Kenclyzer_IOCTL
+#define KENCLYZER_KENCLYZER_IOCTL
 
 #include <linux/ioctl.h>
 
-#define Kenclyzer_IOCTL_MAGIC 'L'
-#define Kenclyzer_IOCTL_VICTIM_INFO _IOWR(Kenclyzer_IOCTL_MAGIC, 0, struct enclave_info)
-#define Kenclyzer_IOCTL_GET_PT_MAPPING _IOWR(Kenclyzer_IOCTL_MAGIC, 1, address_mapping_t)
-#define Kenclyzer_IOCTL_EDBGRD _IOWR(Kenclyzer_IOCTL_MAGIC, 2, edbgrd_t)
-#define Kenclyzer_IOCTL_INVPG _IOWR(Kenclyzer_IOCTL_MAGIC, 3, invpg_t)
-#define Kenclyzer_IOCTL_RDMSR _IOWR(Kenclyzer_IOCTL_MAGIC, 4, msr_t)
-#define Kenclyzer_IOCTL_WRMSR _IOWR(Kenclyzer_IOCTL_MAGIC, 5, msr_t)
+#define KENCLYZER_IOCTL_MAGIC 'L'
+#define KENCLYZER_IOCTL_VICTIM_INFO _IOWR(KENCLYZER_IOCTL_MAGIC, 0, struct enclave_info)
+#define KENCLYZER_IOCTL_GET_PT_MAPPING _IOWR(KENCLYZER_IOCTL_MAGIC, 1, address_mapping_t)
+#define KENCLYZER_IOCTL_EDBGRD _IOWR(KENCLYZER_IOCTL_MAGIC, 2, edbgrd_t)
+#define KENCLYZER_IOCTL_INVPG _IOWR(KENCLYZER_IOCTL_MAGIC, 3, invpg_t)
+#define KENCLYZER_IOCTL_RDMSR _IOWR(KENCLYZER_IOCTL_MAGIC, 4, msr_t)
+#define KENCLYZER_IOCTL_WRMSR _IOWR(KENCLYZER_IOCTL_MAGIC, 5, msr_t)
 
 struct enclave_info
 {
