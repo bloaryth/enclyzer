@@ -3,7 +3,7 @@
 #pragma region msd
 
 TestSuite(mds, .init = construct_app_environment,
-          .fini = destruct_app_environment, .disabled = true);
+          .fini = destruct_app_environment, .disabled = false);
 
 #pragma region mds_st_nosgx
 

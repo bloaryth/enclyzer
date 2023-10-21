@@ -1,11 +1,52 @@
-# Use official Ubuntu 20.04 as the base
-FROM ubuntu:20.04
+FROM ubuntu:20.04 as builder
 
-LABEL maintainer="Jiuqin Zhou <bloaryth@gmail.com>"
+RUN apt-get update && apt-get install -yqq \
+  install build-essential ocaml ocamlbuild automake \
+  autoconf libtool wget python libssl-dev git cmake perl \
+  libssl-dev libcurl4-openssl-dev protobuf-compiler \
+  libprotobuf-dev debhelper cmake reprepro unzip
 
-# Set up the timezone of the image
+RUN git clone https://github.com/intel/linux-sgx.git linux-sgx && \
+  --branch sgx_2.13 --single-branch --depth 1 && \
+  cd linux-sgx && make preparation && \
+  cp external/toolset/ubuntu20.04/{as,ld,ld.gold,objdump} /usr/local/bin && \
+  make sdk -j `nproc` && make sdk_install_pkg && \
+  make psw -j `nproc` && make psw_install_pkg
+
+
+
+FROM ubuntu:20.04 as aesmd
+
+RUN apt-get update && apt-get install -y \
+    libcurl4 libprotobuf10 libssl1.1 make module-init-tools
+
+WORKDIR /installer
+COPY --from=builder /linux-sgx/linux/installer/bin/*.bin ./
+RUN ./sgx_linux_x64_psw_*.bin --no-start-aesm
+
+WORKDIR /opt/intel/sgxpsw/aesm/
+ENV LD_LIBRARY_PATH=.
+CMD ./aesm_service --no-daemon
+
+
+
+FROM ubuntu:20.04 as enclyzer
+
 ENV TZ=Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+# Install SGX SDK and PSW for Linux
+WORKDIR /opt/intel
+COPY --from=builder /linux-sgx/linux/installer/bin/*.bin ./
+RUN ./sgx_linux_x64_psw*.bin --no-start-aesm && \
+  sh -c 'echo yes | ./sgx_linux_x64_sdk_*.bin'
+
+# Install criterion for ENCLYZER
+WORKDIR /criterion
+RUN wget https://github.com/Snaipe/Criterion/releases/download/v2.3.2/criterion-v2.3.2-linux-x86_64.tar.bz2 \
+  -O criterion-v2.3.2-linux-x86_64.tar.bz2 && \
+  tar -xjf criterion-v2.3.2-linux-x86_64.tar.bz2
+COPY ./criterion-v2.3.2/* /usr/
 
 # Enable sudo inside the docker container
 RUN apt-get update && apt-get install -yqq sudo && \
@@ -14,22 +55,9 @@ RUN apt-get update && apt-get install -yqq sudo && \
 
 # Set up default user and workspace
 USER ubuntu
-WORKDIR /
 
 # Install the ENCLYZER repository on github
+WORKDIR /home/ubuntu
 RUN sudo apt-get install -yqq git && \
-  sudo mkdir -p /home/ubuntu && cd /home/ubuntu && \
   git clone https://github.com/bloaryth/enclyzer.git
-
-# Install SGX SDK and PSW for Linux
-RUN sudo apt-get update && sudo apt-get install -yqq systemctl && \
-  cd /home/ubuntu/enclyzer/3rdparty && sudo bash install-linux-sgx-2.13.sh
-
-# Install criterion for ENCLYZER
-RUN sudo apt-get update && \
-  sudo apt-get install -yqq sudo wget tar && \
-  cd /home/ubuntu/enclyzer/3rdparty && \
-  sudo bash install-criterion-v2.3.2.sh
-
-ENTRYPOINT [ "sudo", "bash", "/home/ubuntu/enclyzer/docker/entrypoint.sh" ]
 

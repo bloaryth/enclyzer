@@ -4,19 +4,31 @@
 
 #################### ADDITIONAL SETTINGS ####################
 
-ADDL_TARGETS := libenclyzer kenclyzer disable-prefetcher
+ADDL_BUILD := build_libenclyzer #build_kenclyzer disable_prefetcher
+ADDL_CLEAN := clean_libenclyzer #clean_kenclyzer enable_prefetcher
 
-.PHONY: libenclyzer kenclyzer disable-prefetcher
+.PHONY: build_libenclyzer build_kenclyzer disable_prefetcher \
+	clean_libenclyzer clean_kenclyzer enable_prefetcher
 
-libenclyzer:
+build_libenclyzer:
 	@make -C ../enclyzer/libenclyzer clean all --quiet
 
-kenclyzer:
+clean_libenclyzer:
+	@make -C ../enclyzer/libenclyzer clean --quiet
+
+build_kenclyzer:
 	@sudo make -C ../kenclyzer clean all load --quiet
 
-disable-prefetcher:
+clean_kenclyzer:
+	@sudo make -C ../kenclyzer clean --quiet
+
+disable_prefetcher:
 	@sudo modprobe msr
 	@sudo wrmsr -a 0x1a4 0xf
+
+enable_prefetcher:
+	@sudo modprobe msr
+	@sudo wrmsr -a 0x1a4 0x0
 
 ADDL_APP_RUN_FLAGS := --verbose -j1 
 
@@ -186,16 +198,16 @@ endif
 endif
 
 ifeq ($(build_mode), HW_RELEASE)
-all: $(ADDL_TARGETS) $(APP_NAME) $(ENCLAVE_NAME)
-	@echo "The project has been built in release hardware mode."
+all: $(ADDL_BUILD) $(APP_NAME) $(ENCLAVE_NAME)
+	@echo "The project has been built in release hardware mode." clean_libenclyzer clean
 	@echo "Please sign the $(ENCLAVE_NAME) first with your signing key before you run the $(APP_NAME) to launch and access the enclave."
 	@echo "To sign the enclave use the command:"
 	@echo "   $(SGX_ENCLAVE_SIGNER) sign -key <your key> -enclave $(ENCLAVE_NAME) -out <$(SIGNED_ENCLAVE_NAME)> -config $(ENCLAVE_CONFIG_FILE)"
 	@echo "You can also sign the enclave using an external signing tool."
 	@echo "To build the project in simulation mode set SGX_MODE=SIM. To build the project in prerelease mode set SGX_PRERELEASE=1 and SGX_MODE=HW."
 else
-all: $(ADDL_TARGETS) $(APP_NAME) $(SIGNED_ENCLAVE_NAME)
-ifeq ($(build_mode), HW_DEBUG)
+all: $(ADDL_BUILD) $(APP_NAME) $(SIGNED_ENCLAVE_NAME)
+ifeq ($(build_mode), HW_DEBUG) clean_libenclyzer clean
 	@echo "The project has been built in debug hardware mode."
 else ifeq ($(build_mode), SIM_DEBUG)
 	@echo "The project has been built in debug simulation mode."
@@ -220,7 +232,5 @@ dump:
 	objdump -d $(ENCLAVE_NAME) > $(ENCLAVE_NAME).dump
 	objdump -d $(ENCLAVE_C_OBJECTS) > $(ENCLAVE_C_OBJECTS).dump
 
-clean:
-	@make -C ../enclyzer/libenclyzer clean --quiet
-	@sudo make -C ../kenclyzer clean --quiet
+clean: $(ADDL_CLEAN)
 	@rm -f $(APP_NAME) $(ENCLAVE_NAME) $(SIGNED_ENCLAVE_NAME) $(APP_C_OBJECTS) enclave/enclave_u.* $(ENCLAVE_C_OBJECTS) enclave/enclave_t.* $(APP_NAME).txt

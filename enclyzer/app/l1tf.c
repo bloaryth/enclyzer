@@ -3,7 +3,7 @@
 #pragma region l1tf
 
 TestSuite(l1tf, .init = construct_app_environment,
-          .fini = destruct_app_environment, .disabled = true);
+          .fini = destruct_app_environment, .disabled = false);
 
 #pragma region l1tf_st_nosgx
 

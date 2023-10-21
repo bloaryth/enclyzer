@@ -3,7 +3,7 @@
 #pragma region taa
 
 TestSuite(taa, .init = construct_app_environment,
-          .fini = destruct_app_environment, .disabled = true);
+          .fini = destruct_app_environment, .disabled = false);
 
 #pragma region taa_st_nosgx
 

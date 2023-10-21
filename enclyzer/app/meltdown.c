@@ -3,7 +3,7 @@
 #pragma region meltdown
 
 TestSuite(meltdown, .init = construct_app_environment,
-          .fini = destruct_app_environment, .disabled = true);
+          .fini = destruct_app_environment, .disabled = false);
 
 #pragma region meltdown_st_nosgx
 
