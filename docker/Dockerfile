@@ -42,11 +42,12 @@ RUN ./sgx_linux_x64_psw*.bin --no-start-aesm && \
   sh -c 'echo yes | ./sgx_linux_x64_sdk_*.bin'
 
 # Install criterion for ENCLYZER
-WORKDIR /criterion
+WORKDIR /
 RUN wget https://github.com/Snaipe/Criterion/releases/download/v2.3.2/criterion-v2.3.2-linux-x86_64.tar.bz2 \
   -O criterion-v2.3.2-linux-x86_64.tar.bz2 && \
-  tar -xjf criterion-v2.3.2-linux-x86_64.tar.bz2
-COPY ./criterion-v2.3.2/* /usr/
+  tar -xjf criterion-v2.3.2-linux-x86_64.tar.bz2 && \
+  rm criterion-v2.3.2-linux-x86_64.tar.bz2 && \
+  cp -rf ./criterion-v2.3.2/* /usr/
 
 # Enable sudo inside the docker container
 RUN apt-get update && apt-get install -yqq sudo && \
