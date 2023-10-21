@@ -4,8 +4,8 @@
 
 #################### ADDITIONAL SETTINGS ####################
 
-ADDL_BUILD := build_libenclyzer build_kenclyzer disable_prefetcher
-ADDL_CLEAN := clean_libenclyzer clean_kenclyzer enable_prefetcher
+ADDL_BUILD := build_libenclyzer #build_kenclyzer disable_prefetcher
+ADDL_CLEAN := clean_libenclyzer #clean_kenclyzer enable_prefetcher
 
 .PHONY: build_libenclyzer build_kenclyzer disable_prefetcher \
 	clean_libenclyzer clean_kenclyzer enable_prefetcher

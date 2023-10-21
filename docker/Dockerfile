@@ -64,8 +64,10 @@ RUN apt-get update && apt-get install -yqq wget tar && \
   cp -rf ./criterion-v2.3.2/* /usr/
 
 # Install the ENCLYZER repository on github
+ARG CACHEBUST=$(date)
 RUN apt-get update && sudo apt-get install -yqq git gcc && \
   mkdir -p /home/ubuntu && cd /home/ubuntu && \
+  echo 'ENCLYZER cloned on:' $CACHEBUST && \
   git clone https://github.com/bloaryth/enclyzer.git
 
 # Set up user and build the application
