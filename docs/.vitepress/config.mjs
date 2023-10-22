@@ -8,10 +8,17 @@ export default defineConfig({
     // https://vitepress.dev/reference/default-theme-config
     nav: [
       { text: 'Home', link: '/' },
+      { text: 'Enclyzer', link: '/running-enclyzer-with-docker'},
       { text: 'Examples', link: '/markdown-examples' }
     ],
 
     sidebar: [
+      {
+        text: 'Enclyzer',
+        items: [
+          { text: 'Running Enclyzer with Docker', link: '/running-enclyzer-with-docker'}
+        ]
+      },
       {
         text: 'Examples',
         items: [

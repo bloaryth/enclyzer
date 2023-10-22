@@ -1,14 +1,14 @@
 #!/bin/bash
 ## Usage: sudo bash install-enclyzer-settings.sh
 
-enclyzer_ISOLCPUS=1,$((`grep 'cpu cores' /proc/cpuinfo -m 1 | awk '{print $4}'` + 1))
-enclyzer_CMDLINE_PARAMETER="isolcpus=$enclyzer_ISOLCPUS mitigations=off tsx=on nox2apic iomem=relaxed no_timer_check nmi_watchdog=0 nosmap nosmep clearcpuid=514"
+ENCLYZER_ISOLCPUS=1,$((`grep 'cpu cores' /proc/cpuinfo -m 1 | awk '{print $4}'` + 1))
+ENCLYZER_CMDLINE_PARAMETER="isolcpus=$ENCLYZER_ISOLCPUS mitigations=off tsx=on nox2apic iomem=relaxed no_timer_check nmi_watchdog=0 nosmap nosmep clearcpuid=514"
 
 # Grub cmdline configuration
-if [ -z "$(grep "$enclyzer_CMDLINE_PARAMETER" /etc/default/grub)" ]
+if [ -z "$(grep "$ENCLYZER_CMDLINE_PARAMETER" /etc/default/grub)" ]
 then
     echo "[enclyzer] UPDATE GRUB_CMDLINE_LINUX_DEFAULT..."
-    sudo sed -i -E "s/(GRUB_CMDLINE_LINUX_DEFAULT=\".*)\"/\1 $enclyzer_CMDLINE_PARAMETER\"/g" /etc/default/grub
+    sudo sed -i -E "s/(GRUB_CMDLINE_LINUX_DEFAULT=\".*)\"/\1 $ENCLYZER_CMDLINE_PARAMETER\"/g" /etc/default/grub
     sudo update-grub
     cat /etc/default/grub
 fi
