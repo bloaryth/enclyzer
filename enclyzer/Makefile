@@ -13,11 +13,10 @@ ADDL_CLEAN := clean_libenclyzer enable_prefetcher clean_kenclyzer
 
 build_libenclyzer:
 	@make -C ../enclyzer/libenclyzer clean all --quiet
-	@sleep 1
+	@sleep 5
 
 clean_libenclyzer:
 	@make -C ../enclyzer/libenclyzer clean --quiet
-	@sleep 1
 
 build_kenclyzer:
 	@sudo make -C ../kenclyzer clean all load --quiet
