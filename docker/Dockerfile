@@ -71,5 +71,4 @@ USER ubuntu
 
 # Disable prefechers and run tests
 WORKDIR /home/ubuntu/enclyzer/enclyzer
-CMD [ "sudo", "bash", "../3rdparty/install-sgx-software-enable-master.sh", "&&" \
-  "sudo", "make", "all", "run", "clean" ]
+CMD [ "sudo", "make", "all", "run", "clean" ]
