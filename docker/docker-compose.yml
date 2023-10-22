@@ -1,0 +1,41 @@
+version: '3'
+
+services:
+  aesm:
+    image: bloaryth/aesmd
+    container_name: aesmd
+    devices:
+      - /dev/isgx
+    volumes:
+      - aesmd-socket:/var/run/aesmd
+    stdin_open: true
+    tty: true
+    environment:
+      - http_proxy
+      - https_proxy
+
+  enclyzer:
+    image: bloaryth/enclyzer
+    container_name: enclyzer
+    privileged: true
+    cap_add:
+      - ALL
+    depends_on:
+      - aesm
+    devices:
+      - /dev/isgx
+      - /dev/kenclyzer
+      - /dev/mem
+    volumes:
+      - aesmd-socket:/var/run/aesmd
+      - /lib/modules:/lib/modules
+      - /usr/src:/usr/src
+    stdin_open: true
+    tty: true
+    environment:
+      - http_proxy
+      - https_proxy
+
+volumes:
+  aesmd-socket:
+    external: true

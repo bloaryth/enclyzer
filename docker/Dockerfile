@@ -1,4 +1,4 @@
-FROM ubuntu:20.04 as builder
+FROM ubuntu:20.04 as linux-sgx
 
 ENV TZ=Asia/Shanghai
 RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
@@ -16,18 +16,12 @@ RUN git clone https://github.com/intel/linux-sgx.git linux-sgx \
   make sdk -j `nproc` && make sdk_install_pkg && \
   sh -c 'echo "no\n/opt/intel" | ./linux/installer/bin/sgx_linux_x64_sdk_*.bin' && \
   make psw -j `nproc` && make psw_install_pkg && \
-  ./linux/installer/bin/sgx_linux_x64_psw_*.bin --no-start-aesm
+  ./linux/installer/bin/sgx_linux_x64_psw_*.bin --no-start-aesm && \
+  rm -rf /linux-sgx
 
 
 
-FROM ubuntu:18.04 as aesmd
-
-RUN apt-get update && apt-get install -yqq \
-    libcurl4 libprotobuf10 libssl1.1 make module-init-tools
-
-WORKDIR /installer
-COPY --from=builder /linux-sgx/linux/installer/bin/*.bin ./
-RUN ./sgx_linux_x64_psw_*.bin --no-start-aesm
+FROM linux-sgx as aesmd
 
 WORKDIR /opt/intel/sgxpsw/aesm/
 ENV LD_LIBRARY_PATH=.
@@ -35,10 +29,10 @@ CMD ./aesm_service --no-daemon
 
 
 
-FROM ubuntu:20.04 as enclyzer
+FROM linux-sgx as enclyzer
 
-ENV TZ=Asia/Shanghai
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+# ENV TZ=Asia/Shanghai
+# RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 
 # Enable sudo inside the docker container
 RUN apt-get update && apt-get install -yqq sudo && \
@@ -46,13 +40,13 @@ RUN apt-get update && apt-get install -yqq sudo && \
   echo '%sudo ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 # Install SGX SDK and PSW for Linux
-RUN apt-get update && apt-get install -yqq \
-    libcurl4-openssl-dev libprotobuf-dev libssl-dev make kmod
+# RUN apt-get update && apt-get install -yqq \
+#     libcurl4-openssl-dev libprotobuf-dev libssl-dev make kmod
 
-WORKDIR /opt/intel
-COPY --from=builder /linux-sgx/linux/installer/bin/*.bin ./
-RUN ./sgx_linux_x64_psw*.bin --no-start-aesm && \
-  sh -c 'echo "no\n/opt/intel" | ./sgx_linux_x64_sdk_*.bin'
+# WORKDIR /opt/intel
+# COPY --from=builder /linux-sgx/linux/installer/bin/*.bin ./
+# RUN sh -c 'echo "no\n/opt/intel" | ./sgx_linux_x64_sdk_*.bin' && \
+#   ./sgx_linux_x64_psw*.bin --no-start-aesm
 
 # Install criterion for ENCLYZER
 WORKDIR /
@@ -64,15 +58,17 @@ RUN apt-get update && apt-get install -yqq wget tar && \
   cp -rf ./criterion-v2.3.2/* /usr/
 
 # Install the ENCLYZER repository on github
-ARG CACHEBUST=$(date)
-RUN apt-get update && sudo apt-get install -yqq git gcc && \
+RUN apt-get update && sudo apt-get install -yqq git gcc msr-tools kmod && \
   mkdir -p /home/ubuntu && cd /home/ubuntu && \
-  echo 'ENCLYZER cloned on:' $CACHEBUST && \
   git clone https://github.com/bloaryth/enclyzer.git
+
+# Disable cache and update the ENCLYZER repository
+ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
+RUN cd /home/ubuntu/enclyzer && git pull
 
 # Set up user and build the application
 USER ubuntu
 
+# Disable prefechers and run tests
 WORKDIR /home/ubuntu/enclyzer/enclyzer
-RUN sudo make clean all
-CMD [ "./sgx_app --verbose -j1" ]
+CMD [ "sudo", "make", "all", "run", "clean" ]

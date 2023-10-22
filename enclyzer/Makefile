@@ -4,8 +4,9 @@
 
 #################### ADDITIONAL SETTINGS ####################
 
-ADDL_BUILD := build_libenclyzer #build_kenclyzer disable_prefetcher
-ADDL_CLEAN := clean_libenclyzer #clean_kenclyzer enable_prefetcher
+ADDL_BUILD := build_libenclyzer 
+ADDL_RUN := disable_prefetcher build_kenclyzer 
+ADDL_CLEAN := clean_libenclyzer enable_prefetcher clean_kenclyzer
 
 .PHONY: build_libenclyzer build_kenclyzer disable_prefetcher \
 	clean_libenclyzer clean_kenclyzer enable_prefetcher
@@ -220,10 +221,16 @@ else
 endif
 endif
 
-run: all
+run: all $(ADDL_RUN)
 ifneq ($(build_mode), HW_RELEASE)
-	@-$(CURDIR)/$(APP_NAME) $(ADDL_APP_RUN_FLAGS) > $(APP_NAME).txt 2>&1
-	@sed -i -r "s/\x1B\[(([0-9]{1,2})?(;)?([0-9]{1,2})?)?[m,K,H,f,J]//g" $(APP_NAME).txt
+	-$(CURDIR)/$(APP_NAME) $(ADDL_APP_RUN_FLAGS)
+	@echo "RUN  =>  $(APP_NAME) [$(SGX_MODE)|$(SGX_ARCH), OK]"
+endif
+
+run_quiet: all $(ADDL_RUN)
+ifneq ($(build_mode), HW_RELEASE)
+	-$(CURDIR)/$(APP_NAME) $(ADDL_APP_RUN_FLAGS) > $(APP_NAME).txt 2>&1
+	sed -i -r "s/\x1B\[(([0-9]{1,2})?(;)?([0-9]{1,2})?)?[m,K,H,f,J]//g" $(APP_NAME).txt
 	@echo "RUN  =>  $(APP_NAME) [$(SGX_MODE)|$(SGX_ARCH), OK]"
 endif
 
