@@ -9,7 +9,7 @@ hero:
   actions:
     - theme: brand
       text: Enclyzer
-      link: /running-enclyzer-with-docker'
+      link: /running-enclyzer-with-docker
     - theme: alt
       text: Speechminer
       link: /running-speechminer-with-docker
