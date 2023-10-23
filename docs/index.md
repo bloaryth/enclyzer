@@ -3,23 +3,23 @@
 layout: home
 
 hero:
-  name: "My Awesome Project"
-  text: "A VitePress Site"
-  tagline: My great project tagline
+  name: "SUSTECH SGX ENV"
+  text: "Enclyzer & Speechminer"
+  tagline: Tools for testing vulnerabilities of Intel SGX
   actions:
     - theme: brand
-      text: Markdown Examples
-      link: /markdown-examples
+      text: Enclyzer
+      link: /running-enclyzer-with-docker'
     - theme: alt
-      text: API Examples
-      link: /api-examples
+      text: Speechminer
+      link: /running-speechminer-with-docker
 
 features:
-  - title: Feature A
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature B
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature C
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+  - title: SGX Specific
+    details: These Tools are geared specific to SGX for testing.
+  - title: Docker based
+    details: Use docker image for easy deployment and distribution.
+  # - title: Feature C
+  #   details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
 ---
 
